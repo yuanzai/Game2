@@ -37,9 +37,9 @@
     
 }
 
-- (void) loadWithGameID:(NSInteger) GameID
+- (void) loadWithGameID:(NSInteger) thisGameID
 {
-    self.GameID = GameID;
+    GameID = thisGameID;
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:[self getGamePath]]) {
         NSData *data = [NSData dataWithContentsOfFile:[self getGamePath]];

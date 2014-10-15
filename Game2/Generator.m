@@ -12,7 +12,16 @@
 @implementation Generator
 @synthesize FirstNames;
 @synthesize LastNames;
-const NSInteger playerBatch = 36;
+const NSInteger playerBatch = 360;
+
+- (id) init {
+	if (!(self = [super init]))
+		return nil;
+    FirstNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:1];
+    LastNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:2];
+ 
+    return self;
+}
 
 - (void) generatePlayersForNewSeason
 {
@@ -26,8 +35,6 @@ const NSInteger playerBatch = 36;
 
 - (void) generatePlayersWithSeason:(NSInteger) season
 {
-    FirstNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:1];
-    LastNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:2];
     
     for (int i = 0; i < playerBatch; i ++) {
         GeneratePlayer* newPlayer = [[GeneratePlayer alloc]init];
@@ -240,13 +247,18 @@ const NSInteger statBiasMax = 63;
     FirstName = [FirstNames objectAtIndex:arc4random() % [FirstNames count]];
     LastName = [LastNames objectAtIndex:arc4random() % [LastNames count]];
     DisplayName = LastName;
+    [newPlayer setObject:FirstName forKey:@"FirstName"];
+    [newPlayer setObject:LastName forKey:@"LastName"];
+    [newPlayer setObject:DisplayName forKey:@"DisplayName"];
+
+    
     
     //Consistency
     Consistency = arc4random() % 17 + arc4random() % 4 + 1;
     [newPlayer setObject:[NSNumber numberWithInteger:Consistency] forKey:@"Consistency"];
     
     //WkOfBirth
-    WkOfBirth = - ((season - 20) * 50 ) + arc4random() % 100;
+    WkOfBirth =  ((season - 20) * 50 ) + arc4random() % 100;
     [newPlayer setObject:[NSNumber numberWithInteger:WkOfBirth] forKey:@"WkOfBirth"];
     
     //Condition + Form

@@ -19,10 +19,12 @@
     
     if (!databasePath) {
         //For unit test purpose as app delegate did not run
-//        NSString* databaseName = @"database.db";
-  //      databasePath = [[[NSBundle bundleForClass:[self class]] resourcePath] stringByAppendingPathComponent:databaseName];
-    //    [self getDBPath];
-      //  [self createAndCheckDatabase];
+        /*
+          NSString* databaseName = @"database.db";
+          databasePath = [[[NSBundle bundleForClass:[self class]] resourcePath] stringByAppendingPathComponent:databaseName];
+          [self getDBPath];
+          [self createAndCheckDatabase];
+         */
     }
 
 
@@ -69,8 +71,8 @@
 {
     NSMutableDictionary* resultTable = [[NSMutableDictionary alloc] init];
     [db open];
-    
-    FMResultSet *results = [db executeQuery:@"SELECT * FROM statssd"];
+    NSString* query =@"SELECT * FROM statssd";
+    FMResultSet *results = [db executeQuery:query];
     
     while([results next])
     {
@@ -160,8 +162,9 @@
     NSString* query = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = %i", table, keyField,key];
     FMResultSet* result = [db executeQuery:query];
     if ([result next]) {
+        NSDictionary* ret = [result resultDictionary];
         [db close];
-        return [result resultDictionary];
+        return ret;
         
     } else {
         [db close];
@@ -204,16 +207,17 @@
 {
     [db open];
     NSString* query = [NSString stringWithFormat:@"SELECT %@ FROM %@ WHERE %@ = %i", selectField, table, keyField,key];
+    
     FMResultSet* result = [db executeQuery:query];
-    if (![result hasAnotherRow]) {
-        return nil;
-    }
+
     NSMutableArray *resultArray = [[NSMutableArray alloc]init];
     while ([result next]){
-        [resultArray addObject:[NSNumber numberWithInteger:[result intForColumn:selectField]]];
+        [resultArray addObject:[result objectForColumnName:selectField]];
     }
     
     [db close];
+    if ([resultArray count] == 0)
+        return nil;
     return resultArray;
 }
 

@@ -202,4 +202,9 @@
 @synthesize team1;
 @synthesize team2;
 
+//TODO: update fixture
+-(void) updateFixtureInDatabase
+{
+    
+}
 @end

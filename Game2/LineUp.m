@@ -13,10 +13,6 @@
 @implementation MatchPlayer
 @synthesize matchStats, PosCoeff, currentPositionSide, yellow, red, att, def, hasPlayed;
 
-//TODO: Set Pre Match Form
-- (void) populateMatchDayForm
-{
-}
 
 - (void) populateMatchStats
 {
@@ -191,6 +187,10 @@
 
 @synthesize matchLog;
 
+//TODO: Set Pre Match Form
+- (void) populateMatchDayForm
+{
+}
 
 - (void) populateAllPlayersStats{
     [[currentTactic getAllPlayers] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {

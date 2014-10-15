@@ -21,14 +21,14 @@
 @synthesize PlayersExp;
 @synthesize PlayersID;
 
-- (id) initWithTrainingID:(NSInteger) TrainingID
+- (id) initWithTrainingID:(NSInteger) thisTrainingID
 {
     self = [super init];
     if (self) {
-        PlanStats = [[NSMutableDictionary alloc]initWithDictionary:[[[DatabaseModel alloc]init]getResultDictionaryForTable:@"training" withKeyField:@"TrainingID" withKey:TrainingID]];
+        PlanStats = [[NSMutableDictionary alloc]initWithDictionary:[[[DatabaseModel alloc]init]getResultDictionaryForTable:@"training" withKeyField:@"TrainingID" withKey:thisTrainingID]];
         NSInteger CoachID = [[PlanStats objectForKey:@"CoachID"]integerValue];
         Coach = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"coaches" withKeyField:@"CoachID" withKey:CoachID];
-        PlayersID = [[[DatabaseModel alloc]init]getArrayFrom:@"trainingExp" withSelectField:@"PlayerID" whereKeyField:@"TrainingID" hasKey:TrainingID];
+        PlayersID = [[[DatabaseModel alloc]init]getArrayFrom:@"trainingExp" withSelectField:@"PlayerID" whereKeyField:@"TrainingID" hasKey:thisTrainingID];
 
     }
     return self;
