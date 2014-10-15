@@ -9,13 +9,38 @@
 #import "AppDelegate.h"
 
 @implementation AppDelegate
+@synthesize databasePath,databaseName;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
     return YES;
 }
-							
+
+- (void) getDBPath
+{
+    self.databaseName = @"database.db";
+    
+    NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentDir = [documentPaths objectAtIndex:0];
+    self.databasePath = [documentDir stringByAppendingPathComponent:self.databaseName];
+    
+}
+
+-(void) createAndCheckDatabase
+{
+    BOOL success;
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    success = [fileManager fileExistsAtPath:databasePath];
+    
+    //if(success) return;
+    
+    NSString *databasePathFromApp = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:self.databaseName];
+    
+    [fileManager copyItemAtPath:databasePathFromApp toPath:databasePath error:nil];
+}
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
