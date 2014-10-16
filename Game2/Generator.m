@@ -12,6 +12,9 @@
 @implementation Generator
 @synthesize FirstNames;
 @synthesize LastNames;
+@synthesize TeamNames;
+@synthesize TeamNamesSuffix;
+
 const NSInteger playerBatch = 360;
 
 - (id) init {
@@ -19,24 +22,63 @@ const NSInteger playerBatch = 360;
 		return nil;
     FirstNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:1];
     LastNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:2];
+    TeamNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:3];
+    TeamNamesSuffix = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:4];
  
     return self;
 }
 
-- (void) generatePlayersForNewSeason
+// New Game
+
+- (void) generateNewGame
 {
-    
+    [self generateNewTeams];
+    [self generatePlayersForNewGame];
+    [self AssignPlayersToTeams]   
+}
+
+- (void) generateNewTeams
+{
+	NSArray* tournaments = [[[DatabaseModel alloc]init]getArrayFrom:@"tournaments" whereData:nil sortFieldAsc:@""];
+	[tournaments enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        NSDictionary* result = (NSDictionary*) obj;
+        NSInteger teamCount = [[obj objForKey:@"TEAMCOUNT"]integerValue];
+        
+        for (NSInteger i = 0; i < teamCount; i++) {
+        	NSMutableDictionary* newTeam = [NSMutableDictionary dictionary];
+        	NSString* teamName = [TeamNames objectAtIndex:arc4random() % [TeamNames count]];
+        	if (arc4random % 5 < 3) {
+        		teamName = [NSString stringWithFormat:@"%@ %@",teamName, [TeamNamesSuffix objectAtIndex:arc4random() % [TeamNamesSuffix count]]];
+        		[newTeam setObject:teamName forKey:@"NAME"];
+        		[newTeam setObject:[obj objForKey:@"TOURNAMENTID"] forKey:@"TOURNAMENTID"];
+        	}
+        }
+    }];
 }
 
 - (void) generatePlayersForNewGame
 {
-    
+// TODO
 }
 
-- (void) generatePlayersWithSeason:(NSInteger) season
+- (void) assignPlayersToTeams
+{
+// TODO
+}
+
+- (void) generatePlayersForNewSeason
+{
+// TODO    
+}
+
+
+
+// Continuing
+
+- (void) generatePlayersWithSeason:(NSInteger) season NumberOfPlayers:(NSInteger) number
 {
     
-    for (int i = 0; i < playerBatch; i ++) {
+    for (int i = 0; i < number; i ++) {
         GeneratePlayer* newPlayer = [[GeneratePlayer alloc]init];
         newPlayer.FirstNames = FirstNames;
         newPlayer.LastNames = LastNames;
