@@ -12,6 +12,9 @@
 @implementation Generator
 @synthesize FirstNames;
 @synthesize LastNames;
+@synthesize TeamNames;
+@synthesize TeamNamesSuffix;
+
 const NSInteger playerBatch = 360;
 
 - (id) init {
@@ -19,24 +22,49 @@ const NSInteger playerBatch = 360;
 		return nil;
     FirstNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:1];
     LastNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:2];
+    TeamNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:3];
+    TeamNamesSuffix = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:4];
  
     return self;
 }
 
-- (void) generatePlayersForNewSeason
+// New Game
+
+- (void) generateNewGame
 {
-    
+    [self generateNewTeams];
+    [self generatePlayersForNewGame];
+    [self AssignPlayersToTeams]   
+}
+
+- (void) generateNewTeams
+{
+// TODO
 }
 
 - (void) generatePlayersForNewGame
 {
-    
+// TODO
 }
 
-- (void) generatePlayersWithSeason:(NSInteger) season
+- (void) assignPlayersToTeams
+{
+// TODO
+}
+
+- (void) generatePlayersForNewSeason
+{
+// TODO    
+}
+
+
+
+// Continuing
+
+- (void) generatePlayersWithSeason:(NSInteger) season NumberOfPlayers:(NSInteger) number
 {
     
-    for (int i = 0; i < playerBatch; i ++) {
+    for (int i = 0; i < number; i ++) {
         GeneratePlayer* newPlayer = [[GeneratePlayer alloc]init];
         newPlayer.FirstNames = FirstNames;
         newPlayer.LastNames = LastNames;
