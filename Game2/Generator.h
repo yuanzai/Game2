@@ -13,7 +13,11 @@
 @interface Generator : NSObject
 @property NSArray* FirstNames;
 @property NSArray* LastNames;
+@property NSArray* TeamNames;
+@property NSArray* TeamNamesSuffix;
+
 - (void) generatePlayersWithSeason:(NSInteger) season;
+- (void) generateNewGame;
 
 @end
 
