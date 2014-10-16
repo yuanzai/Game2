@@ -191,12 +191,13 @@
     NSString* query = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@", table, whereString];
     FMResultSet* result = [db executeQuery:query];
     if ([result next]) {
-        if ([result hasAnotherRow]) {
+    	NSDictionary* ret = [result resultDictionary];
+        if ([result next]) {
             [db close];
             return nil; // has more than 1 entry
         }
         [db close];
-        return [result resultDictionary];
+        return ret;
     } else {
         [db close];
         return nil; //has 0 entry in this key field
@@ -254,13 +255,12 @@
     query = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ %@", table, whereSQL,sortSQL];
 
     FMResultSet* result = [db executeQuery:query];
-    if (![result hasAnotherRow]) {
-        return nil;
-    }
     NSMutableArray *resultArray = [[NSMutableArray alloc]init];
     while ([result next]){
         [resultArray addObject:[result resultDictionary]];
     }
+    if ([resultArray count] == 0)
+    	resultArray = nil;
     [db close];
     return resultArray;
 }
