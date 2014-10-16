@@ -39,7 +39,21 @@ const NSInteger playerBatch = 360;
 
 - (void) generateNewTeams
 {
-// TODO
+	NSArray* tournaments = [[[DatabaseModel alloc]init]getArrayFrom:@"tournaments" whereData:nil sortFieldAsc:@""];
+	[tournaments enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        NSDictionary* result = (NSDictionary*) obj;
+        NSInteger teamCount = [[obj objForKey:@"TEAMCOUNT"]integerValue];
+        
+        for (NSInteger i = 0; i < teamCount; i++) {
+        	NSMutableDictionary* newTeam = [NSMutableDictionary dictionary];
+        	NSString* teamName = [TeamNames objectAtIndex:arc4random() % [TeamNames count]];
+        	if (arc4random % 5 < 3) {
+        		teamName = [NSString stringWithFormat:@"%@ %@",teamName, [TeamNamesSuffix objectAtIndex:arc4random() % [TeamNamesSuffix count]]];
+        		[newTeam setObject:teamName forKey:@"NAME"];
+        		[newTeam setObject:[obj objForKey:@"TOURNAMENTID"] forKey:@"TOURNAMENTID"];
+        	}
+        }
+    }];
 }
 
 - (void) generatePlayersForNewGame
