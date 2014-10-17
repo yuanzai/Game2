@@ -14,17 +14,18 @@
 @synthesize LastNames;
 @synthesize TeamNames;
 @synthesize TeamNamesSuffix;
+@synthesize AgeDistribution;
 
 const NSInteger playerBatch = 360;
 
 - (id) init {
 	if (!(self = [super init]))
 		return nil;
-    FirstNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:1];
-    LastNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:2];
-    TeamNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:3];
-    TeamNamesSuffix = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:4];
- 
+    FirstNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@1];
+    LastNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@2];
+    TeamNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@3];
+    TeamNamesSuffix = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@4];
+    AgeDistribution = [[[DatabaseModel alloc]init]getArrayFrom:@"retire" withSelectField:@"AGEDISTRIBUTION" whereKeyField:@"" hasKey:nil];
     return self;
 }
 
@@ -34,7 +35,7 @@ const NSInteger playerBatch = 360;
 {
     [self generateNewTeams];
     [self generatePlayersForNewGame];
-    [self AssignPlayersToTeams]   
+    [self assignPlayersToTeams];
 }
 
 - (void) generateNewTeams
@@ -42,23 +43,27 @@ const NSInteger playerBatch = 360;
 	NSArray* tournaments = [[[DatabaseModel alloc]init]getArrayFrom:@"tournaments" whereData:nil sortFieldAsc:@""];
 	[tournaments enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         NSDictionary* result = (NSDictionary*) obj;
-        NSInteger teamCount = [[obj objForKey:@"TEAMCOUNT"]integerValue];
+        NSInteger teamCount = [[result objectForKey:@"TEAMCOUNT"]integerValue];
         
         for (NSInteger i = 0; i < teamCount; i++) {
         	NSMutableDictionary* newTeam = [NSMutableDictionary dictionary];
         	NSString* teamName = [TeamNames objectAtIndex:arc4random() % [TeamNames count]];
-        	if (arc4random % 5 < 3) {
+        	if (arc4random() % 5 < 3) {
         		teamName = [NSString stringWithFormat:@"%@ %@",teamName, [TeamNamesSuffix objectAtIndex:arc4random() % [TeamNamesSuffix count]]];
-        		[newTeam setObject:teamName forKey:@"NAME"];
-        		[newTeam setObject:[obj objForKey:@"TOURNAMENTID"] forKey:@"TOURNAMENTID"];
         	}
+            [newTeam setObject:teamName forKey:@"NAME"];
+            [newTeam setObject:[obj objectForKey:@"TOURNAMENTID"] forKey:@"TOURNAMENTID"];
+            [[[DatabaseModel alloc]init]insertDatabaseTable:@"teams" withData:newTeam];
         }
     }];
 }
 
 - (void) generatePlayersForNewGame
 {
-// TODO
+    [AgeDistribution enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [self generatePlayersWithSeason:-idx NumberOfPlayers:(NSInteger)(playerBatch * [obj doubleValue])];
+    }];
+    
 }
 
 - (void) assignPlayersToTeams
@@ -154,7 +159,8 @@ const NSInteger statBiasMax = 63;
 - (BOOL) createPlayerWithAbility:(NSInteger)ability Potential:(NSInteger) potential Season:(NSInteger) season
 {
     NSMutableDictionary* newPlayer = [NSMutableDictionary dictionary];
-    
+    [newPlayer setObject:[NSNumber numberWithInteger:potential] forKey:@"potential"];
+
     //Side
     /*
      C 22

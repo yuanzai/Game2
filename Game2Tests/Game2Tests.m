@@ -29,7 +29,7 @@
 
 - (void)testDatabase
 {
-    NSArray* players = [[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"DISPLAYNAME" whereKeyField:@"PLAYERID" hasKey:2];
+    NSArray* players = [[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"DISPLAYNAME" whereKeyField:@"PLAYERID" hasKey:@2];
     XCTAssertTrue([players count] == 1,@"get 1 player in players table");
 
 }

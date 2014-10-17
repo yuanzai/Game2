@@ -204,10 +204,17 @@
     }
 }
 
-- (NSArray*) getArrayFrom:(NSString*)table withSelectField:(NSString*)selectField whereKeyField:(NSString*)keyField hasKey:(NSInteger)key
+- (NSArray*) getArrayFrom:(NSString*)table withSelectField:(NSString*)selectField whereKeyField:(NSString*)keyField hasKey:(id)key
 {
     [db open];
-    NSString* query = [NSString stringWithFormat:@"SELECT %@ FROM %@ WHERE %@ = %i", selectField, table, keyField,key];
+    NSString* query;
+    if ([keyField isEqualToString:@""]) {
+        query = [NSString stringWithFormat:@"SELECT %@ FROM %@", selectField, table];
+    } else if ([key isKindOfClass:[NSString class]]){
+        query = [NSString stringWithFormat:@"SELECT %@ FROM %@ WHERE %@ = '%@'", selectField, table,keyField,key];
+    } else {
+        query = [NSString stringWithFormat:@"SELECT %@ FROM %@ WHERE %@ = %@", selectField, table,keyField,key];
+    }
     
     FMResultSet* result = [db executeQuery:query];
 
