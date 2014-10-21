@@ -9,19 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface GlobalVariableModel : NSObject
-{
-    NSMutableArray* playerStatList;
-    NSMutableArray* gkStatList;
-    NSMutableArray* allStatList;
-    NSMutableDictionary* playerGroupStatList;
-    NSMutableDictionary* statsEventTable;
-    NSMutableDictionary* eventOccurenceFactorTable;
-    NSMutableArray* attackTypes;
-    
-    NSDictionary* ActionStartTable;
-    NSDictionary* standardDeviationTable;
-
-}
 @property NSMutableArray* playerStatList;
 @property NSMutableArray* gkStatList;
 @property NSMutableDictionary* playerGroupStatList;
@@ -29,6 +16,8 @@
 @property NSMutableDictionary* statsEventTable;
 @property NSMutableDictionary* eventOccurenceFactorTable;
 @property NSMutableArray* attackTypes;
+@property NSDictionary* valuationStatListCentre;
+@property NSDictionary* valuationStatListFlank;
 
 @property NSDictionary* standardDeviationTable;
 @property NSDictionary* actionStartTable;
@@ -40,6 +29,8 @@
 - (void)setAttackTypes;
 
 // Stat List
++ (NSDictionary*)valuationStatListForFlank:(NSString*) flank;
+
 + (NSMutableArray*) playerStatList;
 + (NSMutableArray*) gkStatList;
 + (NSMutableDictionary*) playerGroupStatList;

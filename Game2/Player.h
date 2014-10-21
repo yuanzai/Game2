@@ -56,8 +56,11 @@
 @property NSInteger WkOfBirth;
 @property NSMutableDictionary* TrainingExp;
 @property BOOL isGoalKeeper;
+@property NSInteger Valuation;
+
 
 - (id) initWithPlayerID:(NSInteger) InputID;
-- (BOOL) updatePlayerInDatabaseStats:(BOOL) UpdateStats GameStat:(BOOL)UpdateGameStat Team: (BOOL) UpdateTeam Position: (BOOL) UpdatePosition;
+- (BOOL) updatePlayerInDatabaseStats:(BOOL) UpdateStats GameStat:(BOOL)UpdateGameStat Team: (BOOL) UpdateTeam Position: (BOOL) UpdatePosition Valuation:(BOOL) UpdateValuation;
+- (BOOL) valuePlayer;
 
 @end

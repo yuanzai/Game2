@@ -34,7 +34,7 @@
 @synthesize TrainingExp;
 
 @synthesize isGoalKeeper;
-
+@synthesize Valuation;
 
 - (id) initWithPlayerID:(NSInteger) InputID {
 	if (!(self = [super init]))
@@ -87,12 +87,14 @@
     [TrainingExp setObject:[record objectForKey:@"TACTICSEXP"] forKey:@"TACTICSEXP"];
     [TrainingExp setObject:[record objectForKey:@"SKILLSEXP"] forKey:@"SKILLSEXP"];
     
+    Valuation = [[record objectForKey:@"Valuation"] integerValue];
     if (Condition < 0.01)
         isInjured = YES;
     return self;
 }
 
-- (BOOL) updatePlayerInDatabaseStats:(BOOL) UpdateStats GameStat:(BOOL)UpdateGameStat Team: (BOOL) UpdateTeam Position: (BOOL) UpdatePosition{
+- (BOOL) updatePlayerInDatabaseStats:(BOOL) UpdateStats GameStat:(BOOL)UpdateGameStat Team: (BOOL) UpdateTeam Position: (BOOL) UpdatePosition Valuation:(BOOL) UpdateValuation
+{
     NSMutableDictionary* updateDictionary = [[NSMutableDictionary alloc]init];
     
     if (UpdateTeam) {
@@ -114,10 +116,24 @@
     if (UpdatePosition) {
         [updateDictionary addEntriesFromDictionary:PreferredPosition];
     }
+    if (UpdateValuation) {
+        [updateDictionary setObject:[NSNumber numberWithInteger:Valuation] forKey:@"Valuation"];
+    }
     
     [[[DatabaseModel alloc]init]updateDatabaseTable:@"players" withKeyField:@"PlayerID" withKey:PlayerID withDictionary:updateDictionary];
     return YES;
 }
 
-
+- (BOOL) valuePlayer
+{
+    
+    __block NSInteger sumStat;
+    [Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        sumStat += (NSInteger) obj;
+    }];
+    
+    
+    
+    return YES;
+}
 @end

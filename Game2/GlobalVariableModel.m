@@ -10,7 +10,7 @@
 #import "DatabaseModel.h"
 
 @implementation GlobalVariableModel
-@synthesize playerStatList,gkStatList, allStatList, statsEventTable,eventOccurenceFactorTable,attackTypes, playerGroupStatList, standardDeviationTable, actionStartTable;
+@synthesize playerStatList,gkStatList, allStatList, statsEventTable,eventOccurenceFactorTable,attackTypes, playerGroupStatList, standardDeviationTable, actionStartTable, valuationStatListCentre, valuationStatListFlank;
 static GlobalVariableModel* myGlobalVariableModel;
 
 + (GlobalVariableModel*)myGlobalVariableModel
@@ -25,6 +25,37 @@ static GlobalVariableModel* myGlobalVariableModel;
         
     }
     return myGlobalVariableModel;
+}
+
++ (NSDictionary*) valuationStatListForFlank:(NSString*) flank;
+{
+    NSArray* tempArray;
+    if ([flank isEqualToString:@"CENTRE"]) {
+        if (!myGlobalVariableModel.valuationStatListCentre ){
+            tempArray = [[[DatabaseModel alloc]init]getArrayFrom:@"valuations" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"CENTRE",@"FLANKCENTRE", nil] sortFieldAsc:@""];
+            NSMutableDictionary* tempDictionary = [NSMutableDictionary dictionary];
+            [tempArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                [tempDictionary setObject:obj forKey:[(NSDictionary*) obj objectForKey:@"POSITION"]];
+            }];
+            myGlobalVariableModel.valuationStatListCentre = tempDictionary;
+        }else {
+            return myGlobalVariableModel.valuationStatListCentre;
+        }
+    } else if ([flank isEqualToString:@"FLANK"] ||
+               [flank isEqualToString:@"LEFT"] ||
+               [flank isEqualToString:@"RIGHT"]) {
+        if (!myGlobalVariableModel.valuationStatListFlank){
+            tempArray = [[[DatabaseModel alloc]init]getArrayFrom:@"valuations" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"FLANK",@"FLANKCENTRE", nil] sortFieldAsc:@""];
+            
+            NSMutableDictionary* tempDictionary = [NSMutableDictionary dictionary];
+            [tempArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                [tempDictionary setObject:obj forKey:[(NSDictionary*) obj objectForKey:@"POSITION"]];
+            }];
+            myGlobalVariableModel.valuationStatListFlank = tempDictionary;
+        }
+        return myGlobalVariableModel.valuationStatListFlank;
+    }
+    return  nil;
 }
 
 + (NSDictionary *)standardDeviationTable {
