@@ -129,6 +129,8 @@
  - process single player fixture
 
 */
+- (void) newWithGameID:(NSInteger) GameID;
++ (id)myGame;
 
 + (SinglePlayerData*) gameData;
 - (void) enterPreWeek;

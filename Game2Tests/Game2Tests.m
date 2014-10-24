@@ -9,6 +9,7 @@
 #import <XCTest/XCTest.h>
 #import "Generator.h"
 #import "DatabaseModel.h"
+#import "GameModel.h"
 @interface Game2Tests : XCTestCase
 
 @end
@@ -36,8 +37,10 @@
 
 - (void)testGenerate
 {
+    [[GameModel myGame]newWithGameID:1];
+    
     Generator* newGenerator = [[Generator alloc]init];
-    [newGenerator generatePlayersWithSeason:1];
+    [newGenerator generatePlayersWithSeason:1 NumberOfPlayers:100];
 }
 
 - (void)testARC4random

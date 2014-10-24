@@ -20,6 +20,7 @@
 @synthesize relegateToTournament;
 @synthesize promoteCount;
 @synthesize relegateCount;
+@synthesize playerCount;
 
 - (id) initWithTournamentID:(NSInteger) TournamentID
 {
@@ -34,13 +35,14 @@
         relegateToTournament = [[record objectForKey:@"RELEGATETO"]integerValue];
         promoteCount = [[record objectForKey:@"PROMOTECOUNT"]integerValue];
         relegateCount = [[record objectForKey:@"RELEGATECOUNT"]integerValue];
+        playerCount =[[record objectForKey:@"PLAYERCOUNT"]integerValue];
     }
     return self;
 }
 
 - (BOOL) createFixturesForSeason:(NSInteger)season
 {
-    NSMutableArray* teamsArray = [[NSMutableArray alloc]initWithArray:[[[DatabaseModel alloc]init]getArrayFrom:@"teams" withSelectField:@"TEAMID" whereKeyField:@"TOURNAMENTID" hasKey:tournamentID]];
+    NSMutableArray* teamsArray = [[NSMutableArray alloc]initWithArray:[[[DatabaseModel alloc]init]getArrayFrom:@"teams" withSelectField:@"TEAMID" whereKeyField:@"TOURNAMENTID" hasKey:[NSNumber numberWithInteger:tournamentID]]];
     
     if ([teamsArray count] != teamCount)
         return NO;

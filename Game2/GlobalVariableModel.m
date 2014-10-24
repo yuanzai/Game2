@@ -10,7 +10,7 @@
 #import "DatabaseModel.h"
 
 @implementation GlobalVariableModel
-@synthesize playerStatList,gkStatList, allStatList, statsEventTable,eventOccurenceFactorTable,attackTypes, playerGroupStatList, standardDeviationTable, actionStartTable, valuationStatListCentre, valuationStatListFlank;
+@synthesize playerStatList,gkStatList, allStatList, statsEventTable,eventOccurenceFactorTable,attackTypes, playerGroupStatList, standardDeviationTable, actionStartTable, valuationStatListCentre, valuationStatListFlank, tournamentTable;
 static GlobalVariableModel* myGlobalVariableModel;
 
 + (GlobalVariableModel*)myGlobalVariableModel

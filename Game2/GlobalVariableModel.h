@@ -21,7 +21,7 @@
 
 @property NSDictionary* standardDeviationTable;
 @property NSDictionary* actionStartTable;
-
+@property NSDictionary* tournamentTable;
 
 + (GlobalVariableModel*)myGlobalVariableModel;
 - (void)setEventOccurenceFactorTableFromDB;

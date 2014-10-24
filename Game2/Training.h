@@ -21,7 +21,11 @@
 
 - (id) initWithTrainingID:(NSInteger) thisTrainingID;
 - (void) runTrainingPlan;
-- (void) runTrainingPlanForPlayer:(Player*) thisPlayer;
+
+- (void) runTrainingPlanForPlayer:(Player *)thisPlayer Times:(NSInteger) times;
+
+- (void) runTrainingPlanForPlayer:(Player*) thisPlayer TrainingExp:(NSMutableDictionary*) trainingEXP;
+
 - (void) addPlayerToTrainingPlan:(NSInteger) PlayerID;
 - (void) removePlayerFromTrainingPlan:(NSInteger) PlayerID;
 

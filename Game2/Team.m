@@ -31,7 +31,7 @@
 
 - (void) updateFromDatabase
 {
-    PlayerIDList = [[NSMutableArray alloc]initWithArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PlayerID" whereKeyField:@"TeamID" hasKey:TeamID]];
+    PlayerIDList = [[NSMutableArray alloc]initWithArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PlayerID" whereKeyField:@"TeamID" hasKey:[NSNumber numberWithInteger:TeamID]]];
     tableData = [[NSMutableDictionary alloc]initWithDictionary:[[[DatabaseModel alloc]init]getResultDictionaryForTable:@"teams" withKeyField:@"TeamID" withKey:TeamID]];
     Name = [tableData objectForKey:@"NAME"];
     PlayerList = [[NSMutableArray alloc]init];

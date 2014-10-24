@@ -229,6 +229,39 @@
     return resultArray;
 }
 
+
+- (NSArray*) getArrayFrom:(NSString*)table withSelectField:(NSString*)selectField WhereString:(NSString*)whereString OrderBy:(NSString*)orderby Limit:(NSString*) limit
+{
+    NSString* query;
+    [db open];
+    if ([whereString isEqualToString:@""]) {
+        query = [NSString stringWithFormat:@"SELECT %@ FROM %@", selectField, table];
+    } else {
+        query = [NSString stringWithFormat:@"SELECT %@ FROM %@ WHERE %@", selectField, table,whereString];
+    }
+    
+    if (![orderby isEqualToString:@""])
+        query = [NSString stringWithFormat:@"%@ ORDER BY %@", query, orderby];
+    
+    if (![limit isEqualToString:@""])
+        query = [NSString stringWithFormat:@"%@ LIMIT %@", query, limit];
+    
+    FMResultSet* result = [db executeQuery:query];
+    
+    NSMutableArray *resultArray = [[NSMutableArray alloc]init];
+    while ([result next]){
+        [resultArray addObject:[result objectForColumnName:selectField]];
+    }
+    
+    [db close];
+    if ([resultArray count] == 0)
+        return nil;
+    return resultArray;
+}
+
+
+
+
 - (NSArray*) getArrayFrom:(NSString*)table whereData:(NSDictionary*)data sortFieldAsc:(NSString*) sortAsc
 {
 

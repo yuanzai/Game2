@@ -34,7 +34,9 @@
 
 - (void) newWithGameID:(NSInteger) GameID
 {
-    
+    myData.season = 0;
+    myData.weekdate = 0;
+    myData.week = 0;
 }
 
 - (void) loadWithGameID:(NSInteger) thisGameID

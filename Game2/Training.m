@@ -28,7 +28,7 @@
         PlanStats = [[NSMutableDictionary alloc]initWithDictionary:[[[DatabaseModel alloc]init]getResultDictionaryForTable:@"training" withKeyField:@"TrainingID" withKey:thisTrainingID]];
         NSInteger CoachID = [[PlanStats objectForKey:@"CoachID"]integerValue];
         Coach = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"coaches" withKeyField:@"CoachID" withKey:CoachID];
-        PlayersID = [[[DatabaseModel alloc]init]getArrayFrom:@"trainingExp" withSelectField:@"PlayerID" whereKeyField:@"TrainingID" hasKey:thisTrainingID];
+        PlayersID = [[[DatabaseModel alloc]init]getArrayFrom:@"trainingExp" withSelectField:@"PlayerID" whereKeyField:@"TrainingID" hasKey:[NSNumber numberWithInteger:thisTrainingID]];
 
     }
     return self;
@@ -38,23 +38,34 @@
 {
     [PlayersID enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         Player* thisPlayer = [[[GameModel gameData]myTeam]getPlayerWithID:[obj integerValue]];
-        [self runTrainingPlanForPlayer:thisPlayer];
+        NSMutableDictionary* trainingEXP =[[NSMutableDictionary alloc] initWithDictionary:[[[DatabaseModel alloc]init]getResultDictionaryForTable:@"trainingExp" withKeyField:@"PlayerID" withKey:thisPlayer.PlayerID]];
+        
+        [self runTrainingPlanForPlayer:thisPlayer TrainingExp:trainingEXP];
+        [thisPlayer updatePlayerInDatabaseStats:YES GameStat:NO Team:NO Position:NO Valuation:NO];
+        [self updateTrainingExpForPlayer:thisPlayer WithExp:trainingEXP];
     }];
 }
 
-- (void) runTrainingPlanForPlayer:(Player*) thisPlayer
+- (void) runTrainingPlanForPlayer:(Player *)thisPlayer Times:(NSInteger) times
+{
+    NSMutableDictionary* trainingEXP = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
+                                        @0,@"DRILLS",
+                                        @0,@"SHOOTING",
+                                        @0,@"PHYSICAL",
+                                        @0,@"TACTICS",
+                                        @0,@"SKILLS", nil];
+    for (NSInteger i = 0 ; i < times; i++) {
+        [self runTrainingPlanForPlayer:thisPlayer TrainingExp:trainingEXP];
+    }
+}
+
+- (void) runTrainingPlanForPlayer:(Player*) thisPlayer TrainingExp:(NSMutableDictionary*) trainingEXP
 {
     __block double totalStat;
     
     NSArray *groupArray = [[GlobalVariableModel playerGroupStatList] allKeys];
-
     NSDictionary * groupStatList = [GlobalVariableModel playerGroupStatList];
-
-    NSMutableDictionary* changeExpList = [NSMutableDictionary dictionary];
     
-    
-    NSDictionary* trainingEXP = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"trainingExp" withKeyField:@"PlayerID" withKey:thisPlayer.PlayerID];
-
     [thisPlayer.Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         totalStat += [obj doubleValue];
     }];
@@ -72,16 +83,14 @@
         
         if (statExp <= -3 || statExp >= 3) {
             [self getChangeStatStringWithGroup:obj Player:thisPlayer];
-            [changeExpList setObject:@0 forKey:obj];
+            [trainingEXP setObject:@0 forKey:obj];
         } else {
-            [changeExpList setObject:@(statExp) forKey:obj];
+            [trainingEXP setObject:@(statExp) forKey:obj];
         }
         
     }];
-    
-    [thisPlayer updatePlayerInDatabaseStats:YES GameStat:NO Team:NO Position:NO];
-    [self updateTrainingExpForPlayer:thisPlayer WithExp:changeExpList];
 }
+
 
 - (void) updateTrainingExpForPlayer:(Player*) player WithExp:(NSDictionary*) data
 {

@@ -62,8 +62,10 @@
 		6B133A2B19EECF7B00BC749E /* Team.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A1D19EECF7B00BC749E /* Team.m */; };
 		6B133A2C19EECF7B00BC749E /* Training.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A1F19EECF7B00BC749E /* Training.m */; };
 		6B133A2D19EECF7B00BC749E /* Training.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A1F19EECF7B00BC749E /* Training.m */; };
-		6B133A2F19EED2A700BC749E /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B133A2E19EED2A700BC749E /* database.db */; };
-		6B133A3019EED2A700BC749E /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B133A2E19EED2A700BC749E /* database.db */; };
+		6B133A3219F8CFA200BC749E /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B133A3119F8CFA200BC749E /* database.db */; };
+		6B133A3319F8CFA200BC749E /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B133A3119F8CFA200BC749E /* database.db */; };
+		6B133A3619F958C600BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3519F958C600BC749E /* Tactic.m */; };
+		6B133A3719F958C600BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3519F958C600BC749E /* Tactic.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,7 +138,9 @@
 		6B133A1D19EECF7B00BC749E /* Team.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Team.m; sourceTree = "<group>"; };
 		6B133A1E19EECF7B00BC749E /* Training.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Training.h; sourceTree = "<group>"; };
 		6B133A1F19EECF7B00BC749E /* Training.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Training.m; sourceTree = "<group>"; };
-		6B133A2E19EED2A700BC749E /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
+		6B133A3119F8CFA200BC749E /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
+		6B133A3419F958C600BC749E /* Tactic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tactic.h; sourceTree = "<group>"; };
+		6B133A3519F958C600BC749E /* Tactic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tactic.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,8 +222,8 @@
 		6B1339A919EECC5400BC749E /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				6B133A2E19EED2A700BC749E /* database.db */,
 				6B1339AA19EECC5400BC749E /* Game2-Info.plist */,
+				6B133A3119F8CFA200BC749E /* database.db */,
 				6B1339AB19EECC5400BC749E /* InfoPlist.strings */,
 				6B1339AE19EECC5400BC749E /* main.m */,
 				6B1339B019EECC5400BC749E /* Game2-Prefix.pch */,
@@ -307,6 +311,8 @@
 				6B133A1D19EECF7B00BC749E /* Team.m */,
 				6B133A1E19EECF7B00BC749E /* Training.h */,
 				6B133A1F19EECF7B00BC749E /* Training.m */,
+				6B133A3419F958C600BC749E /* Tactic.h */,
+				6B133A3519F958C600BC749E /* Tactic.m */,
 			);
 			name = "Game Components";
 			sourceTree = "<group>";
@@ -387,7 +393,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6B133A2F19EED2A700BC749E /* database.db in Resources */,
+				6B133A3219F8CFA200BC749E /* database.db in Resources */,
 				6B1339B919EECC5400BC749E /* Main_iPad.storyboard in Resources */,
 				6B1339BE19EECC5400BC749E /* Images.xcassets in Resources */,
 				6B1339B619EECC5400BC749E /* Main_iPhone.storyboard in Resources */,
@@ -399,7 +405,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6B133A3019EED2A700BC749E /* database.db in Resources */,
+				6B133A3319F8CFA200BC749E /* database.db in Resources */,
 				6B1339CF19EECC5400BC749E /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -419,6 +425,7 @@
 				6B1339EF19EECEB500BC749E /* Match.m in Sources */,
 				6B133A2619EECF7B00BC749E /* Scouting.m in Sources */,
 				6B1339FB19EECEFC00BC749E /* FMDatabase.m in Sources */,
+				6B133A3619F958C600BC749E /* Tactic.m in Sources */,
 				6B133A0B19EECF2600BC749E /* SinglePlayerData.m in Sources */,
 				6B1339F119EECEB500BC749E /* Tactic.m in Sources */,
 				6B1339ED19EECEB500BC749E /* LineUp.m in Sources */,
@@ -457,6 +464,7 @@
 				6B133A2919EECF7B00BC749E /* Staff.m in Sources */,
 				6B133A0819EECF2600BC749E /* GameModel.m in Sources */,
 				6B133A0A19EECF2600BC749E /* GlobalVariableModel.m in Sources */,
+				6B133A3719F958C600BC749E /* Tactic.m in Sources */,
 				6B1339E119EECE7B00BC749E /* Action.m in Sources */,
 				6B133A2719EECF7B00BC749E /* Scouting.m in Sources */,
 				6B1339F219EECEB500BC749E /* Tactic.m in Sources */,

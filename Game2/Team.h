@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class Player;
+@class Tournament;
 @interface Team : NSObject{
     NSInteger TeamID;
     NSString* Name;
@@ -24,6 +25,7 @@
 @property NSMutableDictionary* PlayerDictionary;
 @property NSMutableDictionary* tableData;
 @property BOOL isSinglePlayer;
+@property Tournament* tournament;
 
 - (id) initWithTeamID:(NSInteger) InputID;
 - (void) updateFromDatabase;

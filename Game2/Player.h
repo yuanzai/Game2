@@ -31,6 +31,7 @@
     NSInteger DecayConstantID;
     NSInteger WkOfBirth;
     NSMutableDictionary* TrainingExp;
+    double Valuation;
     
     BOOL isGoalKeeper;
     BOOL isInjured;
@@ -56,7 +57,7 @@
 @property NSInteger WkOfBirth;
 @property NSMutableDictionary* TrainingExp;
 @property BOOL isGoalKeeper;
-@property NSInteger Valuation;
+@property double Valuation;
 
 
 - (id) initWithPlayerID:(NSInteger) InputID;

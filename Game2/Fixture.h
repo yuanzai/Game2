@@ -17,6 +17,8 @@
 @property NSInteger relegateToTournament;
 @property NSInteger promoteCount;
 @property NSInteger relegateCount;
+@property NSInteger playerCount;
+
 
 - (id) initWithTournamentID:(NSInteger) TournamentID;
 

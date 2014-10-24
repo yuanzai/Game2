@@ -10,6 +10,7 @@
 #import "Player.h"
 #import "GlobalVariableModel.h"
 #import "DatabaseModel.h"
+#import "GameModel.h"
 
 @implementation Player
 @synthesize PlayerID;
@@ -126,14 +127,97 @@
 
 - (BOOL) valuePlayer
 {
-    
-    __block NSInteger sumStat;
+
+    //Value from Ability
+    __block NSInteger sumStat = 0;
     [Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        sumStat += (NSInteger) obj;
+        sumStat += [(NSNumber*) obj integerValue];
     }];
+    NSLog(@"%i",sumStat);
+
+    Valuation = [self statValuation:sumStat];
+    //NSLog(@"%f",Valuation);
     
+    NSDictionary* positionTable = [[NSDictionary alloc]initWithObjectsAndKeys:
+                                   @1, @"DEF",
+                                   @1.2,@"DM",
+                                   @1.3,@"MID",
+                                   @1.4,@"AM",
+                                   @1.5,@"SC", nil];
     
+    __block NSInteger coreStat = 0;
+    __block double positionMultiplier = 1.0;
+    
+    [positionTable enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        if ([[PreferredPosition objectForKey:key]integerValue]==1) {
+            if ([[PreferredPosition objectForKey:@"CENTRE"]integerValue]==1) {
+                NSInteger newStat = [self positionStatWithPosition:key Side:@"CENTRE"];
+                if (newStat >= coreStat)
+                    positionMultiplier = [obj doubleValue];
+                coreStat = MAX(newStat,coreStat);
+            }
+            
+            if ([[PreferredPosition objectForKey:@"LEFT"]integerValue]==1 ||
+                [[PreferredPosition objectForKey:@"RIGHT"]integerValue]==1) {
+                NSInteger newStat = [self positionStatWithPosition:key Side:@"CENTRE"];
+                if (newStat >= coreStat)
+                    positionMultiplier = [obj doubleValue];
+                coreStat = MAX(newStat,coreStat);
+            }
+        }
+    }];
+    Valuation += [self statValuation:coreStat]/3;
+    
+    NSInteger age = [[GameModel gameData]weekdate] - WkOfBirth;
+    double ageMultiplier = 0.0;
+    
+    if (age < 200) {
+        ageMultiplier = .8;
+    } else if (age< 300) {
+        ageMultiplier = 1.0;
+    } else if (age< 400) {
+        ageMultiplier = 1.1;
+    }else if (age< 600) {
+        ageMultiplier = 1.2;
+    }else if (age< 700) {
+        ageMultiplier = 1.1;
+    }else if (age< 800) {
+        ageMultiplier = 1.0;
+    }else if (age< 1000) {
+        ageMultiplier = .9;
+    }else {
+        ageMultiplier = .8;
+    }
+    Valuation *= ageMultiplier;
+    Valuation *= positionMultiplier;
     
     return YES;
+}
+
+- (double) statValuation:(double) stat
+{
+    //stat has max 360
+    return MIN(pow(10,(stat/100+1.7)),100000) + MAX(0,stat-330)*1000;
+}
+
+- (NSInteger) positionStatWithPosition:(NSString*)position Side:(NSString*) side
+{
+    __block double maxStat;
+    NSDictionary* valuationTable;
+    if ([position isEqualToString:@"GK"]) {
+        //TODO GK stat
+        return 0;
+    } else if ([[side uppercaseString] isEqualToString:@"CENTRE"]) {
+        valuationTable = [[[GlobalVariableModel myGlobalVariableModel]valuationStatListCentre] objectForKey:position];
+    } else {
+        valuationTable = [[[GlobalVariableModel myGlobalVariableModel]valuationStatListCentre] objectForKey:position];
+    }
+    
+    [Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        if ([[valuationTable objectForKey:key]integerValue] == 1)
+            maxStat += (NSInteger) obj;
+    }];
+    
+    return maxStat/7*20;
 }
 @end
