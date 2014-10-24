@@ -10,7 +10,7 @@
 #import "AppDelegate.h" 
 
 @implementation DatabaseModel
-
+@synthesize databasePath;
 -(id)init
 {
 	if (!(self = [super init]))

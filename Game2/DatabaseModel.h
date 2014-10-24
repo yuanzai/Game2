@@ -24,6 +24,7 @@
 }
 -(id)initWithPath:(NSString*) path;
 
+@property NSString* databasePath;
 
 //Event
 - (NSMutableDictionary*) getStandardDeviationTable;

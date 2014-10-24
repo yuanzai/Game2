@@ -26,6 +26,7 @@
 {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
     [super tearDown];
+    NSLog(@"%@",[[[DatabaseModel alloc]init]databasePath]);
 }
 
 - (void)testDatabase
@@ -38,9 +39,12 @@
 - (void)testGenerate
 {
     [[GameModel myGame]newWithGameID:1];
+
+    
     
     Generator* newGenerator = [[Generator alloc]init];
-    [newGenerator generatePlayersWithSeason:1 NumberOfPlayers:100];
+    [newGenerator generateNewGame];
+//    [newGenerator generatePlayersWithSeason:1 NumberOfPlayers:100];
 }
 
 - (void)testARC4random

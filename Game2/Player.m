@@ -133,7 +133,6 @@
     [Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         sumStat += [(NSNumber*) obj integerValue];
     }];
-    NSLog(@"%i",sumStat);
 
     Valuation = [self statValuation:sumStat];
     //NSLog(@"%f",Valuation);

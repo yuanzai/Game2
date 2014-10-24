@@ -32,8 +32,6 @@
 		6B1339EE19EECEB500BC749E /* LineUp.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1339E619EECEB500BC749E /* LineUp.m */; };
 		6B1339EF19EECEB500BC749E /* Match.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1339E819EECEB500BC749E /* Match.m */; };
 		6B1339F019EECEB500BC749E /* Match.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1339E819EECEB500BC749E /* Match.m */; };
-		6B1339F119EECEB500BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1339EA19EECEB500BC749E /* Tactic.m */; };
-		6B1339F219EECEB500BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1339EA19EECEB500BC749E /* Tactic.m */; };
 		6B1339FB19EECEFC00BC749E /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1339F619EECEFC00BC749E /* FMDatabase.m */; };
 		6B1339FC19EECEFC00BC749E /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1339F619EECEFC00BC749E /* FMDatabase.m */; };
 		6B1339FD19EECEFC00BC749E /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1339F819EECEFC00BC749E /* FMDatabasePool.m */; };
@@ -64,8 +62,8 @@
 		6B133A2D19EECF7B00BC749E /* Training.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A1F19EECF7B00BC749E /* Training.m */; };
 		6B133A3219F8CFA200BC749E /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B133A3119F8CFA200BC749E /* database.db */; };
 		6B133A3319F8CFA200BC749E /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B133A3119F8CFA200BC749E /* database.db */; };
-		6B133A3619F958C600BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3519F958C600BC749E /* Tactic.m */; };
-		6B133A3719F958C600BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3519F958C600BC749E /* Tactic.m */; };
+		6B133A3A19FA180C00BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3919FA180C00BC749E /* Tactic.m */; };
+		6B133A3B19FA180C00BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3919FA180C00BC749E /* Tactic.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,8 +106,6 @@
 		6B1339E619EECEB500BC749E /* LineUp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineUp.m; sourceTree = "<group>"; };
 		6B1339E719EECEB500BC749E /* Match.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Match.h; sourceTree = "<group>"; };
 		6B1339E819EECEB500BC749E /* Match.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Match.m; sourceTree = "<group>"; };
-		6B1339E919EECEB500BC749E /* Tactic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tactic.h; sourceTree = "<group>"; };
-		6B1339EA19EECEB500BC749E /* Tactic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tactic.m; sourceTree = "<group>"; };
 		6B1339F519EECEFC00BC749E /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
 		6B1339F619EECEFC00BC749E /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
 		6B1339F719EECEFC00BC749E /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
@@ -139,8 +135,8 @@
 		6B133A1E19EECF7B00BC749E /* Training.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Training.h; sourceTree = "<group>"; };
 		6B133A1F19EECF7B00BC749E /* Training.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Training.m; sourceTree = "<group>"; };
 		6B133A3119F8CFA200BC749E /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
-		6B133A3419F958C600BC749E /* Tactic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tactic.h; sourceTree = "<group>"; };
-		6B133A3519F958C600BC749E /* Tactic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tactic.m; sourceTree = "<group>"; };
+		6B133A3819FA180C00BC749E /* Tactic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tactic.h; sourceTree = "<group>"; };
+		6B133A3919FA180C00BC749E /* Tactic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tactic.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -258,8 +254,8 @@
 				6B1339E619EECEB500BC749E /* LineUp.m */,
 				6B1339E719EECEB500BC749E /* Match.h */,
 				6B1339E819EECEB500BC749E /* Match.m */,
-				6B1339E919EECEB500BC749E /* Tactic.h */,
-				6B1339EA19EECEB500BC749E /* Tactic.m */,
+				6B133A3819FA180C00BC749E /* Tactic.h */,
+				6B133A3919FA180C00BC749E /* Tactic.m */,
 				6B1339DE19EECE7B00BC749E /* Action.h */,
 				6B1339DF19EECE7B00BC749E /* Action.m */,
 			);
@@ -311,8 +307,6 @@
 				6B133A1D19EECF7B00BC749E /* Team.m */,
 				6B133A1E19EECF7B00BC749E /* Training.h */,
 				6B133A1F19EECF7B00BC749E /* Training.m */,
-				6B133A3419F958C600BC749E /* Tactic.h */,
-				6B133A3519F958C600BC749E /* Tactic.m */,
 			);
 			name = "Game Components";
 			sourceTree = "<group>";
@@ -425,9 +419,8 @@
 				6B1339EF19EECEB500BC749E /* Match.m in Sources */,
 				6B133A2619EECF7B00BC749E /* Scouting.m in Sources */,
 				6B1339FB19EECEFC00BC749E /* FMDatabase.m in Sources */,
-				6B133A3619F958C600BC749E /* Tactic.m in Sources */,
+				6B133A3A19FA180C00BC749E /* Tactic.m in Sources */,
 				6B133A0B19EECF2600BC749E /* SinglePlayerData.m in Sources */,
-				6B1339F119EECEB500BC749E /* Tactic.m in Sources */,
 				6B1339ED19EECEB500BC749E /* LineUp.m in Sources */,
 				6B1339EB19EECEB500BC749E /* Event.m in Sources */,
 				6B1339FD19EECEFC00BC749E /* FMDatabasePool.m in Sources */,
@@ -464,10 +457,9 @@
 				6B133A2919EECF7B00BC749E /* Staff.m in Sources */,
 				6B133A0819EECF2600BC749E /* GameModel.m in Sources */,
 				6B133A0A19EECF2600BC749E /* GlobalVariableModel.m in Sources */,
-				6B133A3719F958C600BC749E /* Tactic.m in Sources */,
+				6B133A3B19FA180C00BC749E /* Tactic.m in Sources */,
 				6B1339E119EECE7B00BC749E /* Action.m in Sources */,
 				6B133A2719EECF7B00BC749E /* Scouting.m in Sources */,
-				6B1339F219EECEB500BC749E /* Tactic.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -20,6 +20,9 @@
 @property NSMutableDictionary* PlanStats;
 
 - (id) initWithTrainingID:(NSInteger) thisTrainingID;
+- (id) initWithPotential:(NSInteger) potential;
+
+
 - (void) runTrainingPlan;
 
 - (void) runTrainingPlanForPlayer:(Player *)thisPlayer Times:(NSInteger) times;

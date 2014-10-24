@@ -21,6 +21,39 @@
 @synthesize PlayersExp;
 @synthesize PlayersID;
 
+- (id) initWithPotential:(NSInteger) potential
+{
+    self = [super init];
+    if (self) {
+        PlanStats = [[NSMutableDictionary alloc]initWithObjectsAndKeys:
+                     @"0",@"DRILLS",
+                     @"0",@"SHOOTING",
+                     @"0",@"PHYSICAL",
+                     @"0",@"TACTICS",
+                     @"0",@"SKILLS",
+                     @"1",@"INTENSITY", nil];
+        
+        NSMutableDictionary* setCoach = [NSMutableDictionary dictionary];
+        [setCoach setValue:@"5" forKeyPath:@"DRILLS"];
+        [setCoach setValue:@"5" forKeyPath:@"SHOOTING"];
+        [setCoach setValue:@"5" forKeyPath:@"PHYSICAL"];
+        [setCoach setValue:@"5" forKeyPath:@"TACTICS"];
+        [setCoach setValue:@"5" forKeyPath:@"SKILLS"];
+        [setCoach setValue:@"5" forKeyPath:@"MOTIVATION"];
+        
+        NSInteger r = potential / 16 + (arc4random() % 5) * 6;
+        
+        for (NSInteger i = 0; i < r; i++) {
+            NSInteger k = arc4random() % 6;
+            NSString* key = [[setCoach allKeys]objectAtIndex:k];
+            NSInteger stat = [[setCoach objectForKey:key]integerValue];
+            [setCoach setObject:[NSNumber numberWithInteger:stat+1] forKey:key];
+        }
+    }
+    return self;
+
+}
+
 - (id) initWithTrainingID:(NSInteger) thisTrainingID
 {
     self = [super init];
@@ -56,6 +89,8 @@
                                         @0,@"SKILLS", nil];
     for (NSInteger i = 0 ; i < times; i++) {
         [self runTrainingPlanForPlayer:thisPlayer TrainingExp:trainingEXP];
+        if (i % 100 == 0)
+            NSLog(@"%@", [thisPlayer Stats]);
     }
 }
 

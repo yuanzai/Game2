@@ -8,6 +8,7 @@
 
 #import "Generator.h"
 #import "DatabaseModel.h"
+#import "Training.h"
 
 @implementation Generator
 @synthesize FirstNames;
@@ -16,7 +17,7 @@
 @synthesize TeamNamesSuffix;
 @synthesize AgeDistribution;
 
-const NSInteger playerBatch = 36;
+const NSInteger playerBatch = 10;
 
 - (id) init {
 	if (!(self = [super init]))
@@ -214,6 +215,7 @@ const NSInteger playerBatch = 36;
         NSInteger ability = 100 + [self generateAbilityCoefficient] * MAX(potential * 2 + 160 - 100,100);
         
         [newPlayer createPlayerWithAbility:ability Potential:potential Season:season];
+        
     }
 }
 
@@ -429,6 +431,12 @@ const NSInteger statBiasMax = 63;
         NSInteger stat = [[Stats objectForKey:[[GlobalVariableModel playerStatList]objectAtIndex:r]]integerValue];
         [Stats setObject:[NSNumber numberWithInteger:stat+1] forKey:[[GlobalVariableModel playerStatList]objectAtIndex:r]];
     }
+    
+    
+    Plan* newPlayerTraining = [[Plan alloc]initWithPotential:potential];
+    [newPlayerTraining runTrainingPlanForPlayer:self Times:season * -50];
+
+    
     [newPlayer addEntriesFromDictionary:Stats];
     
     
