@@ -31,7 +31,7 @@
 @synthesize GrowthID;
 @synthesize DecayID;
 @synthesize DecayConstantID;
-@synthesize WkOfBirth;
+@synthesize BirthYear;
 @synthesize TrainingExp;
 
 @synthesize isGoalKeeper;
@@ -80,7 +80,7 @@
     GrowthID = [[record objectForKey:@"GrowthID"] integerValue];
     DecayID = [[record objectForKey:@"DecayID"] integerValue];
     DecayConstantID = [[record objectForKey:@"DecayConstantID"] integerValue];
-    WkOfBirth = [[record objectForKey:@"WkOfBirth"] integerValue];
+    BirthYear = [[record objectForKey:@"BirthYear"] integerValue];
     
     [TrainingExp setObject:[record objectForKey:@"DRILLSEXP"] forKey:@"DRILLSEXP"];
     [TrainingExp setObject:[record objectForKey:@"SHOOTINGEXP"] forKey:@"SHOOTINGEXP"];
@@ -138,7 +138,7 @@
     //NSLog(@"%f",Valuation);
     
     NSDictionary* positionTable = [[NSDictionary alloc]initWithObjectsAndKeys:
-                                   @1, @"DEF",
+                                   @1.0, @"DEF",
                                    @1.2,@"DM",
                                    @1.3,@"MID",
                                    @1.4,@"AM",
@@ -165,24 +165,24 @@
             }
         }
     }];
-    Valuation += [self statValuation:coreStat]/3;
+    Valuation += [self statValuation:coreStat]/2.5;
     
-    NSInteger age = [[GameModel gameData]weekdate] - WkOfBirth;
+    NSInteger age = [[GameModel gameData]season] - BirthYear;
     double ageMultiplier = 0.0;
     
-    if (age < 200) {
+    if (age < 4) {
         ageMultiplier = .8;
-    } else if (age< 300) {
+    } else if (age< 6) {
         ageMultiplier = 1.0;
-    } else if (age< 400) {
+    } else if (age< 8) {
         ageMultiplier = 1.1;
-    }else if (age< 600) {
+    }else if (age< 12) {
         ageMultiplier = 1.2;
-    }else if (age< 700) {
+    }else if (age< 14) {
         ageMultiplier = 1.1;
-    }else if (age< 800) {
+    }else if (age< 16) {
         ageMultiplier = 1.0;
-    }else if (age< 1000) {
+    }else if (age< 20) {
         ageMultiplier = .9;
     }else {
         ageMultiplier = .8;
@@ -196,25 +196,25 @@
 - (double) statValuation:(double) stat
 {
     //stat has max 360
-    return MIN(pow(10,(stat/100+1.7)),100000) + MAX(0,stat-330)*1000;
+    return MIN(pow(10,(stat/100+1.8)),100000) + MAX(0,stat-320)*1000;
 }
 
 - (NSInteger) positionStatWithPosition:(NSString*)position Side:(NSString*) side
 {
-    __block double maxStat;
+    __block double maxStat = 0.0;
     NSDictionary* valuationTable;
     if ([position isEqualToString:@"GK"]) {
         //TODO GK stat
         return 0;
     } else if ([[side uppercaseString] isEqualToString:@"CENTRE"]) {
-        valuationTable = [[[GlobalVariableModel myGlobalVariableModel]valuationStatListCentre] objectForKey:position];
+        valuationTable = [[GlobalVariableModel valuationStatListForFlank:@"CENTRE"] objectForKey:position];
     } else {
-        valuationTable = [[[GlobalVariableModel myGlobalVariableModel]valuationStatListCentre] objectForKey:position];
+        valuationTable = [[GlobalVariableModel valuationStatListForFlank:@"FLANK"] objectForKey:position];
     }
     
     [Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         if ([[valuationTable objectForKey:key]integerValue] == 1)
-            maxStat += (NSInteger) obj;
+            maxStat +=  [obj doubleValue];
     }];
     
     return maxStat/7*20;

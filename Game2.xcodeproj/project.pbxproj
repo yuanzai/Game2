@@ -60,10 +60,10 @@
 		6B133A2B19EECF7B00BC749E /* Team.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A1D19EECF7B00BC749E /* Team.m */; };
 		6B133A2C19EECF7B00BC749E /* Training.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A1F19EECF7B00BC749E /* Training.m */; };
 		6B133A2D19EECF7B00BC749E /* Training.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A1F19EECF7B00BC749E /* Training.m */; };
-		6B133A3219F8CFA200BC749E /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B133A3119F8CFA200BC749E /* database.db */; };
-		6B133A3319F8CFA200BC749E /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B133A3119F8CFA200BC749E /* database.db */; };
 		6B133A3A19FA180C00BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3919FA180C00BC749E /* Tactic.m */; };
 		6B133A3B19FA180C00BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3919FA180C00BC749E /* Tactic.m */; };
+		6B133A4619FD490B00BC749E /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B133A4519FD490B00BC749E /* database.db */; };
+		6B133A4719FD490B00BC749E /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B133A4519FD490B00BC749E /* database.db */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,9 +134,9 @@
 		6B133A1D19EECF7B00BC749E /* Team.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Team.m; sourceTree = "<group>"; };
 		6B133A1E19EECF7B00BC749E /* Training.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Training.h; sourceTree = "<group>"; };
 		6B133A1F19EECF7B00BC749E /* Training.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Training.m; sourceTree = "<group>"; };
-		6B133A3119F8CFA200BC749E /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
 		6B133A3819FA180C00BC749E /* Tactic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tactic.h; sourceTree = "<group>"; };
 		6B133A3919FA180C00BC749E /* Tactic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tactic.m; sourceTree = "<group>"; };
+		6B133A4519FD490B00BC749E /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,8 +218,8 @@
 		6B1339A919EECC5400BC749E /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				6B133A4519FD490B00BC749E /* database.db */,
 				6B1339AA19EECC5400BC749E /* Game2-Info.plist */,
-				6B133A3119F8CFA200BC749E /* database.db */,
 				6B1339AB19EECC5400BC749E /* InfoPlist.strings */,
 				6B1339AE19EECC5400BC749E /* main.m */,
 				6B1339B019EECC5400BC749E /* Game2-Prefix.pch */,
@@ -387,7 +387,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6B133A3219F8CFA200BC749E /* database.db in Resources */,
+				6B133A4619FD490B00BC749E /* database.db in Resources */,
 				6B1339B919EECC5400BC749E /* Main_iPad.storyboard in Resources */,
 				6B1339BE19EECC5400BC749E /* Images.xcassets in Resources */,
 				6B1339B619EECC5400BC749E /* Main_iPhone.storyboard in Resources */,
@@ -399,7 +399,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6B133A3319F8CFA200BC749E /* database.db in Resources */,
+				6B133A4719FD490B00BC749E /* database.db in Resources */,
 				6B1339CF19EECC5400BC749E /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

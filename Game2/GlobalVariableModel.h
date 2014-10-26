@@ -13,11 +13,14 @@
 @property NSMutableArray* gkStatList;
 @property NSMutableDictionary* playerGroupStatList;
 @property NSMutableArray* allStatList;
-@property NSMutableDictionary* statsEventTable;
 @property NSMutableDictionary* eventOccurenceFactorTable;
-@property NSMutableArray* attackTypes;
+
 @property NSDictionary* valuationStatListCentre;
 @property NSDictionary* valuationStatListFlank;
+
+//Training
+@property NSDictionary* ageProfile;
+@property NSDictionary* statBiasTable;
 
 @property NSDictionary* standardDeviationTable;
 @property NSDictionary* actionStartTable;
@@ -25,8 +28,6 @@
 
 + (GlobalVariableModel*)myGlobalVariableModel;
 - (void)setEventOccurenceFactorTableFromDB;
-- (NSDictionary*) statsEventTable:(NSString *)type WithPosition:(NSString*)position WithSide:(NSString*)sidetype;
-- (void)setAttackTypes;
 
 // Stat List
 + (NSDictionary*)valuationStatListForFlank:(NSString*) flank;
@@ -39,5 +40,8 @@
 + (NSDictionary *)standardDeviationTable;
 + (NSDictionary*) actionStartTable;
 
+// Training Tables
++ (NSDictionary*) statBiasTable;
++ (NSDictionary*) ageProfile;
 
 @end

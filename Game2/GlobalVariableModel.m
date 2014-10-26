@@ -10,60 +10,142 @@
 #import "DatabaseModel.h"
 
 @implementation GlobalVariableModel
-@synthesize playerStatList,gkStatList, allStatList, statsEventTable,eventOccurenceFactorTable,attackTypes, playerGroupStatList, standardDeviationTable, actionStartTable, valuationStatListCentre, valuationStatListFlank, tournamentTable;
+
+@synthesize playerStatList,gkStatList, allStatList,eventOccurenceFactorTable, playerGroupStatList, standardDeviationTable, actionStartTable, valuationStatListCentre, valuationStatListFlank, tournamentTable ;
+
 static GlobalVariableModel* myGlobalVariableModel;
 
 + (GlobalVariableModel*)myGlobalVariableModel
 {
     if (!myGlobalVariableModel) {
         myGlobalVariableModel = [[GlobalVariableModel alloc] init];
-        [myGlobalVariableModel setPlayerStatList];
-        [myGlobalVariableModel setGkStatList];
         [myGlobalVariableModel setAllStatList];
         [myGlobalVariableModel setEventOccurenceFactorTableFromDB];
-        //[myGlobalVariableModel setAttackTypes];
         
     }
     return myGlobalVariableModel;
 }
 
+
+/*
++ (id)myGlobalVariableModel {
+    static GlobalVariableModel *myGlobalVariableModel = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        myGlobalVariableModel = [[self alloc] init];
+        [myGlobalVariableModel setAllStatList];
+        [myGlobalVariableModel setEventOccurenceFactorTableFromDB];
+
+    });
+    
+    return myGlobalVariableModel;
+}
+*/
 + (NSDictionary*) valuationStatListForFlank:(NSString*) flank;
 {
     NSArray* tempArray;
     if ([flank isEqualToString:@"CENTRE"]) {
         if (!myGlobalVariableModel.valuationStatListCentre ){
-            tempArray = [[[DatabaseModel alloc]init]getArrayFrom:@"valuations" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"CENTRE",@"FLANKCENTRE", nil] sortFieldAsc:@""];
+            tempArray = [[[DatabaseModel alloc]init]getArrayFrom:@"valuation" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"CENTRE",@"FLANKCENTRE", nil] sortFieldAsc:@""];
             NSMutableDictionary* tempDictionary = [NSMutableDictionary dictionary];
             [tempArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 [tempDictionary setObject:obj forKey:[(NSDictionary*) obj objectForKey:@"POSITION"]];
             }];
-            myGlobalVariableModel.valuationStatListCentre = tempDictionary;
-        }else {
-            return myGlobalVariableModel.valuationStatListCentre;
+            [[GlobalVariableModel myGlobalVariableModel] setValuationStatListCentre:tempDictionary];
         }
+            return myGlobalVariableModel.valuationStatListCentre;
+        
     } else if ([flank isEqualToString:@"FLANK"] ||
                [flank isEqualToString:@"LEFT"] ||
                [flank isEqualToString:@"RIGHT"]) {
         if (!myGlobalVariableModel.valuationStatListFlank){
-            tempArray = [[[DatabaseModel alloc]init]getArrayFrom:@"valuations" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"FLANK",@"FLANKCENTRE", nil] sortFieldAsc:@""];
+            tempArray = [[[DatabaseModel alloc]init]getArrayFrom:@"valuation" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"FLANK",@"FLANKCENTRE", nil] sortFieldAsc:@""];
             
             NSMutableDictionary* tempDictionary = [NSMutableDictionary dictionary];
             [tempArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 [tempDictionary setObject:obj forKey:[(NSDictionary*) obj objectForKey:@"POSITION"]];
             }];
-            myGlobalVariableModel.valuationStatListFlank = tempDictionary;
+            [[GlobalVariableModel myGlobalVariableModel] setValuationStatListFlank:tempDictionary];
         }
         return myGlobalVariableModel.valuationStatListFlank;
     }
     return  nil;
 }
 
+
 + (NSDictionary *)standardDeviationTable {
     if (!myGlobalVariableModel.standardDeviationTable){
-        myGlobalVariableModel.standardDeviationTable = [[[DatabaseModel alloc]init]getStandardDeviationTable];
+        [[GlobalVariableModel myGlobalVariableModel] setStandardDeviationTable: [[[DatabaseModel alloc]init]getStandardDeviationTable]];
     }
     return myGlobalVariableModel.standardDeviationTable;
 }
+
+# pragma mark Training Methods
+
++ (NSDictionary*) statBiasTable {
+    if (!myGlobalVariableModel.statBiasTable){
+        
+        NSArray* statBiasList = [[[DatabaseModel alloc]init]getArrayFrom:@"statBias" whereData:nil sortFieldAsc:@""];
+        NSMutableDictionary* result = [NSMutableDictionary dictionary];
+        [statBiasList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [result setObject:obj forKey:[[obj objectForKey:@"STATBIASID"]stringValue]];
+        }];
+        [[GlobalVariableModel myGlobalVariableModel] setStatBiasTable:result];
+    }
+    
+    return myGlobalVariableModel.statBiasTable ;
+}
+
+
++ (NSDictionary*) ageProfile
+{
+    if (!myGlobalVariableModel.ageProfile){
+        NSMutableDictionary* result = [NSMutableDictionary dictionary];
+        
+        NSArray* allProfiles = [[[DatabaseModel alloc]init]getArrayFrom:@"trainingProfile" whereData:nil sortFieldAsc:@""];
+        [allProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            if ([result objectForKey:[[obj objectForKey:@"AGE"]stringValue]]) {
+                NSMutableDictionary* profile = [result objectForKey:[obj objectForKey:@"AGE"]];
+                [profile setObject:obj forKey:[[obj objectForKey:@"PROFILEID"]stringValue]];
+            } else {
+                NSMutableDictionary* profile = [NSMutableDictionary dictionary];
+                [profile setObject:obj forKey:[[obj objectForKey:@"PROFILEID"]stringValue]];
+                [result setObject:profile forKey:[[obj objectForKey:@"AGE"]stringValue]];
+            }
+        }];
+        
+        [[GlobalVariableModel myGlobalVariableModel]setAgeProfile:result];
+    }
+    return myGlobalVariableModel.ageProfile;
+}
+
+
+/*
++ (NSArray*) decayProfile
+{
+    if (!myGlobalVariableModel.decayProfile){
+        NSMutableArray* profileArray = [NSMutableArray array];
+        
+        NSMutableDictionary* result = [NSMutableDictionary dictionary];
+        
+        NSArray* allProfiles = [[[DatabaseModel alloc]init]getArrayFrom:@"trainingProfile" whereData:nil sortFieldAsc:@""];
+        
+        [allProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            if ([result objectForKey:[[obj objectForKey:@"AGE"]stringValue]]) {
+                NSMutableDictionary* profile = [result objectForKey:[obj objectForKey:@"AGE"]];
+                [profile setObject:obj forKey:[[obj objectForKey:@"PROFILEID"]stringValue]];
+            } else {
+                NSMutableDictionary* profile = [NSMutableDictionary dictionary];
+                [profile setObject:obj forKey:[[obj objectForKey:@"PROFILEID"]stringValue]];
+                [result setObject:profile forKey:[[obj objectForKey:@"AGE"]stringValue]];
+            }
+        }];
+        
+        [[GlobalVariableModel myGlobalVariableModel]setDecayProfile:result];
+    }
+    return myGlobalVariableModel.decayProfile;
+}
+*/
 
 + (NSDictionary*) actionStartTable
 {
@@ -109,52 +191,6 @@ static GlobalVariableModel* myGlobalVariableModel;
      @"PHY", @"COM", @"FIT",  @"TEC", @"INT", @"TEA",nil];
 }
 
-
-- (void)setPlayerStatList
-{
-    playerStatList = [[NSMutableArray alloc]initWithObjects:
-                       @"PAS",
-                       @"LPA",
-                       @"HEA",
-                       @"SHO",
-                       @"TAC",
-                       @"AGI",
-                       @"CRO",
-                       @"DRI",
-                       @"MOV",
-                       @"POS",
-                       @"LSH",
-                       @"PEN",
-                       @"FRE",
-                       @"SPE",
-                       @"STR",
-                       @"FIT",
-                       @"WOR",
-                       @"TEC",
-                       @"INT",
-                       @"TEA",nil];
-    
-}
-
-- (void)setGkStatList
-{
-    gkStatList = [[NSMutableArray alloc]initWithObjects:
-                      @"DIS",
-                      @"HAN",
-                      @"AGI",
-                      @"REF",
-                      @"PEN",
-                      @"FRE",
-                      @"POS",
-                      @"PHY",
-                      @"COM",
-                      @"FIT",
-                      @"TEC",
-                      @"INT",
-                      @"TEA",nil];
-    
-}
-
 - (void) setAllStatList
 {
     allStatList = [[NSMutableArray alloc]initWithObjects:
@@ -191,26 +227,5 @@ static GlobalVariableModel* myGlobalVariableModel;
     eventOccurenceFactorTable = [[[DatabaseModel alloc]init]getEventOccurenceFactorTable];
 }
 
-- (NSDictionary*) statsEventTable:(NSString *)type WithPosition:(NSString*)position WithSide:(NSString*)sidetype
-{
-    return [statsEventTable objectForKey:[NSString stringWithFormat:@"%@|%@|%@",type,position,sidetype]];
-}
 
--(void)setAttackTypes
-{
-    gkStatList = [[NSMutableArray alloc]initWithObjects:
-                  @"SHORTPASS",
-                  @"LONGPASS",
-                  @"DRIBBLE",
-                  @"CROSS",
-                  @"FIRSTTOUCH",
-                  @"HEADEDPASS",
-                  @"HEADERSHOT",
-                  @"LAYOFF",
-                  @"SHOT",
-                  @"LONGSHOT",
-                  @"MAKINGRUN",
-                  @"RECEIVING",
-                  @"FAIL",nil];
-}
 @end

@@ -13,7 +13,18 @@
 #import "Player.h"
 #import "SinglePlayerData.h"
 
-@implementation Plan
+@implementation Plan {
+    NSArray *groupArray;
+    NSDictionary * groupStatList;
+    NSDictionary * statBiasTable;
+    NSInteger season;
+    NSTimeInterval timeInterval;
+    NSDictionary* ageProfiles;
+    NSInteger statExpMax;
+    NSInteger expReps;
+
+}
+
 @synthesize TrainingID;
 @synthesize Coach;
 @synthesize Players;
@@ -21,9 +32,24 @@
 @synthesize PlayersExp;
 @synthesize PlayersID;
 
-- (id) initWithPotential:(NSInteger) potential
+- (id) initWithDefault
 {
     self = [super init];
+    if (self) {
+        groupArray = [[GlobalVariableModel playerGroupStatList] allKeys];
+        groupStatList = [GlobalVariableModel  playerGroupStatList];
+        statBiasTable = [GlobalVariableModel statBiasTable];
+        season = [[[GameModel myGame]myData]season];
+        ageProfiles = [GlobalVariableModel ageProfile];
+        statExpMax = 3;
+        expReps = 1;
+    }
+    return self;
+}
+
+- (id) initWithPotential:(NSInteger) potential Age:(NSInteger) age
+{
+    self = [self initWithDefault];
     if (self) {
         PlanStats = [[NSMutableDictionary alloc]initWithObjectsAndKeys:
                      @"0",@"DRILLS",
@@ -34,14 +60,14 @@
                      @"1",@"INTENSITY", nil];
         
         NSMutableDictionary* setCoach = [NSMutableDictionary dictionary];
-        [setCoach setValue:@"5" forKeyPath:@"DRILLS"];
-        [setCoach setValue:@"5" forKeyPath:@"SHOOTING"];
-        [setCoach setValue:@"5" forKeyPath:@"PHYSICAL"];
-        [setCoach setValue:@"5" forKeyPath:@"TACTICS"];
-        [setCoach setValue:@"5" forKeyPath:@"SKILLS"];
-        [setCoach setValue:@"5" forKeyPath:@"MOTIVATION"];
+        [setCoach setValue:@"6" forKeyPath:@"DRILLS"];
+        [setCoach setValue:@"6" forKeyPath:@"SHOOTING"];
+        [setCoach setValue:@"6" forKeyPath:@"PHYSICAL"];
+        [setCoach setValue:@"6" forKeyPath:@"TACTICS"];
+        [setCoach setValue:@"6" forKeyPath:@"SKILLS"];
+        [setCoach setValue:@"6" forKeyPath:@"MOTIVATION"];
         
-        NSInteger r = potential / 16 + (arc4random() % 5) * 6;
+        NSInteger r = (potential / 16 + (arc4random() % 5) + MIN(age/3,3)) * 6;
         
         for (NSInteger i = 0; i < r; i++) {
             NSInteger k = arc4random() % 6;
@@ -49,6 +75,7 @@
             NSInteger stat = [[setCoach objectForKey:key]integerValue];
             [setCoach setObject:[NSNumber numberWithInteger:stat+1] forKey:key];
         }
+        Coach = setCoach;
     }
     return self;
 
@@ -56,7 +83,7 @@
 
 - (id) initWithTrainingID:(NSInteger) thisTrainingID
 {
-    self = [super init];
+    self = [self initWithDefault];
     if (self) {
         PlanStats = [[NSMutableDictionary alloc]initWithDictionary:[[[DatabaseModel alloc]init]getResultDictionaryForTable:@"training" withKeyField:@"TrainingID" withKey:thisTrainingID]];
         NSInteger CoachID = [[PlanStats objectForKey:@"CoachID"]integerValue];
@@ -79,8 +106,10 @@
     }];
 }
 
-- (void) runTrainingPlanForPlayer:(Player *)thisPlayer Times:(NSInteger) times
+- (void) runTrainingPlanForPlayer:(Player *)thisPlayer Times:(NSInteger) times ExpReps : (NSInteger) reps Season:(NSInteger) setSeason
 {
+    season = setSeason;
+    expReps = reps;
     NSMutableDictionary* trainingEXP = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
                                         @0,@"DRILLS",
                                         @0,@"SHOOTING",
@@ -89,42 +118,55 @@
                                         @0,@"SKILLS", nil];
     for (NSInteger i = 0 ; i < times; i++) {
         [self runTrainingPlanForPlayer:thisPlayer TrainingExp:trainingEXP];
-        if (i % 100 == 0)
-            NSLog(@"%@", [thisPlayer Stats]);
     }
 }
 
 - (void) runTrainingPlanForPlayer:(Player*) thisPlayer TrainingExp:(NSMutableDictionary*) trainingEXP
 {
     __block double totalStat;
-    
-    NSArray *groupArray = [[GlobalVariableModel playerGroupStatList] allKeys];
-    NSDictionary * groupStatList = [GlobalVariableModel playerGroupStatList];
-    
     [thisPlayer.Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         totalStat += [obj doubleValue];
     }];
-    
     [groupArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         __block double gStat = 0.0;
-        NSInteger statExp = [[trainingEXP objectForKey:obj]integerValue];
 
+        NSInteger statExp = [[trainingEXP objectForKey:obj]integerValue];
         NSArray* thisArray = (NSArray*)[groupStatList objectForKey:obj];
+
         [thisArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             gStat += [[thisPlayer.Stats objectForKey:obj]doubleValue];
         }];
-        
+
         statExp += [self updateOneGroup:obj GroupStat:gStat TotalStat:totalStat StatExp:statExp Player:thisPlayer isMatch:NO];
         
-        if (statExp <= -3 || statExp >= 3) {
-            [self getChangeStatStringWithGroup:obj Player:thisPlayer];
-            [trainingEXP setObject:@0 forKey:obj];
-        } else {
-            [trainingEXP setObject:@(statExp) forKey:obj];
-        }
+        //update training exp
+        //update stat
         
+        if (statExp / statExpMax == 0) {
+            [trainingEXP setObject:@(statExp) forKey:obj];
+            
+        } else if (statExp > 0) {
+            
+            for (int i = 0; i < statExp/statExpMax; i ++) {
+                if (gStat < (double) thisPlayer.Potential *.8 ||
+                    totalStat < (double) thisPlayer.Potential * 2.6 + 100) {
+                    [self getChangeStatStringWithGroup:obj Player:thisPlayer upChange:YES];
+                }
+            }
+            [trainingEXP setObject:@(statExp % statExpMax) forKey:obj];
+        } else if (statExp < 0) {
+            
+            for (int i = 0; i < -statExp/statExpMax; i ++) {
+                if (gStat > 15 + (double) thisPlayer.Potential * .2||
+                    totalStat > (double) thisPlayer.Potential * .6 + 80) {
+                    [self getChangeStatStringWithGroup:obj Player:thisPlayer upChange:NO];
+                }
+            }
+            [trainingEXP setObject:@(statExpMax - statExp % statExpMax) forKey:obj];
+        }
     }];
 }
+
 
 
 - (void) updateTrainingExpForPlayer:(Player*) player WithExp:(NSDictionary*) data
@@ -142,8 +184,6 @@
     
     double potentialM;
     double trainingM;
-    //double coach1M;
-    //double coach2M;
     double coachM;
     double growthM;
     double realisedM;
@@ -152,9 +192,8 @@
     double decayProb;
     double trainingProb;
     int expChange = 0;
-    
-    NSInteger age = [[GameModel gameData]weekdate] - player.WkOfBirth;
-    NSInteger ageGroup = age - (age % 100);
+
+    NSInteger age = season - player.BirthYear;
     
     if (isMatch) {
         trainingM = 0.5;
@@ -162,53 +201,62 @@
     } else {
         trainingM = [self getTrainingPlanMultiplerWithGroup:group];
         coachM = [self getCoachMultiplierWithCoach:Coach Group:group PlayerGroupStat:gStat];
-        //coach2M = [self getCoachMultiplierWithCoach:Coach2 Group:group PlayerGroupStat:gStat];
-        //coachM = MAX(coach1M,coach2M) * .6 + MIN(coach1M,coach2M) * .4;
     }
-    
-    potentialM = (double) (player.Potential / 200);
 
-    growthM = [self getMultiplierWithType:@"GROWTH" ID:player.GrowthID Age:ageGroup];
+    potentialM = ((double) player.Potential + 15) / 200;
+
+    growthM = [self getMultiplierWithType:@"GROWTH" ID:player.GrowthID Age:age];
+
+    decayProb = [self getMultiplierWithType:@"DECAY" ID:player.DecayID Age:age] * (double) player.Potential + [self getMultiplierWithType:@"DECAYCONSTANT" ID:player.DecayConstantID Age:age];
+
     
-    decayProb = [self getMultiplierWithType:@"DECAY" ID:player.DecayID Age:ageGroup] * player.Potential + [self getMultiplierWithType:@"DECAYCONSTANT" ID:player.DecayConstantID Age:ageGroup];
     
-    if (tStat/player.Potential/3.60 < 0.4) decayProb = 0;
-    if (gStat/player.Potential/0.72 < 0.3) decayProb = 0;
-    if (tStat < 75 + .5 * player.Potential) decayProb = 0;
+    if ((double)tStat/(double)player.Potential/3.60 < 0.4)
+        decayProb = 0;
+    
+    if ((double)gStat/(double)player.Potential/0.72 < 0.3)
+        decayProb = 0;
+    
+    if ((double)tStat < 75 + .5 * (double)player.Potential)
+        decayProb = 0;
     
     realisedM = [self getRealisedMultiplierWithTotalStat:tStat Potential:player.Potential];
     absoluteM = [self getAbsoluteMultiplierWithTotalStat:tStat];
-    biasM = [self getBiasMultiplierWithStatBiasID:player.StatBiasID StatGroup:group];
-    
+    biasM = [[[statBiasTable objectForKey:[NSString stringWithFormat:@"%i", player.StatBiasID]]objectForKey:group] doubleValue] + 1;
+
+//    NSLog(@"%f,%f,%f,%f,%f,%f,%f",potentialM,realisedM,growthM,biasM,coachM,absoluteM,trainingM);
     trainingProb = MIN(potentialM * realisedM * growthM * biasM * coachM * absoluteM * trainingM,0.95);
-    
-    if (arc4random()*10000 < trainingProb*10000) expChange++;
-    if (arc4random()*10000 < decayProb*10000) expChange--;
-    
-    if ((expChange >0 &&
-         (gStat > (double) player.Potential *.8 ||
-          tStat > (double) player.Potential * 3.6))) {
-             expChange = 0;
-         }
+
+    for (NSInteger i = 0; i < expReps; i ++) {
+        if (arc4random()*10000 < trainingProb*10000) expChange++;
+        if (arc4random()*10000 < decayProb*10000) expChange--;
+    }
+
     return expChange;
 }
 
-- (void) getChangeStatStringWithGroup:(NSString*) group Player:(Player*) player{
-    NSMutableArray* statArray = [[NSMutableArray alloc]initWithArray:[[[GlobalVariableModel playerGroupStatList] objectForKey:group]allKeys]];
+- (void) getChangeStatStringWithGroup:(NSString*) group Player:(Player*) player upChange:(BOOL) isUp{
+    NSArray* statArray = [[groupStatList objectForKey:group]allKeys];
+    NSMutableArray* validStats = [NSMutableArray array];
     
-    NSInteger stat;
-    NSString* changeStat = @"";
-    while ([statArray count] > 0) {
-        NSInteger r = arc4random() % ([statArray count]-1);
-        changeStat = [statArray objectAtIndex:r];
-        stat = [[player.Stats objectForKey:changeStat]integerValue];
-        if (stat < 20 && stat > 1) {
-            stat = [[player.Stats objectForKey:changeStat]integerValue];
-            [player.Stats setObject:[NSNumber numberWithInteger:stat] forKey:changeStat];
-            break;
+    
+    [statArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if (isUp) {
+            if ([[player.Stats objectForKey:obj]integerValue] < 20)
+                [validStats addObject:obj];
         } else {
-            [statArray removeObjectAtIndex:r];
+            if ([[player.Stats objectForKey:obj]integerValue] > 1)
+                [validStats addObject:obj];
         }
+    }];
+    
+    NSString* changeStat = [validStats objectAtIndex:arc4random() % [validStats count]];
+    
+    NSInteger stat = [[player.Stats objectForKey:changeStat]integerValue];
+    if (isUp) {
+        [player.Stats setObject:[NSNumber numberWithInteger:stat + 1] forKey:changeStat];
+    } else {
+        [player.Stats setObject:[NSNumber numberWithInteger:stat - 1] forKey:changeStat];
     }
 }
 
@@ -235,23 +283,15 @@
     return [self updateTrainingPlanToDatabase];
 }
 
--(double) getBiasMultiplierWithStatBiasID:(NSInteger) StatBiasID StatGroup: (NSString*) group {
-    
-    return [[[[[DatabaseModel alloc]init]getResultDictionaryForTable:@"statBias" withKeyField:@"STATBIASID" withKey:StatBiasID]objectForKey:group]doubleValue];
-}
-
-- (double) getCoachMultiplierWithCoachStat:(NSInteger)coach PlayerGroupStat:(NSInteger)gStat {
-    return MAX(MIN((0.15 * coach + -0.25 * gStat / 4 + 2.2) * (0.7 + coach * 0.015),1),0) * (0.7 + coach * 0.015);
-}
-
 - (double) getCoachMultiplierWithCoach:(NSDictionary*)coach Group:(NSString*) group PlayerGroupStat:(NSInteger)gStat {
     return MAX(
                MIN(
-                   (0.15 * [[coach objectForKey:group]doubleValue] + -0.25 * gStat / 4 + 2.2) * (0.7 + [[coach objectForKey:group]doubleValue] * 0.015) //Min1
+                   (0.15 * [[coach objectForKey:group]doubleValue] + -0.25 * gStat / 4 + 2.2) *
+                   (0.7 + [[coach objectForKey:group]doubleValue] * 0.015) //Min1
                    ,1) //Min2 / Max1
                ,0) * //Max2
     (0.7 + [[coach objectForKey:group]doubleValue] * 0.015) *
-    [[coach objectForKey:@"MOTIVATION"]doubleValue];
+    (0.9 + [[coach objectForKey:@"MOTIVATION"]doubleValue]/20);
 }
 
 
@@ -263,9 +303,10 @@
 
 
 - (double) getMultiplierWithType:(NSString*) type ID: (NSInteger) ProfileID Age:(NSInteger) age {
-    // types available GROWTH DECAY DECAYCONSTANT
-    //[db open];
-    NSDictionary* record = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"trainingProfile" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInteger:ProfileID],@"PROFILEID",[NSNumber numberWithInteger:age],@"AGE", nil]];
+
+    NSDictionary* profile = [ageProfiles objectForKey:[NSString stringWithFormat:@"%i", age]];
+    NSDictionary* record = [profile objectForKey:[NSString stringWithFormat:@"%i", ProfileID]];
+    
     return [[record objectForKey:type]doubleValue];
 }
 
@@ -276,7 +317,18 @@
 
 - (double) getRealisedMultiplierWithTotalStat: (int) stat Potential:(int) potential{
     
-    return MAX(MIN(-.25 + 4.1 * (double)stat/potential - 3.5 * ((double)stat/potential) * ((double)stat/potential),1),0.6);
+    return MAX(
+               MIN(-.25 + 4.1 * (double)stat/potential - 3.5 * ((double)stat/potential) * ((double)stat/potential),1)
+               ,0.6);
+}
+
+@end
+
+@implementation GKTraining
+
+- (void) trainGK:(Player*) gk
+{
+    
 }
 
 @end

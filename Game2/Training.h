@@ -20,12 +20,12 @@
 @property NSMutableDictionary* PlanStats;
 
 - (id) initWithTrainingID:(NSInteger) thisTrainingID;
-- (id) initWithPotential:(NSInteger) potential;
+- (id) initWithPotential:(NSInteger) potential Age:(NSInteger) age;
 
 
 - (void) runTrainingPlan;
 
-- (void) runTrainingPlanForPlayer:(Player *)thisPlayer Times:(NSInteger) times;
+- (void) runTrainingPlanForPlayer:(Player *)thisPlayer Times:(NSInteger) times ExpReps : (NSInteger) reps Season:(NSInteger) setSeason;
 
 - (void) runTrainingPlanForPlayer:(Player*) thisPlayer TrainingExp:(NSMutableDictionary*) trainingEXP;
 
@@ -34,6 +34,10 @@
 
 - (BOOL) updateTrainingPlanToDatabase;
 - (BOOL) updatePlanStats:(NSString*)stat Value:(NSInteger) value;
+
+@end
+
+@interface GKTraining : NSObject
 
 @end
 

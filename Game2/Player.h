@@ -29,7 +29,7 @@
     NSInteger GrowthID;
     NSInteger DecayID;
     NSInteger DecayConstantID;
-    NSInteger WkOfBirth;
+    NSInteger BirthYear;
     NSMutableDictionary* TrainingExp;
     double Valuation;
     
@@ -54,7 +54,7 @@
 @property NSInteger GrowthID;
 @property NSInteger DecayID;
 @property NSInteger DecayConstantID;
-@property NSInteger WkOfBirth;
+@property NSInteger BirthYear;
 @property NSMutableDictionary* TrainingExp;
 @property BOOL isGoalKeeper;
 @property double Valuation;

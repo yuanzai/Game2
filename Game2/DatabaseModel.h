@@ -23,6 +23,7 @@
     NSString* databasePath;
 }
 -(id)initWithPath:(NSString*) path;
++ (id)myDB;
 
 @property NSString* databasePath;
 
@@ -56,5 +57,10 @@
 
 // INSERT QUERY
 - (BOOL) insertDatabaseTable:(NSString*) table withData:(NSDictionary*) data;
+- (BOOL) insertQueueDatabaseTable:(NSString*) table withData:(NSDictionary*) data;
+- (BOOL) finishInsertQueue;
+
+// CLEAR TABLE
+- (BOOL) deleteFromTable:(NSString*) table withData:(NSDictionary*) data;
 
 @end

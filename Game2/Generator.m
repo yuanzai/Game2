@@ -11,22 +11,26 @@
 #import "Training.h"
 
 @implementation Generator
+{
+    int playerCounter;
+}
 @synthesize FirstNames;
 @synthesize LastNames;
 @synthesize TeamNames;
 @synthesize TeamNamesSuffix;
 @synthesize AgeDistribution;
 
-const NSInteger playerBatch = 10;
+const NSInteger playerBatch = 330;
+const NSInteger maxTurn = 16;
 
 - (id) init {
 	if (!(self = [super init]))
 		return nil;
-    FirstNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@1];
-    LastNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@2];
-    TeamNames = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@3];
-    TeamNamesSuffix = [[[DatabaseModel alloc]init]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@4];
-    AgeDistribution = [[[DatabaseModel alloc]init]getArrayFrom:@"retire" withSelectField:@"AGEDISTRIBUTION" whereKeyField:@"" hasKey:nil];
+    FirstNames = [[DatabaseModel myDB]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@1];
+    LastNames = [[DatabaseModel myDB]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@2];
+    TeamNames = [[DatabaseModel myDB]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@3];
+    TeamNamesSuffix = [[DatabaseModel myDB]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@4];
+    AgeDistribution = [[DatabaseModel myDB]getArrayFrom:@"retire" withSelectField:@"AGEDISTRIBUTION" whereKeyField:@"" hasKey:nil];
     return self;
 }
 
@@ -35,13 +39,20 @@ const NSInteger playerBatch = 10;
 - (void) generateNewGame
 {
     [self generateNewTeams];
+    NSLog(@"New Teams");
+
     [self generatePlayersForNewGame];
+    NSLog(@"New Players");
+
     [self assignPlayersToTeams];
+    NSLog(@"New Assignments");
+
 }
 
 - (void) generateNewTeams
 {
-	NSArray* tournaments = [[[DatabaseModel alloc]init]getArrayFrom:@"tournaments" whereData:nil sortFieldAsc:@""];
+    [[DatabaseModel myDB]deleteFromTable:@"teams" withData:nil];
+	NSArray* tournaments = [[DatabaseModel myDB]getArrayFrom:@"tournaments" whereData:nil sortFieldAsc:@""];
 	[tournaments enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         NSDictionary* result = (NSDictionary*) obj;
         NSInteger teamCount = [[result objectForKey:@"TEAMCOUNT"]integerValue];
@@ -54,20 +65,20 @@ const NSInteger playerBatch = 10;
         	}
             [newTeam setObject:teamName forKey:@"NAME"];
             [newTeam setObject:[obj objectForKey:@"TOURNAMENTID"] forKey:@"TOURNAMENTID"];
-            [[[DatabaseModel alloc]init]insertDatabaseTable:@"teams" withData:newTeam];
+            [[DatabaseModel myDB]insertDatabaseTable:@"teams" withData:newTeam];
         }
     }];
 }
 
 - (void) generatePlayersForNewGame
 {
+    [[DatabaseModel myDB]deleteFromTable:@"players" withData:nil];
+
     [AgeDistribution enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        [self generatePlayersWithSeason:-idx NumberOfPlayers:(NSInteger)(playerBatch * [obj doubleValue])];
+        [self generatePlayersWithSeason:-idx+1 NumberOfPlayers:(NSInteger)(playerBatch * [obj doubleValue])];
     }];
     
 }
-
-
 
 
 - (void) assignPlayersToTeams
@@ -86,18 +97,25 @@ const NSInteger playerBatch = 10;
 
     NSArray* playerList;
     
-    for (NSInteger i = 0; i<[teamGroup count] + 10;i++) {
-        for (NSInteger j = 10; j == 0; j--){
+    for (NSInteger i = 0; i<[teamGroup count] + maxTurn;i++) {
+        for (NSInteger j = maxTurn; j >= 0; j--){
             if (i-j >= 0 && i-j < [teamGroup count]) {
-                NSUInteger teamCount = [[teamGroupCount objectAtIndex:i-j]integerValue];
-                playerList = [self distributePlayersTurn:j TeamsCount:teamCount];
-                [playerList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                    NSMutableDictionary* updateDict = [NSMutableDictionary dictionary];
-                    NSUInteger index = (idx % teamCount);
-                    NSInteger teamID = [[teamList objectAtIndex:[[teamGroup objectAtIndex:index]integerValue]]integerValue];
-                    [updateDict setObject:[NSNumber numberWithInteger:teamID]  forKey:@"TEAMID"];
-                    [[[DatabaseModel alloc] init]updateDatabaseTable:@"players" withKeyField:@"PLAYERID" withKey:[obj integerValue] withDictionary:updateDict];
-                }];
+                if (j < maxTurn-1 || (j == maxTurn - 1 && i-j <11) || (j==maxTurn && i-j <4)) {
+                    NSUInteger teamCount = [[teamGroupCount objectAtIndex:i-j]integerValue];
+                    
+                    playerList = [self distributePlayersTurn:j TeamsCount:teamCount];
+                    [playerList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                        
+                        NSMutableDictionary* updateDict = [NSMutableDictionary dictionary];
+                        NSUInteger index = (idx % teamCount);
+                        NSInteger teamListIndex =[[teamGroup objectAtIndex:i-j]integerValue] - index -1;
+                        NSInteger teamID = [[teamList objectAtIndex:teamListIndex]integerValue];
+                        [updateDict setObject:[NSNumber numberWithInteger:teamID]  forKey:@"TEAMID"];
+                        
+                        [[DatabaseModel myDB]updateDatabaseTable:@"players" withKeyField:@"PLAYERID" withKey:[obj integerValue] withDictionary:updateDict];
+                        
+                    }];
+                }
             }
         }
     }
@@ -123,41 +141,52 @@ const NSInteger playerBatch = 10;
     
     {
         case 0:
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
             break;
             
         case 1:
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
             break;
         case 2:
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"DEF=1 AND LEFT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"DEF=1 AND CENTRE=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"DEF=1 AND RIGHT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
-            
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND DEF=1 AND LEFT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
             break;
         case 3:
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND DEF=1 AND CENTRE=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            break;
         case 4:
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"(DM=1 OR MID=1 OR AM=1) AND LEFT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"(DM=1 OR MID=1 OR AM=1) AND RIGHT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"(DM=1 OR MID=1 OR AM=1) AND CENTRE=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND DEF=1 AND RIGHT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
             break;
         case 5:
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"SC=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
-            break;
-        case 6:
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"GK=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
-            break;
-        case 7:
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
-            break;
         case 8:
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"" OrderBy:@"RANDOM()" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND (DM=1 OR MID=1 OR AM=1) AND LEFT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
             break;
+            
+        case 6:
         case 9:
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND (DM=1 OR MID=1 OR AM=1) AND RIGHT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
             break;
+            
+        case 7:
         case 10:
-            [result addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"" OrderBy:@"RANDOM()" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND (DM=1 OR MID=1 OR AM=1) AND CENTRE=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
+            break;
+        case 11:
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND SC=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            break;
+        case 12:
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND GK=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            break;
+        case 13:
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
+            break;
+        case 14:
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"RANDOM()" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
+            break;
+        case 15:
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            break;
+        case 16:
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"RANDOM()" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
             break;
             
         default:
@@ -178,9 +207,9 @@ const NSInteger playerBatch = 10;
 
 - (NSArray*) getTeamsGrouping {
     return [[NSArray alloc]initWithObjects:
-            @0,@4,@8,@12,@16,@20,@24,@28,@32,@36,
+            @4,@8,@12,@16,@20,@24,@28,@32,@36,
             @40,@48,@56,@64,@72,@80,@88,@96,@104,@112,
-            @120,@136,@152,@168,@182,@200,nil];
+            @120,@136,@152,@168,@184,@200,nil];
 }
 
 - (NSArray*) getTeamsRankingArray {
@@ -188,7 +217,7 @@ const NSInteger playerBatch = 10;
     for (NSInteger i = 1; i <9; i++) {
         NSMutableArray* teamsArray = [NSMutableArray array];
         for (NSInteger j = 1; j < 10 ; j++){
-            [teamsArray addObjectsFromArray:[[[DatabaseModel alloc]init]getArrayFrom:@"teams" withSelectField:@"TEAMID" whereKeyField:@"TOURNAMENTID" hasKey:[NSNumber numberWithInteger:i*10+j]]];
+            [teamsArray addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"teams" withSelectField:@"TEAMID" whereKeyField:@"TOURNAMENTID" hasKey:[NSNumber numberWithInteger:i*10+j]]];
         }
         [fullArray addObjectsFromArray:[self shuffleArray:teamsArray]];
     }
@@ -206,16 +235,16 @@ const NSInteger playerBatch = 10;
 
 - (void) generatePlayersWithSeason:(NSInteger) season NumberOfPlayers:(NSInteger) number
 {
-    
+    GeneratePlayer* newPlayer;
     for (int i = 0; i < number; i ++) {
-        GeneratePlayer* newPlayer = [[GeneratePlayer alloc]init];
+        newPlayer = [[GeneratePlayer alloc]init];
         newPlayer.FirstNames = FirstNames;
         newPlayer.LastNames = LastNames;
         NSInteger potential = [self generatePotential];
         NSInteger ability = 100 + [self generateAbilityCoefficient] * MAX(potential * 2 + 160 - 100,100);
         
         [newPlayer createPlayerWithAbility:ability Potential:potential Season:season];
-        
+        playerCounter++;
     }
 }
 
@@ -223,23 +252,23 @@ const NSInteger playerBatch = 10;
 {
     NSInteger r = arc4random() % 1000;
     NSInteger potential;
-    if (r < 210) {
+    if (r < 160) {
         potential = 0;
-    } else if (r < 393) {
+    } else if (r < 363) {
         potential = 10;
-    } else if (r < 551) {
+    } else if (r < 501) {
         potential = 20;
-    } else if (r < 680) {
+    } else if (r < 630) {
         potential = 30;
-    } else if (r < 778) {
+    } else if (r < 738) {
         potential = 40;
-    } else if (r < 864) {
+    } else if (r < 834) {
         potential = 50;
-    } else if (r < 936) {
+    } else if (r < 910) {
         potential = 60;
-    } else if (r < 982) {
+    } else if (r < 965) {
         potential = 70;
-    } else if (r < 996) {
+    } else if (r < 988) {
         potential = 80;
     } else {
         potential = 90;
@@ -313,7 +342,18 @@ const NSInteger statBiasMax = 63;
 {
     NSMutableDictionary* newPlayer = [NSMutableDictionary dictionary];
     [newPlayer setObject:[NSNumber numberWithInteger:potential] forKey:@"potential"];
-
+    self.potential = potential;
+    
+    //Profiles
+    StatBiasID = (arc4random() % statBiasMax) + 1;
+    GrowthID = (arc4random() % growthMax) + 1;
+    DecayConstantID = (arc4random() % decayKMax) + 1;
+    DecayID = (arc4random() % decayMax) + 1;
+    [newPlayer setObject:[NSNumber numberWithInteger:StatBiasID] forKey:@"StatBiasID"];
+    [newPlayer setObject:[NSNumber numberWithInteger:GrowthID] forKey:@"GrowthID"];
+    [newPlayer setObject:[NSNumber numberWithInteger:DecayConstantID] forKey:@"DecayConstantID"];
+    [newPlayer setObject:[NSNumber numberWithInteger:DecayID] forKey:@"DecayID"];
+    
     //Side
     /*
      C 22
@@ -325,6 +365,8 @@ const NSInteger statBiasMax = 63;
      R 17
      */
     NSInteger r = arc4random() % 100;
+    if (!PreferredPosition)
+        PreferredPosition = [NSMutableDictionary dictionary];
     
     if (r < 22) {
         [PreferredPosition setObject:@0 forKey:@"RIGHT"];
@@ -380,33 +422,39 @@ const NSInteger statBiasMax = 63;
     [PreferredPosition setObject:@0 forKey:@"SC"];
     
     
-    if (r < 23) {
+    if (r < 11) {
+        [PreferredPosition setObject:@1 forKey:@"GK"];
+        [PreferredPosition setObject:@0 forKey:@"RIGHT"];
+        [PreferredPosition setObject:@0 forKey:@"CENTRE"];
+        [PreferredPosition setObject:@0 forKey:@"LEFT"];
+        isGoalKeeper = YES;
+    } else if (r < 31) {
         [PreferredPosition setObject:@1 forKey:@"DEF"];
-    } else if (r < 36) {
-        [PreferredPosition setObject:@1 forKey:@"DEF"];
-        [PreferredPosition setObject:@1 forKey:@"DM"];
-    } else if (r < 41) {
-        [PreferredPosition setObject:@1 forKey:@"DEF"];
-        [PreferredPosition setObject:@1 forKey:@"MID"];
     } else if (r < 43) {
         [PreferredPosition setObject:@1 forKey:@"DEF"];
+        [PreferredPosition setObject:@1 forKey:@"DM"];
+    } else if (r < 48) {
+        [PreferredPosition setObject:@1 forKey:@"DEF"];
+        [PreferredPosition setObject:@1 forKey:@"MID"];
+    } else if (r < 50) {
+        [PreferredPosition setObject:@1 forKey:@"DEF"];
         [PreferredPosition setObject:@1 forKey:@"AM"];
-    } else if (r < 44) {
+    } else if (r < 51) {
         [PreferredPosition setObject:@1 forKey:@"DEF"];
         [PreferredPosition setObject:@1 forKey:@"SC"];
-    } else if (r < 51) {
+    } else if (r < 57) {
         [PreferredPosition setObject:@1 forKey:@"DM"];
-    } else if (r < 59) {
+    } else if (r < 64) {
         [PreferredPosition setObject:@1 forKey:@"MID"];
-    } else if (r < 66) {
+    } else if (r < 70) {
         [PreferredPosition setObject:@1 forKey:@"AM"];
-    } else if (r < 67) {
+    } else if (r < 71) {
         [PreferredPosition setObject:@1 forKey:@"DM"];
         [PreferredPosition setObject:@1 forKey:@"SC"];
-    } else if (r < 69) {
+    } else if (r < 73) {
         [PreferredPosition setObject:@1 forKey:@"MID"];
         [PreferredPosition setObject:@1 forKey:@"SC"];
-    } else if (r < 82) {
+    } else if (r < 84) {
         [PreferredPosition setObject:@1 forKey:@"AM"];
         [PreferredPosition setObject:@1 forKey:@"SC"];
     } else {
@@ -418,7 +466,18 @@ const NSInteger statBiasMax = 63;
     }
     [newPlayer addEntriesFromDictionary:PreferredPosition];
     
-    
+    //Name
+    FirstName = [FirstNames objectAtIndex:arc4random() % [FirstNames count]];
+    LastName = [LastNames objectAtIndex:arc4random() % [LastNames count]];
+    DisplayName = LastName;
+    [newPlayer setObject:FirstName forKey:@"FirstName"];
+    [newPlayer setObject:LastName forKey:@"LastName"];
+    [newPlayer setObject:DisplayName forKey:@"DisplayName"];
+
+    //WkOfBirth
+    BirthYear =  season;
+    [newPlayer setObject:[NSNumber numberWithInteger:BirthYear] forKey:@"BirthYear"];
+
     //Stats
     
     Stats = [NSMutableDictionary dictionary];
@@ -429,44 +488,31 @@ const NSInteger statBiasMax = 63;
     for (NSInteger i = 0; i < ability - 20; i++) {
         r = arc4random() % 20;
         NSInteger stat = [[Stats objectForKey:[[GlobalVariableModel playerStatList]objectAtIndex:r]]integerValue];
-        [Stats setObject:[NSNumber numberWithInteger:stat+1] forKey:[[GlobalVariableModel playerStatList]objectAtIndex:r]];
+        if (stat == 20) {
+            i--;
+        } else {
+            [Stats setObject:[NSNumber numberWithInteger:stat+1] forKey:[[GlobalVariableModel playerStatList]objectAtIndex:r]];
+        }
     }
     
+    Plan* newPlayerTraining = [[Plan alloc]initWithPotential:potential Age:1-BirthYear];
     
-    Plan* newPlayerTraining = [[Plan alloc]initWithPotential:potential];
-    [newPlayerTraining runTrainingPlanForPlayer:self Times:season * -50];
+    for (NSInteger i = BirthYear; i<1; i ++){
+        [newPlayerTraining runTrainingPlanForPlayer:self Times:5 ExpReps:17 Season:i];
+    }
 
     
     [newPlayer addEntriesFromDictionary:Stats];
     
-    
-    //Profiles
-    StatBiasID = arc4random() % statBiasMax + 1;
-    GrowthID = arc4random() % growthMax + 1;
-    DecayConstantID = arc4random() % decayKMax + 1;
-    DecayID = arc4random() % decayMax + 1;
-    [newPlayer setObject:[NSNumber numberWithInteger:StatBiasID] forKey:@"StatBiasID"];
-    [newPlayer setObject:[NSNumber numberWithInteger:GrowthID] forKey:@"GrowthID"];
-    [newPlayer setObject:[NSNumber numberWithInteger:DecayConstantID] forKey:@"DecayConstantID"];
-    [newPlayer setObject:[NSNumber numberWithInteger:DecayID] forKey:@"DecayID"];
-    
-    //Name
-    FirstName = [FirstNames objectAtIndex:arc4random() % [FirstNames count]];
-    LastName = [LastNames objectAtIndex:arc4random() % [LastNames count]];
-    DisplayName = LastName;
-    [newPlayer setObject:FirstName forKey:@"FirstName"];
-    [newPlayer setObject:LastName forKey:@"LastName"];
-    [newPlayer setObject:DisplayName forKey:@"DisplayName"];
-
+    //TEAMID
+    TeamID = -1;
+    [newPlayer setObject:[NSNumber numberWithInteger:TeamID] forKey:@"TeamID"];
     
     
     //Consistency
     Consistency = arc4random() % 17 + arc4random() % 4 + 1;
     [newPlayer setObject:[NSNumber numberWithInteger:Consistency] forKey:@"Consistency"];
     
-    //WkOfBirth
-    WkOfBirth =  ((season - 20) * 50 ) + arc4random() % 100;
-    [newPlayer setObject:[NSNumber numberWithInteger:WkOfBirth] forKey:@"WkOfBirth"];
     
     //Condition + Form
     Condition = 1;
@@ -478,6 +524,6 @@ const NSInteger statBiasMax = 63;
     
     [newPlayer setObject:[NSNumber numberWithDouble:Valuation] forKey:@"Valuation"];
     
-    return [[[DatabaseModel alloc]init]insertDatabaseTable:@"players" withData:newPlayer];
+    return [[DatabaseModel myDB]insertDatabaseTable:@"players" withData:newPlayer];
 }
 @end
