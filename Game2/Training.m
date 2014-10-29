@@ -235,6 +235,54 @@
     return expChange;
 }
 
+- (void) trainGK:(Player*) gk Season:(NSInteger) setSeason
+{
+    if (!gk.isGoalKeeper) {
+        season = setSeason;
+
+        __block double sumStat = 0.0;
+        [gk.Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            sumStat += [obj doubleValue];
+        }];
+        NSInteger age = season - gk.BirthYear;
+        
+        double decayK = [self getMultiplierWithType:@"DECAYCONSTANT" ID:gk.DecayConstantID Age:age];
+        
+        double decaySlope = [self getMultiplierWithType:@"DECAY" ID:gk.DecayID Age:age];
+        
+        double trainingProb = MIN(0.2 + (220 - (sumStat*0.18)/25),0.95) - (decayK+(double) gk.Potential *decaySlope/100);
+        
+        BOOL upStat = YES;
+        if (trainingProb < 0 )
+            upStat = NO;
+        
+        NSMutableArray* validStats = [NSMutableArray array];
+        
+        [[GlobalVariableModel gkStatList] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            if (upStat) {
+                if ([[gk.Stats objectForKey:obj]integerValue] < 20)
+                    [validStats addObject:obj];
+            } else {
+                if ([[gk.Stats objectForKey:obj]integerValue] > 1)
+                    [validStats addObject:obj];
+            }
+        }];
+
+        
+        if (arc4random()*10000 < abs(trainingProb)*10000) {
+            NSInteger r = arc4random() % [validStats count];
+            NSString* statString =[validStats objectAtIndex:r];
+            NSInteger stat = [[gk.Stats objectForKey:statString]integerValue];
+            if (upStat) {
+                [gk.Stats setObject:@(stat+1) forKey:statString];
+            } else {
+                [gk.Stats setObject:@(stat-1) forKey:statString];
+            }
+        }
+    }
+}
+
+
 - (void) getChangeStatStringWithGroup:(NSString*) group Player:(Player*) player upChange:(BOOL) isUp{
     NSArray* statArray = [[groupStatList objectForKey:group]allKeys];
     NSMutableArray* validStats = [NSMutableArray array];
@@ -306,7 +354,7 @@
 
     NSDictionary* profile = [ageProfiles objectForKey:[NSString stringWithFormat:@"%i", age]];
     NSDictionary* record = [profile objectForKey:[NSString stringWithFormat:@"%i", ProfileID]];
-    
+
     return [[record objectForKey:type]doubleValue];
 }
 
@@ -320,15 +368,6 @@
     return MAX(
                MIN(-.25 + 4.1 * (double)stat/potential - 3.5 * ((double)stat/potential) * ((double)stat/potential),1)
                ,0.6);
-}
-
-@end
-
-@implementation GKTraining
-
-- (void) trainGK:(Player*) gk
-{
-    
 }
 
 @end

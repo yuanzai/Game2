@@ -55,11 +55,12 @@
     
     if ([[record objectForKey:@"GK"] integerValue] == 1) {
         isGoalKeeper = YES;
-        NSDictionary* gkrecord = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"gk" withKeyField:@"PlayerID" withKey:self.PlayerID];
+        NSDictionary* gkrecord = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"players" withKeyField:@"PlayerID" withKey:self.PlayerID];
         [[GlobalVariableModel gkStatList]enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             [Stats setObject:[gkrecord objectForKey:obj] forKey:obj];
         }];
-        
+        [PreferredPosition setObject:@"0" forKey:@"GK"];
+
     } else {
         isGoalKeeper = NO;
         [[GlobalVariableModel playerStatList] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -134,37 +135,46 @@
         sumStat += [(NSNumber*) obj integerValue];
     }];
 
+    if (isGoalKeeper)
+        sumStat = sumStat / [[GlobalVariableModel gkStatList]count] * 20;
+    
     Valuation = [self statValuation:sumStat];
     //NSLog(@"%f",Valuation);
-    
-    NSDictionary* positionTable = [[NSDictionary alloc]initWithObjectsAndKeys:
-                                   @1.0, @"DEF",
-                                   @1.2,@"DM",
-                                   @1.3,@"MID",
-                                   @1.4,@"AM",
-                                   @1.5,@"SC", nil];
-    
     __block NSInteger coreStat = 0;
     __block double positionMultiplier = 1.0;
     
-    [positionTable enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        if ([[PreferredPosition objectForKey:key]integerValue]==1) {
-            if ([[PreferredPosition objectForKey:@"CENTRE"]integerValue]==1) {
-                NSInteger newStat = [self positionStatWithPosition:key Side:@"CENTRE"];
-                if (newStat >= coreStat)
-                    positionMultiplier = [obj doubleValue];
-                coreStat = MAX(newStat,coreStat);
+    if (isGoalKeeper) {
+        coreStat = [self positionStatWithPosition:@"GK" Side:@"GK"];
+    } else {
+        
+        NSDictionary* positionTable = [[NSDictionary alloc]initWithObjectsAndKeys:
+                                       @1.0, @"DEF",
+                                       @1.2,@"DM",
+                                       @1.3,@"MID",
+                                       @1.4,@"AM",
+                                       @1.5,@"SC", nil];
+        
+        
+        [positionTable enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            if ([[PreferredPosition objectForKey:key]integerValue]==1) {
+                if ([[PreferredPosition objectForKey:@"CENTRE"]integerValue]==1) {
+                    NSInteger newStat = [self positionStatWithPosition:key Side:@"CENTRE"];
+                    if (newStat >= coreStat)
+                        positionMultiplier = [obj doubleValue];
+                    coreStat = MAX(newStat,coreStat);
+                }
+                
+                if ([[PreferredPosition objectForKey:@"LEFT"]integerValue]==1 ||
+                    [[PreferredPosition objectForKey:@"RIGHT"]integerValue]==1) {
+                    NSInteger newStat = [self positionStatWithPosition:key Side:@"CENTRE"];
+                    if (newStat >= coreStat)
+                        positionMultiplier = [obj doubleValue];
+                    coreStat = MAX(newStat,coreStat);
+                }
             }
-            
-            if ([[PreferredPosition objectForKey:@"LEFT"]integerValue]==1 ||
-                [[PreferredPosition objectForKey:@"RIGHT"]integerValue]==1) {
-                NSInteger newStat = [self positionStatWithPosition:key Side:@"CENTRE"];
-                if (newStat >= coreStat)
-                    positionMultiplier = [obj doubleValue];
-                coreStat = MAX(newStat,coreStat);
-            }
-        }
-    }];
+        }];
+    }
+    
     Valuation += [self statValuation:coreStat]/2.5;
     
     NSInteger age = [[GameModel gameData]season] - BirthYear;
@@ -204,8 +214,7 @@
     __block double maxStat = 0.0;
     NSDictionary* valuationTable;
     if ([position isEqualToString:@"GK"]) {
-        //TODO GK stat
-        return 0;
+        valuationTable = [GlobalVariableModel valuationStatListForFlank:@"GK"];
     } else if ([[side uppercaseString] isEqualToString:@"CENTRE"]) {
         valuationTable = [[GlobalVariableModel valuationStatListForFlank:@"CENTRE"] objectForKey:position];
     } else {
@@ -217,6 +226,6 @@
             maxStat +=  [obj doubleValue];
     }];
     
-    return maxStat/7*20;
+    return maxStat/[valuationTable count]*[Stats count];
 }
 @end

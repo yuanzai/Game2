@@ -29,15 +29,14 @@
 
 - (void) runTrainingPlanForPlayer:(Player*) thisPlayer TrainingExp:(NSMutableDictionary*) trainingEXP;
 
+- (void) trainGK:(Player*) gk Season:(NSInteger) setSeason;
+
+
 - (void) addPlayerToTrainingPlan:(NSInteger) PlayerID;
 - (void) removePlayerFromTrainingPlan:(NSInteger) PlayerID;
 
 - (BOOL) updateTrainingPlanToDatabase;
 - (BOOL) updatePlanStats:(NSString*)stat Value:(NSInteger) value;
-
-@end
-
-@interface GKTraining : NSObject
 
 @end
 

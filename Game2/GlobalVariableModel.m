@@ -44,7 +44,14 @@ static GlobalVariableModel* myGlobalVariableModel;
 + (NSDictionary*) valuationStatListForFlank:(NSString*) flank;
 {
     NSArray* tempArray;
-    if ([flank isEqualToString:@"CENTRE"]) {
+    if ([flank isEqualToString:@"GK"]) {
+        if (!myGlobalVariableModel.valuationStatListGK ){
+            NSDictionary* tempDictionary = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"valuation" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@"GK",@"FLANKCENTRE", nil]];
+            [[GlobalVariableModel myGlobalVariableModel] setValuationStatListGK:tempDictionary];
+        }
+        return myGlobalVariableModel.valuationStatListGK;
+
+    } else if ([flank isEqualToString:@"CENTRE"]) {
         if (!myGlobalVariableModel.valuationStatListCentre ){
             tempArray = [[[DatabaseModel alloc]init]getArrayFrom:@"valuation" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"CENTRE",@"FLANKCENTRE", nil] sortFieldAsc:@""];
             NSMutableDictionary* tempDictionary = [NSMutableDictionary dictionary];
@@ -187,8 +194,8 @@ static GlobalVariableModel* myGlobalVariableModel;
 
 + (NSMutableArray*) gkStatList{
     return [[NSMutableArray alloc]initWithObjects:
-     @"DIS", @"HAN", @"AGI",  @"REF", @"PEN", @"FRE", @"POS",
-     @"PHY", @"COM", @"FIT",  @"TEC", @"INT", @"TEA",nil];
+    @"DIS", @"HAN", @"AGI", @"REF", @"PHY", @"COM",
+    @"POS", @"PEN", @"INT", @"FRE", @"TEC", @"TEA",nil];
 }
 
 - (void) setAllStatList

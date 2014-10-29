@@ -17,6 +17,7 @@
 
 @property NSDictionary* valuationStatListCentre;
 @property NSDictionary* valuationStatListFlank;
+@property NSDictionary* valuationStatListGK;
 
 //Training
 @property NSDictionary* ageProfile;
