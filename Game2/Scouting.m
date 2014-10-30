@@ -7,7 +7,33 @@
 //
 
 #import "Scouting.h"
+#import "DatabaseModel.h"
 
 @implementation Scouting
 
+@end
+
+@implementation Scout
+@synthesize SCOUTID;
+@synthesize NAME;
+@synthesize JUDGEMENT; // judging ability + potential
+@synthesize YOUTH; // judging potential in < 23yr olds
+@synthesize VALUE; // abilty to price ratio
+@synthesize KNOWLEDGE; // useful perks spotting
+@synthesize DILIGENCE; // probabilty of more names
+
+
+- (id) initWithScoutID: (NSInteger) thisScoutID {
+    self = [super init];
+    if (self) {
+        NSDictionary* result = [[DatabaseModel myDB]getResultDictionaryForTable:@"scouts" withKeyField:@"SCOUTID" withKey:thisScoutID];
+        [result enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            [self setValuesForKeysWithDictionary:result];
+            
+        }];
+    
+    }
+    return self;
+
+}
 @end

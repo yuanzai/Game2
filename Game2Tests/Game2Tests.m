@@ -10,6 +10,7 @@
 #import "Generator.h"
 #import "DatabaseModel.h"
 #import "GameModel.h"
+#import "Scouting.h"
 @interface Game2Tests : XCTestCase
 
 @end
@@ -39,12 +40,18 @@
 - (void)testGenerate
 {
     [[GameModel myGame]newWithGameID:1];
-
     
     
     Generator* newGenerator = [[Generator alloc]init];
     [newGenerator generateNewGame];
-//    [newGenerator generatePlayersWithSeason:1 NumberOfPlayers:100];
+    [[DatabaseModel myDB]deleteFromTable:@"fixtures" withData:nil];
+
+    [[GameModel myGame]startSeason];
+}
+
+- (void) testScout {
+    Scout* newScout = [[Scout alloc]initWithScoutID:0];
+    NSLog(@"%@",newScout.NAME);
 }
 
 - (void)testARC4random

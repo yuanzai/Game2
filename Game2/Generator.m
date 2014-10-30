@@ -41,10 +41,10 @@ const NSInteger maxTurn = 16;
     [self generateNewTeams];
     NSLog(@"New Teams");
 
-    [self generatePlayersForNewGame];
+    //[self generatePlayersForNewGame];
     NSLog(@"New Players");
 
-    [self assignPlayersToTeams];
+    //[self assignPlayersToTeams];
     NSLog(@"New Assignments");
 
 }

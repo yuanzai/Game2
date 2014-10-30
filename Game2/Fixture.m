@@ -27,10 +27,10 @@
     self = [super init];
     if (self) {
         self.tournamentID = TournamentID;
-        NSDictionary* record = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"tournaments" withKeyField:@"TournamentID" withKey:tournamentID];
+        NSDictionary* record = [[DatabaseModel myDB]getResultDictionaryForTable:@"tournaments" withKeyField:@"TournamentID" withKey:tournamentID];
         tournamentName = [record objectForKey:@"NAME"];
         tournamentType = [record objectForKey:@"TYPE"];
-        teamCount = [[record objectForKey:@"TYPE"]integerValue];
+        teamCount = [[record objectForKey:@"TEAMCOUNT"]integerValue];
         promoteToTournament = [[record objectForKey:@"PROMOTETO"]integerValue];
         relegateToTournament = [[record objectForKey:@"RELEGATETO"]integerValue];
         promoteCount = [[record objectForKey:@"PROMOTECOUNT"]integerValue];
@@ -42,7 +42,7 @@
 
 - (BOOL) createFixturesForSeason:(NSInteger)season
 {
-    NSMutableArray* teamsArray = [[NSMutableArray alloc]initWithArray:[[[DatabaseModel alloc]init]getArrayFrom:@"teams" withSelectField:@"TEAMID" whereKeyField:@"TOURNAMENTID" hasKey:[NSNumber numberWithInteger:tournamentID]]];
+    NSMutableArray* teamsArray = [[NSMutableArray alloc]initWithArray:[[DatabaseModel myDB]getArrayFrom:@"teams" withSelectField:@"TEAMID" whereKeyField:@"TOURNAMENTID" hasKey:[NSNumber numberWithInteger:tournamentID]]];
     
     if ([teamsArray count] != teamCount)
         return NO;
@@ -92,7 +92,7 @@
     NSInteger k = 0;
     for (NSInteger round = 0; round < [teamsArray count]-1; round++) {
         for (NSInteger i = 0; i < [teamsArray count]/2;i++){
-            NSInteger date = ([[GameModel gameData]season]-1) * 52 + round;
+            NSInteger date = season * 52 + round;
             NSDictionary* data =
             [[NSDictionary alloc]
              initWithObjectsAndKeys:
@@ -105,7 +105,7 @@
              @0,@"HASET",
              @0,@"HASPENALTIES",
              nil];
-            [[[DatabaseModel alloc]init]insertDatabaseTable:@"fixtures" withData:data];
+            [[DatabaseModel myDB]insertDatabaseTable:@"fixtures" withData:data];
             k++;
         }
     }
@@ -141,7 +141,7 @@
              @0,@"HASET",
              @0,@"HASPENALTIES",
              nil];
-            [[[DatabaseModel alloc]init]insertDatabaseTable:@"fixtures" withData:data];
+            [[DatabaseModel myDB]insertDatabaseTable:@"fixtures" withData:data];
             k++;
 
         }
@@ -151,18 +151,18 @@
 }
 - (NSArray*) getAllFixturesForSeason:(NSInteger)season;
 {
-    return [[[DatabaseModel alloc]init]getArrayFrom:@"fixtures" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInteger:tournamentID],@"TOURNAMENTID", [NSNumber numberWithInteger:season],@"SEASON", nil] sortFieldAsc:@"DATE"];
+    return [[DatabaseModel myDB]getArrayFrom:@"fixtures" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInteger:tournamentID],@"TOURNAMENTID", [NSNumber numberWithInteger:season],@"SEASON", nil] sortFieldAsc:@"DATE"];
 }
 
 - (NSArray*) getFixturesForTeam:(Team*) team ForSeason:(NSInteger)season;
 {
-    NSArray* homeArray = [[[DatabaseModel alloc]init]getArrayFrom:@"fixtures" whereData:
+    NSArray* homeArray = [[DatabaseModel myDB]getArrayFrom:@"fixtures" whereData:
             [[NSDictionary alloc]initWithObjectsAndKeys:
              [NSNumber numberWithInteger:tournamentID],@"TOURNAMENTID",
              [NSNumber numberWithInteger:season],@"SEASON",
              [NSNumber numberWithInteger:team.TeamID],@"HOMETEAM", nil] sortFieldAsc:@"DATE"];
 
-    NSArray* awayArray = [[[DatabaseModel alloc]init]getArrayFrom:@"fixtures" whereData:
+    NSArray* awayArray = [[DatabaseModel myDB]getArrayFrom:@"fixtures" whereData:
                           [[NSDictionary alloc]initWithObjectsAndKeys:
                            [NSNumber numberWithInteger:tournamentID],@"TOURNAMENTID",
                            [NSNumber numberWithInteger:season],@"SEASON",
@@ -190,7 +190,7 @@
 
 -(NSArray*) getLeagueTableForSeason:(NSInteger)season
 {
-    return [[[DatabaseModel alloc]init]getLeagueTableForTournamentID:tournamentID Season:season];
+    return [[DatabaseModel myDB]getLeagueTableForTournamentID:tournamentID Season:season];
 }
 @end
 
@@ -204,9 +204,10 @@
 @synthesize team1;
 @synthesize team2;
 
+
 //TODO: update fixture
 -(void) updateFixtureInDatabase
 {
-    
+    // todo
 }
 @end

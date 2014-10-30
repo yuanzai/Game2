@@ -37,6 +37,11 @@
                BlueprintName = "Game2Tests"
                ReferencedContainer = "container:Game2.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "Game2Tests/testGenerate">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>

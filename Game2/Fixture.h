@@ -30,6 +30,7 @@
 
 @end
 
+
 @interface Fixture : NSObject
 @property BOOL hasPenalties;
 @property BOOL hasExtraTime;
@@ -39,6 +40,28 @@
 @property NSInteger team2ID;
 @property Team* team1;
 @property Team* team2;
+
+@property NSInteger MATCHID;
+@property NSInteger TOURNAMENTID;
+@property NSInteger SEASON;
+@property NSInteger DATE;
+@property NSInteger ROUND;
+@property NSInteger HOMETEAM;
+@property NSInteger AWAYTEAM;
+@property NSInteger HOMESCORE;
+@property NSInteger AWAYSCORE;
+@property NSInteger HOMEYELLOW;
+@property NSInteger HOMERED;
+@property NSInteger AWAYYELLOW;
+@property NSInteger AWAYRED;
+@property NSInteger HASET;
+@property NSInteger PLAYEDET;
+@property NSInteger HASPENALTIES;
+@property NSInteger PLAYEDPENALTIES;
+@property NSInteger HOMEPENALTIES;
+@property NSInteger AWAYPENALTIES;
+@property NSInteger HOMELOGJSON;
+@property NSInteger AWAYLOGJSON;
 
 -(void) updateFixtureInDatabase;
 

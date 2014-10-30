@@ -132,6 +132,12 @@
 - (void) newWithGameID:(NSInteger) GameID;
 + (id)myGame;
 
+
+//Seaons
+- (void) startSeason;
+
+
+//Turns
 + (SinglePlayerData*) gameData;
 - (void) enterPreWeek;
 - (void) enterPreTask;

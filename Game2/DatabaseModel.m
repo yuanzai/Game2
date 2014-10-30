@@ -434,7 +434,7 @@ const NSInteger insertQueueMax = 10;
         }
     }];
     
-    NSString* whereString = [NSString stringWithFormat:@"WHERE %@",[whereValues componentsJoinedByString:@","]];
+    NSString* whereString = [NSString stringWithFormat:@"WHERE %@",[whereValues componentsJoinedByString:@" AND "]];
     
     return whereString;
 }

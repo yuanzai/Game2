@@ -7,6 +7,9 @@
 //
 
 #import "GameModel.h"
+#import "Fixture.h"
+#import "DatabaseModel.h"
+
 @implementation GameModel
 @synthesize myData;
 @synthesize GameID;
@@ -125,10 +128,18 @@
 - (void) startSeason
 {
     myData.season++;
+    NSArray* tournamentList = [[[DatabaseModel alloc]init]getArrayFrom:@"tournaments" withSelectField:@"TOURNAMENTID" WhereString:@"" OrderBy:@"" Limit:@""];
+    [tournamentList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        Tournament* thisTournament = [[Tournament alloc]initWithTournamentID:[obj integerValue]];
+        [thisTournament createFixturesForSeason:myData.season];
+    }];
+    
+    
 }
 
 - (void) endSeason
 {
     
 }
+
 @end
