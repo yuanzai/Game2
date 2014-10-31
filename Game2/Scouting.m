@@ -10,7 +10,11 @@
 #import "DatabaseModel.h"
 
 @implementation Scouting
-
+- (NSArray*) getPlayerArrayForScout:(Scout*) scout Type:(NSString*) type
+{
+    //TODO: Make scout tasks
+    return nil;
+}
 @end
 
 @implementation Scout

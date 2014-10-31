@@ -41,10 +41,7 @@
 @end
 
 @interface Training : NSObject
-{
-    NSMutableArray* Plans;
-}
-@property NSArray* Plans;
+@property NSMutableArray* Plans;
 
 - (void) runAllPlans;
 

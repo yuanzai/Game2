@@ -17,7 +17,7 @@
 @property NSArray* TeamNamesSuffix;
 @property NSArray* AgeDistribution;
 
-- (void) generatePlayersForNewGame;
+- (void) generateNewGameWithTeamName:(NSString*) myTeamName;
 
 - (void) generatePlayersWithSeason:(NSInteger) season NumberOfPlayers:(NSInteger) number;
 - (void) generateNewGame;

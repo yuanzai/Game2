@@ -20,6 +20,8 @@
 @synthesize TeamNamesSuffix;
 @synthesize AgeDistribution;
 
+
+
 const NSInteger playerBatch = 330;
 const NSInteger maxTurn = 16;
 
@@ -36,9 +38,9 @@ const NSInteger maxTurn = 16;
 
 // New Game
 
-- (void) generateNewGame
+- (void) generateNewGameWithTeamName:(NSString*) myTeamName
 {
-    [self generateNewTeams];
+    [self generateNewTeamsWithTeamName:myTeamName];
     NSLog(@"New Teams");
 
     //[self generatePlayersForNewGame];
@@ -49,8 +51,10 @@ const NSInteger maxTurn = 16;
 
 }
 
-- (void) generateNewTeams
+- (void) generateNewTeamsWithTeamName:(NSString*) myTeamName
 {
+    NSInteger myLeague = 81 + arc4random() % 4;
+    
     [[DatabaseModel myDB]deleteFromTable:@"teams" withData:nil];
 	NSArray* tournaments = [[DatabaseModel myDB]getArrayFrom:@"tournaments" whereData:nil sortFieldAsc:@""];
 	[tournaments enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -58,13 +62,19 @@ const NSInteger maxTurn = 16;
         NSInteger teamCount = [[result objectForKey:@"TEAMCOUNT"]integerValue];
         
         for (NSInteger i = 0; i < teamCount; i++) {
-        	NSMutableDictionary* newTeam = [NSMutableDictionary dictionary];
+            NSMutableDictionary* newTeam = [NSMutableDictionary dictionary];
         	NSString* teamName = [TeamNames objectAtIndex:arc4random() % [TeamNames count]];
         	if (arc4random() % 5 < 3) {
         		teamName = [NSString stringWithFormat:@"%@ %@",teamName, [TeamNamesSuffix objectAtIndex:arc4random() % [TeamNamesSuffix count]]];
         	}
-            [newTeam setObject:teamName forKey:@"NAME"];
-            [newTeam setObject:[obj objectForKey:@"TOURNAMENTID"] forKey:@"TOURNAMENTID"];
+            if ([[obj objectForKey:@"TOURNAMENTID"] integerValue] == myLeague && i == 0) {
+                [newTeam setObject:myTeamName forKey:@"NAME"];
+                [newTeam setObject:[obj objectForKey:@"TOURNAMENTID"] forKey:@"TOURNAMENTID"];
+                [newTeam setObject:@0 forKey:@"TEAMID"];
+            } else {
+                [newTeam setObject:teamName forKey:@"NAME"];
+                [newTeam setObject:[obj objectForKey:@"TOURNAMENTID"] forKey:@"TOURNAMENTID"];
+            }
             [[DatabaseModel myDB]insertDatabaseTable:@"teams" withData:newTeam];
         }
     }];

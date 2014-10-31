@@ -34,6 +34,10 @@ Factors
 @property Scout* scout2;
 @property Scout* scout3;
 @property Scout* scout4;
+
+- (NSArray*) getPlayerArrayForScout:(Scout*) scout Type:(NSString*) type;
+
+
 @end
 
 @interface Scout : NSObject
