@@ -63,10 +63,16 @@ const NSInteger maxTurn = 16;
         
         for (NSInteger i = 0; i < teamCount; i++) {
             NSMutableDictionary* newTeam = [NSMutableDictionary dictionary];
-        	NSString* teamName = [TeamNames objectAtIndex:arc4random() % [TeamNames count]];
-        	if (arc4random() % 5 < 3) {
-        		teamName = [NSString stringWithFormat:@"%@ %@",teamName, [TeamNamesSuffix objectAtIndex:arc4random() % [TeamNamesSuffix count]]];
-        	}
+        	
+            NSString* teamName;
+            do {
+                teamName = [TeamNames objectAtIndex:arc4random() % [TeamNames count]];
+                if (arc4random() % 5 < 3) {
+                    teamName = [NSString stringWithFormat:@"%@ %@",teamName, [TeamNamesSuffix objectAtIndex:arc4random() % [TeamNamesSuffix count]]];
+                }
+            } while ([[[DatabaseModel myDB]getArrayFrom:@"teams" withSelectField:@"TEAMID" whereKeyField:@"NAME" hasKey:teamName]count] == 0);
+
+            
             if ([[obj objectForKey:@"TOURNAMENTID"] integerValue] == myLeague && i == 0) {
                 [newTeam setObject:myTeamName forKey:@"NAME"];
                 [newTeam setObject:[obj objectForKey:@"TOURNAMENTID"] forKey:@"TOURNAMENTID"];

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 @class Team;
+@class  Fixture;
 @interface Tournament : NSObject
 @property NSString* tournamentName;
 @property NSInteger tournamentID;
@@ -28,6 +29,7 @@
 - (NSArray*) getLeagueTableForSeason:(NSInteger)season;
 - (void) getPromotionAndRelegationForSeason:(NSInteger) season;
 
+- (Fixture*) getMatchForTeamID:(NSInteger) teamID Date:(NSInteger) date;
 @end
 
 
@@ -62,7 +64,8 @@
 @property NSInteger AWAYPENALTIES;
 @property NSInteger HOMELOGJSON;
 @property NSInteger AWAYLOGJSON;
+@property NSInteger PLAYED;
 
 -(void) updateFixtureInDatabase;
-
+- (id) initWithMatchID:(NSInteger) thisMatchID;
 @end

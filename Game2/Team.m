@@ -13,6 +13,7 @@
 
 @implementation Team
 @synthesize TeamID;
+@synthesize Name;
 @synthesize PlayerList;
 @synthesize PlayerIDList;
 @synthesize PlayerDictionary;

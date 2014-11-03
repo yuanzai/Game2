@@ -9,6 +9,7 @@
 #import "GameModel.h"
 #import "Fixture.h"
 #import "DatabaseModel.h"
+#import "LineUp.h"
 
 @implementation GameModel
 @synthesize myData;
@@ -84,6 +85,7 @@
         [self startSeason];
     }
     myData.week++;
+    [myData setNextMatch];
 }
 
 - (void) enterPreTask
@@ -109,7 +111,11 @@
 
 - (void) enterPreGame
 {
+    myData.currentLineup = (LineUp*) myData.myTeam;
+    myData.currentLineup.currentTactic = myData.currentTactic;
+    [myData.currentLineup populateMatchDayForm];
     
+    myData.nextMatchOpponents = (LineUp*) myData.nextMatchOpponents;
 }
 
 - (void) enterGame
@@ -134,6 +140,7 @@
         [thisTournament createFixturesForSeason:myData.season];
     }];
     
+    [myData setCurrentLeagueTournament];
     
 }
 

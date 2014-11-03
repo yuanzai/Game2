@@ -53,6 +53,7 @@ typedef struct PositionSide PositionSide;
 - (NSArray*) getOutFieldPlayers;
 - (NSArray*) getAllPlayers;
 
+
 - (id) initWithTacticID:(NSInteger) InputID;
 - (BOOL) populatePlayer:(Player*) player Position:(PositionChoices)position Side:(SideChoices)side;
 

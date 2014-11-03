@@ -19,17 +19,6 @@ typedef enum {
 } VenueType;
 
 @interface MatchPlayer : Player
-{
-    NSMutableDictionary* matchStats;
-    double PosCoeff;
-    struct PositionSide currentPositionSide;
-    BOOL yellow;
-    BOOL red;
-    double att;
-    double def;
-    
-    BOOL hasPlayed;
-}
 @property NSMutableDictionary* matchStats;
 @property double PosCoeff;
 @property struct PositionSide currentPositionSide;
@@ -38,32 +27,16 @@ typedef enum {
 @property double att;
 @property double def;
 @property BOOL hasPlayed;
+//@property Player* player;
 
-
+- (id) initWithPlayer:(Player*) thisPlayer;
 - (void) populateMatchStats;
 - (double) getMatchStatWithBaseStat:(double)stat Consistency:(double) consistency;
 @end
 
 @interface LineUp : Team
-{
-    Tactic* currentTactic;
-    VenueType Location;
-    double attTeam;
-    double defTeam;
-    
-    NSInteger score;
-    NSInteger events;
-    NSInteger shots;
-    NSInteger onTarget;
-    NSInteger yellowCard;
-    NSInteger redCard;
-    NSInteger foul;
-    NSInteger offside;
-    
-    NSMutableArray* matchLog;
-}
-
 @property Tactic* currentTactic;
+@property Team* team;
 @property VenueType Location;
 @property double attTeam;
 @property double defTeam;

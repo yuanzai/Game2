@@ -29,7 +29,6 @@
 
 @property Fixture* thisFixture;
 @property NSInteger matchMinute;
-//@property EventProbabilityModel *thisProbModel;
 @property BOOL isPaused;
 @property BOOL hasExtraTime;
 @property BOOL isOver;
@@ -43,7 +42,6 @@
 
 - (void) pauseMatch;
 - (void) resumeMatch;
-//- (void) startMatchWithTarget:(id) target Timer:(SEL) timerMethod Printer:(SEL) printMethod;
 - (void) upPlayerStats;
 
 - (BOOL) subIn:(MatchPlayer*) sub ForPlayer:(MatchPlayer*) player;

@@ -104,6 +104,7 @@
              [teamsArray objectAtIndex:[[awayList objectAtIndex:k]integerValue]],@"AWAYTEAM",
              @0,@"HASET",
              @0,@"HASPENALTIES",
+             @0,@"PLAYED",
              nil];
             [[DatabaseModel myDB]insertDatabaseTable:@"fixtures" withData:data];
             k++;
@@ -154,7 +155,7 @@
     return [[DatabaseModel myDB]getArrayFrom:@"fixtures" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInteger:tournamentID],@"TOURNAMENTID", [NSNumber numberWithInteger:season],@"SEASON", nil] sortFieldAsc:@"DATE"];
 }
 
-- (NSArray*) getFixturesForTeam:(Team*) team ForSeason:(NSInteger)season;
+- (NSArray*) getFixturesForTeam:(Team*) team ForSeason:(NSInteger)season Remaining:(BOOL) remainingOnly;
 {
     NSArray* homeArray = [[DatabaseModel myDB]getArrayFrom:@"fixtures" whereData:
             [[NSDictionary alloc]initWithObjectsAndKeys:
@@ -166,7 +167,7 @@
                           [[NSDictionary alloc]initWithObjectsAndKeys:
                            [NSNumber numberWithInteger:tournamentID],@"TOURNAMENTID",
                            [NSNumber numberWithInteger:season],@"SEASON",
-                           [NSNumber numberWithInteger:team.TeamID],@"HOMETEAM", nil] sortFieldAsc:@"DATE"];
+                           [NSNumber numberWithInteger:team.TeamID],@"AWAYTEAM", nil] sortFieldAsc:@"DATE"];
     
     NSMutableArray* bothArray = [[NSMutableArray alloc] initWithArray:homeArray];
     [bothArray addObjectsFromArray:awayArray];
@@ -192,18 +193,62 @@
 {
     return [[DatabaseModel myDB]getLeagueTableForTournamentID:tournamentID Season:season];
 }
+
+- (Fixture*) getMatchForTeamID:(NSInteger) teamID Date:(NSInteger) date
+{
+    NSDictionary* result = [[DatabaseModel myDB]
+                            getResultDictionaryForTable:@"fixtures"
+                            withDictionary:[[NSDictionary alloc]
+                                            initWithObjectsAndKeys:@(teamID),@"HOMETEAM",
+                                            @(date),@"DATE",
+                                            nil]];
+    if (!result)
+        result =[[DatabaseModel myDB]
+                 getResultDictionaryForTable:@"fixtures"
+                 withDictionary:[[NSDictionary alloc]
+                                 initWithObjectsAndKeys:@(teamID),@"AWAYTEAM",
+                                 @(date),@"DATE",
+                                 nil]];
+    NSInteger matchID = [[result objectForKey:@"MATCHID"]integerValue];
+    return [[Fixture alloc]initWithMatchID:matchID];
+}
 @end
 
 @implementation Fixture
-@synthesize hasPenalties;
-@synthesize hasExtraTime;
-@synthesize thisTournement;
-@synthesize Week;
-@synthesize team1ID;
-@synthesize team2ID;
-@synthesize team1;
-@synthesize team2;
+@synthesize MATCHID;
+@synthesize TOURNAMENTID;
+@synthesize SEASON;
+@synthesize DATE;
+@synthesize ROUND;
+@synthesize HOMETEAM;
+@synthesize AWAYTEAM;
+@synthesize HOMESCORE;
+@synthesize AWAYSCORE;
+@synthesize HOMEYELLOW;
+@synthesize HOMERED;
+@synthesize AWAYYELLOW;
+@synthesize AWAYRED;
+@synthesize HASET;
+@synthesize PLAYEDET;
+@synthesize HASPENALTIES;
+@synthesize PLAYEDPENALTIES;
+@synthesize HOMEPENALTIES;
+@synthesize AWAYPENALTIES;
+@synthesize HOMELOGJSON;
+@synthesize AWAYLOGJSON;
+@synthesize PLAYED;
 
+- (id) initWithMatchID:(NSInteger) thisMatchID
+{
+    self = [super init];
+    if (self) {
+        NSDictionary* result = [[DatabaseModel myDB]getResultDictionaryForTable:@"fixtures" withKeyField:@"MATCHID" withKey:thisMatchID];
+        [result enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            [self setValuesForKeysWithDictionary:result];
+        }];
+    }
+    return self;
+}
 
 //TODO: update fixture
 -(void) updateFixtureInDatabase

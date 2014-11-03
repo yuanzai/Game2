@@ -14,6 +14,15 @@
 @synthesize matchStats, PosCoeff, currentPositionSide, yellow, red, att, def, hasPlayed;
 
 
+- (id)initWithPlayer:(Player*) thisPlayer;
+{
+    self = [super init];
+    if (self) {
+        self = (MatchPlayer*) thisPlayer;
+    } return self;
+}
+
+
 - (void) populateMatchStats
 {
     if (!matchStats)
@@ -134,6 +143,8 @@
     return sum;
 }
 
+
+
 - (NSString*) getPositionString:(PositionSide) ps
 {
     if (ps.position == GKPosition)
@@ -173,6 +184,8 @@
 @implementation LineUp
 @synthesize currentTactic;
 @synthesize Location;
+@synthesize team;
+
 @synthesize attTeam;
 @synthesize defTeam;
 
@@ -187,10 +200,50 @@
 
 @synthesize matchLog;
 
+- (void) initWithTeam:(Team*) thisTeam
+{
+    self.team = thisTeam;
+}
+
 //TODO: Set Pre Match Form
 - (void) populateMatchDayForm
 {
+    [team.PlayerList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        Player* thisPlayer = (Player*) obj;
+        NSInteger r = arc4random() % 10;
+        if (thisPlayer.Form == 0) {
+            if (r < 3) {
+                thisPlayer.Form = -1;
+            } else if (r <6) {
+                thisPlayer.Form = 1;
+            }
+        } else if (abs(thisPlayer.Form) == 1) {
+            if (r < 3) {
+                thisPlayer.Form = 0;
+            } else if (r <6) {
+                thisPlayer.Form *= 2;
+            }
+        } else if (abs(thisPlayer.Form) == 2) {
+            if (r < 4) {
+                thisPlayer.Form /= 2;
+            }
+        }
+    }];
 }
+
+- (BOOL) validateTactic {
+    
+    __block BOOL isValid = YES;
+    [[currentTactic getAllPlayers]enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        Player* thisPlayer = (Player*) obj;
+        if (thisPlayer.Condition <= 0) {
+            isValid = NO;
+            *stop = YES;
+        }
+            }];
+    return isValid;
+}
+
 
 - (void) populateAllPlayersStats{
     [[currentTactic getAllPlayers] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {

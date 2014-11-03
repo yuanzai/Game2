@@ -10,16 +10,10 @@
 
 @class Player;
 @class Tournament;
-@interface Team : NSObject{
-    NSInteger TeamID;
-    NSString* Name;
-    NSMutableArray* PlayerIDList;
-    NSMutableArray* PlayerList;
-    NSMutableDictionary* PlayerDictionary;
-    NSMutableDictionary* tableData;
-    BOOL isSinglePlayer;
-}
+@interface Team : NSObject
+
 @property NSInteger TeamID;
+@property NSString* Name;
 @property NSMutableArray* PlayerList;
 @property NSMutableArray* PlayerIDList;
 @property NSMutableDictionary* PlayerDictionary;
