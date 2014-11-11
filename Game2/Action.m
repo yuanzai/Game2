@@ -43,48 +43,13 @@ const PositionSide PSNil = {PositionCount, SideCount};
 
 - (void) setActionProperties
 {
-    NSDictionary* record;
+    
     
     actionCount = previousAction.actionCount + 1;
     [self setActionFromPrevious];
     
-    if (!AttackType)
-        [NSException raise:@"No AttackType" format:@"No AttackType"];
-    
-    if ([self isSetPiecePenaltyCorner:AttackType])
-        [self getSetPieceTakers];
-    
-    attQuotient = [self getExecutionQualityWithPlayer:FromPlayer ExecutionType:AttackType];
-    
-    record = [self getProbResultFromTable:@"ToZoneFlankZF_ZFAtt" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:NO Team:thisTeam PositionSideToExclude:PSNil];
-    ToZoneFlank = [self getZoneFlankFromDictionary:record];
-    
-    record = [self getProbResultFromTable:@"ToPlayerToZF_PS_dy" ZoneFlank:ToZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:FromPositionSide];
-    ToPositionSide = [self getPositionSideFromDictionary:record];
-    ToPlayer = [thisTeam.currentTactic getPlayerAtPositionSide:ToPositionSide];
-    
-    OppKeeper = oppTeam.currentTactic.GoalKeeper;
-    
-    if (![self isSetPiecePenaltyCorner:AttackType]) {
-        if (FromZoneFlank.zone != GK) {
-            record = [self getProbResultFromTable:@"DefenseType_ZFAtt_dy" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
-            DefenseType = [record objectForKey:@"OUTDEFENSETYPE"];
-        }
-        record = [self getProbResultFromTable:@"OppPlayerPS_PS_dy" ZoneFlank:ZFNil PositionSide:FromPositionSide AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:oppTeam PositionSideToExclude:PSNil];
-        OppPositionSide = [self getPositionSideFromDictionary:record];
-        
-        OppPlayer = [oppTeam.currentTactic getPlayerAtPositionSide:OppPositionSide];
-        
-        if ([DefenseType isEqualToString:@"Caught"])
-            OppPlayer = OppKeeper;
-        defQuotient = [self getExecutionQualityWithPlayer:OppPlayer ExecutionType:DefenseType];
-    }
-
-    if (![self isGoalAttempt:AttackType]) {
-        record = [self getProbResultFromTable:@"NextAttackType_ZFAtt" ZoneFlank:ToZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:NO Team:thisTeam PositionSideToExclude:PSNil];
-        NextAttack = [record objectForKey:@"OUTATTACKTYPE"];
-    }
-
+    [self setOffense];
+    [self setDefense];
     [self getResult];
     [self setCommentary];
     
@@ -117,6 +82,59 @@ const PositionSide PSNil = {PositionCount, SideCount};
     }
 }
 
+- (void) setOffense 
+{
+    NSDictionary* record;
+    
+    if (!AttackType)
+        [NSException raise:@"No AttackType" format:@"No AttackType"];
+    
+    if ([self isSetPiecePenaltyCorner:AttackType])
+        [self getSetPieceTakers];
+    
+    attQuotient = [self getExecutionQualityWithPlayer:FromPlayer ExecutionType:AttackType];
+    
+    if (![self isGoalAttempt:AttackType]) {
+        record = [self getProbResultFromTable:@"ToZoneFlankZF_ZFAtt" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:NO Team:thisTeam PositionSideToExclude:PSNil];
+        ToZoneFlank = [self getZoneFlankFromDictionary:record];
+    
+        record = [self getProbResultFromTable:@"ToPlayerToZF_PS_dy" ZoneFlank:ToZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:FromPositionSide];
+        ToPositionSide = [self getPositionSideFromDictionary:record];
+        ToPlayer = [thisTeam.currentTactic getPlayerAtPositionSide:ToPositionSide];
+        
+        record = [self getProbResultFromTable:@"NextAttackType_ZFAtt" ZoneFlank:ToZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:NO Team:thisTeam PositionSideToExclude:PSNil];
+        NextAttack = [record objectForKey:@"OUTATTACKTYPE"];
+    }
+}
+
+- (void) setDefense 
+{
+    NSDictionary* record;
+    OppKeeper = oppTeam.currentTactic.GoalKeeper;
+    
+    if (![self isSetPieceShot:AttackType]) {
+        
+        record = [self getProbResultFromTable:@"DefenseType_ZFAtt_dy" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
+        DefenseType = [record objectForKey:@"OUTDEFENSETYPE"];
+        
+        record = [self getProbResultFromTable:@"OppPlayerPS_PS_dy" ZoneFlank:ZFNil PositionSide:FromPositionSide AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:oppTeam PositionSideToExclude:PSNil];
+        OppPositionSide = [self getPositionSideFromDictionary:record];
+        OppPlayer = [oppTeam.currentTactic getPlayerAtPositionSide:OppPositionSide];
+        
+        if ([DefenseType isEqualToString:@"Caught"])
+            OppPlayer = OppKeeper;
+    } else {
+        DefenseType = @"Save";
+        OppPlayer = OppKeeper;
+    }
+    if (!DefenseType)
+        [NSException raise:@"No DefenseType" format:@"No DefenseType"];
+    if (!OppPlayer)
+        [NSException raise:@"No OppPlayer" format:@"No OppPlayer"];
+
+    defQuotient = [self getExecutionQualityWithPlayer:OppPlayer ExecutionType:DefenseType];
+}
+
 - (double) getExecutionQualityWithPlayer:(Player*) thisPlayer ExecutionType:(NSString*) type
 {
 
@@ -124,9 +142,9 @@ const PositionSide PSNil = {PositionCount, SideCount};
     __block double TopQ;
     __block double StatQ;
     
-    NSDictionary* statGrid = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"SGrid" withDictionary:[[NSMutableDictionary alloc]initWithObjectsAndKeys:type,@"TYPE",@"COEFF",@"STATTYPE", nil]];
+    NSDictionary* statGrid = [[DatabaseModel myDB]getResultDictionaryForTable:@"SGrid" withDictionary:[[NSMutableDictionary alloc]initWithObjectsAndKeys:type,@"TYPE",@"COEFF",@"STATTYPE", nil]];
     
-    NSDictionary* topStatGrid = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"SGrid" withDictionary:[[NSMutableDictionary alloc]initWithObjectsAndKeys:type,@"TYPE",@"TOP",@"STATTYPE", nil]];
+    NSDictionary* topStatGrid = [[DatabaseModel myDB]getResultDictionaryForTable:@"SGrid" withDictionary:[[NSMutableDictionary alloc]initWithObjectsAndKeys:type,@"TYPE",@"TOP",@"STATTYPE", nil]];
     
     __block int topStatRandom = arc4random() % 6;
     
@@ -170,7 +188,7 @@ const PositionSide PSNil = {PositionCount, SideCount};
 
 - (BOOL) isOffSideWithFromZone:(ZoneFlank) fromZF ToZone:(ZoneFlank) toZF AttackType: (NSString*) type
 {
-    NSDictionary* record = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"Offside_ZZAtt" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@"INZONE",[self getZoneString:fromZF],@"OUTZONE",[self getZoneString:toZF],@"INATTACKTYPE",type, nil]];
+    NSDictionary* record = [[DatabaseModel myDB]getResultDictionaryForTable:@"Offside_ZZAtt" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@"INZONE",[self getZoneString:fromZF],@"OUTZONE",[self getZoneString:toZF],@"INATTACKTYPE",type, nil]];
     if (record) {
         if ([[record objectForKey:@"PROB"]integerValue] > (arc4random() % 10000))
             return YES;
@@ -180,7 +198,7 @@ const PositionSide PSNil = {PositionCount, SideCount};
 
 - (void) getFoulResult {
     
-    NSDictionary* record = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"FoulGrid" withDictionary:
+    NSDictionary* record = [[DatabaseModel myDB]getResultDictionaryForTable:@"FoulGrid" withDictionary:
                             [[NSDictionary alloc]initWithObjectsAndKeys:
                              @"DEF", @"FOULSIDE",
                              AttackType, @"ATTACKTYPE",
@@ -217,7 +235,7 @@ const PositionSide PSNil = {PositionCount, SideCount};
         return;
     }
     
-    record = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"FoulGrid" withDictionary:
+    record = [[DatabaseModel myDB]getResultDictionaryForTable:@"FoulGrid" withDictionary:
               [[NSDictionary alloc]initWithObjectsAndKeys:
                @"ATT", @"FOULSIDE",
                AttackType, @"ATTACKTYPE",
@@ -305,6 +323,13 @@ const PositionSide PSNil = {PositionCount, SideCount};
             [type isEqualToString:@"FreekickCross"]||
             [type isEqualToString:@"FreekickShot"]||
             [type isEqualToString:@"FreekickLongShot"]||
+            [type isEqualToString:@"Corner"]||
+            [type isEqualToString:@"Penalty"]);
+}
+
+- (BOOL) isSetPieceShot:(NSString*) type {
+    return ([type isEqualToString:@"FreekickShot"]||
+            [type isEqualToString:@"FreekickLongShot"]||
             [type isEqualToString:@"Penalty"]);
 }
 
@@ -344,7 +369,7 @@ const PositionSide PSNil = {PositionCount, SideCount};
 - (void) getNonGoalAttemptResult
 {
     NSDictionary* record;
-    record = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"AttackOutcome_ZFAtt" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@"INZONE",[self getZoneString:FromZoneFlank],@"INFLANK",[self getFlankString:FromZoneFlank],@"INATTACKTYPE",AttackType, nil]];
+    record = [[DatabaseModel myDB]getResultDictionaryForTable:@"AttackOutcome_ZFAtt" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@"INZONE",[self getZoneString:FromZoneFlank],@"INFLANK",[self getFlankString:FromZoneFlank],@"INATTACKTYPE",AttackType, nil]];
     NSInteger prob = 0;
     if (record)
         prob = [[record objectForKey:@"PROB"]integerValue];
