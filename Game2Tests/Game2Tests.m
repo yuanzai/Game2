@@ -11,6 +11,9 @@
 #import "DatabaseModel.h"
 #import "GameModel.h"
 #import "Scouting.h"
+#import "Team.h"
+#import "LineUp.h"
+
 @interface Game2Tests : XCTestCase
 
 @end
@@ -30,36 +33,8 @@
     NSLog(@"%@",[[[DatabaseModel alloc]init]databasePath]);
 }
 
-- (void)testDatabase
-{
-    NSArray* players = [[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"DISPLAYNAME" whereKeyField:@"PLAYERID" hasKey:@2];
-    XCTAssertTrue([players count] == 1,@"get 1 player in players table");
 
-}
 
-- (void)testGenerate
-{
-    [[GameModel myGame]newWithGameID:1];
-    
-    
-    Generator* newGenerator = [[Generator alloc]init];
-    [newGenerator generateNewGame];
-    [[DatabaseModel myDB]deleteFromTable:@"fixtures" withData:nil];
-
-    [[GameModel myGame]startSeason];
-}
-
-- (void) testScout {
-    Scout* newScout = [[Scout alloc]initWithScoutID:0];
-    NSLog(@"%@",newScout.NAME);
-}
-
-- (void)testARC4random
-{
-    for (int i = 0; i < 100; i++){
-        NSInteger k = arc4random() % 10000;
-    }
-}
 - (void)testExample
 {
     //XCTFail(@"No implementation for \"%s\"", __PRETTY_FUNCTION__);

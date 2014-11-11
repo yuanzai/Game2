@@ -8,6 +8,7 @@
 
 #import "Tactic.h"
 #import "DatabaseModel.h"
+#import "Player.h"
 
 @implementation Tactic
 @synthesize TacticID;
@@ -18,10 +19,11 @@
 {
     self = [super init];
     if (self) {
+
         TacticID = InputID;
-        NSArray* formationData = [[[DatabaseModel alloc]init]getArrayFrom:@"tactics" whereKeyField:@"TacticID" hasKey:[NSNumber numberWithInteger:InputID] sortFieldAsc:@""];
+        NSArray* formationData = [[DatabaseModel myDB]getArrayFrom:@"tactics" whereKeyField:@"TACTICID" hasKey:[NSNumber numberWithInteger:InputID] sortFieldAsc:@""];
         [formationData enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            formationArray[[[obj objectForKey:@"PositionVal"]integerValue]][[[obj objectForKey:@"SideVal"]integerValue]] = YES;
+            formationArray[[[obj objectForKey:@"POSITIONVAL"]integerValue]][[[obj objectForKey:@"SIDEVAL"]integerValue]] = YES;
         }];
     } return self;
 }
@@ -46,23 +48,6 @@
     return result;
 }
 
-- (BOOL) populatePlayer:(Player*) player Position:(PositionChoices)position Side:(SideChoices)side
-{
-    if (!formationArray[position][side])
-        return NO;
-    playerArray[position][side] = player;
-    return YES;
-}
-
-- (Player*) getPlayerAtPosition:(PositionChoices)position Side:(SideChoices)side
-{
-    if (!formationArray[position][side]) {
-        playerArray[position][side] = nil;
-        return nil;
-    }
-    return playerArray[position][side];
-}
-
 - (Player*) getPlayerAtPositionSide:(PositionSide) ps
 {
     if (!formationArray[ps.position][ps.side]) {
@@ -74,25 +59,82 @@
 
 - (BOOL) hasPlayerAtPositionSide:(PositionSide) ps
 {
-    return formationArray[ps.position][ps.side];
+    if (!playerArray[ps.position][ps.side])
+        return NO;
+    return YES;
 }
 
 
-- (BOOL) movePlayerAtPosition:(PositionChoices)fromposition AtSide:(SideChoices)fromside ToPosition:(PositionChoices)toposition ToSide:(SideChoices)toside
+- (BOOL) populatePlayer:(Player*) player PositionSide:(PositionSide) ps ForceSwap:(BOOL) swap
 {
-    if (!formationArray[fromposition][fromside] && !formationArray[toposition][toside])
+    if (!formationArray[ps.position][ps.side])
+        return NO;
+    if (playerArray[ps.position][ps.side].PlayerID == player.PlayerID)
+        return YES;
+    
+    for (int i = 0; i < 5;i++) {
+        for (int j = 0; j < 5;j++) {
+            if (playerArray[i][j]) {
+                if (playerArray[i][j].PlayerID == player.PlayerID) {
+                    if (swap) {
+                        return [self movePlayerAtPositionSide:(PositionSide){i,j} ToPositionSide:ps];
+                    } else {
+                        return NO;
+                    }
+                }
+            }
+        }
+    };
+
+    playerArray[ps.position][ps.side] = player;
+    return YES;
+}
+
+- (BOOL) removePlayerAtPositionSide:(PositionSide) ps
+{
+    if (!formationArray[ps.position][ps.side])
+        return NO;
+    playerArray[ps.position][ps.side] = nil;
+    return YES;
+}
+
+- (BOOL) movePlayerAtPositionSide:(PositionSide) fromPS ToPositionSide:(PositionSide) toPS
+{
+    if (!formationArray[fromPS.position][fromPS.side] && !formationArray[toPS.position][toPS.side])
         return NO;
 
     Player* temp;
     BOOL tempBool;
-    temp = playerArray[fromposition][fromside];
-    playerArray[fromposition][fromside] = playerArray[toposition][toside];
-    playerArray[toposition][toside] = temp;
+    temp = playerArray[fromPS.position][fromPS.side];
+    playerArray[fromPS.position][fromPS.side] = playerArray[toPS.position][toPS.side];
+    playerArray[toPS.position][toPS.side] = temp;
     
-    tempBool = formationArray[fromposition][fromside];
-    formationArray[fromposition][fromside] = formationArray[toposition][toside];
-    formationArray[toposition][toside] = tempBool;
+    tempBool = formationArray[fromPS.position][fromPS.side];
+    formationArray[fromPS.position][fromPS.side] = formationArray[toPS.position][toPS.side];
+    formationArray[toPS.position][toPS.side] = tempBool;
     return YES;
+}
+
+- (BOOL) isFormationFilled
+{
+    for (int i = 0; i < 5;i++) {
+        for (int j = 0; j < 5;j++) {
+            if (formationArray[i][j]){
+                PositionSide ps;
+                ps.side = i;
+                ps.position = j;
+                if (![self hasPlayerAtPositionSide:ps]){
+                    return NO;
+                }
+            }
+        }
+    };
+    return YES;
+}
+
+- (BOOL) hasPositionAtPositionSide: (PositionSide) ps
+{
+    return formationArray[ps.position][ps.side];
 }
 
 - (BOOL) updateTacticsInDatabase
@@ -100,4 +142,6 @@
     //TODO
     return YES;
 }
+
+
 @end

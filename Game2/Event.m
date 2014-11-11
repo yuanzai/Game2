@@ -28,6 +28,8 @@
     retainTeam = NO;
     [self setEventOwnerTeam1:team1 Team2:team2];
     [self setCommentary];
+    NSLog(@"Minute %i",matchMinute);
+    NSLog(@"%@",eventCommentary);
 }
 
 -(void) setEventOwnerTeam1:(LineUp*) team1 Team2:(LineUp*) team2
@@ -77,6 +79,8 @@
 
 - (void) setCommentary {
     
+    eventCommentary = [NSMutableArray array];
+
     if (!ownTeam) {
         eventCommentary = nil;
         eventOutcome = nil;
@@ -93,8 +97,9 @@
         
         [thisAction setActionProperties];
         previousAction = thisAction;
-        //eventOutcome = thisAction.result;
-        
+
+        eventCount++;
+
         //actions to continue
         if (thisAction.result == Success) {
             [eventCommentary addObject:thisAction.Commentary];
@@ -142,7 +147,6 @@
             break;
         }
         
-        eventCount++;
     }
 }
 @end

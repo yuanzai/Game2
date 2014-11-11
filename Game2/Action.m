@@ -7,8 +7,6 @@
 //
 
 #import "Action.h"
-#import "GlobalVariableModel.h"
-#import "DatabaseModel.h"
 
 @implementation Action
 //ATTACKERS
@@ -50,6 +48,9 @@ const PositionSide PSNil = {PositionCount, SideCount};
     actionCount = previousAction.actionCount + 1;
     [self setActionFromPrevious];
     
+    if (!AttackType)
+        [NSException raise:@"No AttackType" format:@"No AttackType"];
+    
     if ([self isSetPiecePenaltyCorner:AttackType])
         [self getSetPieceTakers];
     
@@ -58,30 +59,32 @@ const PositionSide PSNil = {PositionCount, SideCount};
     record = [self getProbResultFromTable:@"ToZoneFlankZF_ZFAtt" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:NO Team:thisTeam PositionSideToExclude:PSNil];
     ToZoneFlank = [self getZoneFlankFromDictionary:record];
     
-    record = [self getProbResultFromTable:@"ToPlayerToZF_PS_dy" ZoneFlank:ToZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:FromPositionSide];
+    record = [self getProbResultFromTable:@"ToPlayerToZF_PS_dy" ZoneFlank:ToZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:FromPositionSide];
     ToPositionSide = [self getPositionSideFromDictionary:record];
-    ToPlayer = (MatchPlayer*) [thisTeam.currentTactic getPlayerAtPositionSide:ToPositionSide];
+    ToPlayer = [thisTeam.currentTactic getPlayerAtPositionSide:ToPositionSide];
     
-    OppKeeper = (MatchPlayer*) oppTeam.currentTactic.GoalKeeper;
+    OppKeeper = oppTeam.currentTactic.GoalKeeper;
     
     if (![self isSetPiecePenaltyCorner:AttackType]) {
-
-        record = [self getProbResultFromTable:@"DefenseType_ZFAtt_dy" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
-        
-        DefenseType = [record objectForKey:@"OUTDEFENSETYPE"];
+        if (FromZoneFlank.zone != GK) {
+            record = [self getProbResultFromTable:@"DefenseType_ZFAtt_dy" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
+            DefenseType = [record objectForKey:@"OUTDEFENSETYPE"];
+        }
         record = [self getProbResultFromTable:@"OppPlayerPS_PS_dy" ZoneFlank:ZFNil PositionSide:FromPositionSide AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:oppTeam PositionSideToExclude:PSNil];
         OppPositionSide = [self getPositionSideFromDictionary:record];
         
-        OppPlayer = (MatchPlayer*) [oppTeam.currentTactic getPlayerAtPositionSide:OppPositionSide];
+        OppPlayer = [oppTeam.currentTactic getPlayerAtPositionSide:OppPositionSide];
         
         if ([DefenseType isEqualToString:@"Caught"])
             OppPlayer = OppKeeper;
         defQuotient = [self getExecutionQualityWithPlayer:OppPlayer ExecutionType:DefenseType];
     }
-    
-    record = [self getProbResultFromTable:@"NextAttackType_ZFAtt" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:NO Team:thisTeam PositionSideToExclude:PSNil];
-    
-    NextAttack = [record objectForKey:@"OUTATTACKTYPE"];
+
+    if (![self isGoalAttempt:AttackType]) {
+        record = [self getProbResultFromTable:@"NextAttackType_ZFAtt" ZoneFlank:ToZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:NO Team:thisTeam PositionSideToExclude:PSNil];
+        NextAttack = [record objectForKey:@"OUTATTACKTYPE"];
+    }
+
     [self getResult];
     [self setCommentary];
     
@@ -99,12 +102,12 @@ const PositionSide PSNil = {PositionCount, SideCount};
         if (FromZoneFlank.flank == GKFlank) {
             FromPositionSide.position = GKPosition;
             FromPositionSide.side = GKSide;
-            FromPlayer = (MatchPlayer*) thisTeam.currentTactic.GoalKeeper;
+            FromPlayer = thisTeam.currentTactic.GoalKeeper;
             
         } else {
-            record = [self getProbResultFromTable:@"ActionStartPS_PS_dy" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
+            record = [self getProbResultFromTable:@"ActionStartPS_PS" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
             FromPositionSide = [self getPositionSideFromDictionary:record];
-            FromPlayer = (MatchPlayer*) [thisTeam.currentTactic getPlayerAtPositionSide:FromPositionSide];
+            FromPlayer = [thisTeam.currentTactic getPlayerAtPositionSide:FromPositionSide];
         }
     } else {
         FromZoneFlank = previousAction.ToZoneFlank;
@@ -114,16 +117,16 @@ const PositionSide PSNil = {PositionCount, SideCount};
     }
 }
 
-- (double) getExecutionQualityWithPlayer:(MatchPlayer*) thisPlayer ExecutionType:(NSString*) type
+- (double) getExecutionQualityWithPlayer:(Player*) thisPlayer ExecutionType:(NSString*) type
 {
 
     __block double CoEffQ;
     __block double TopQ;
     __block double StatQ;
     
-    NSDictionary* statGrid = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"SGrid" withDictionary:[[NSMutableDictionary alloc]initWithObjectsAndKeys:@"TYPE",type,@"STATTYPE",@"COEFF", nil]];
+    NSDictionary* statGrid = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"SGrid" withDictionary:[[NSMutableDictionary alloc]initWithObjectsAndKeys:type,@"TYPE",@"COEFF",@"STATTYPE", nil]];
     
-    NSDictionary* topStatGrid = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"TOP" withDictionary:[[NSMutableDictionary alloc]initWithObjectsAndKeys:@"TYPE",type,@"STATTYPE",@"COEFF", nil]];
+    NSDictionary* topStatGrid = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"SGrid" withDictionary:[[NSMutableDictionary alloc]initWithObjectsAndKeys:type,@"TYPE",@"TOP",@"STATTYPE", nil]];
     
     __block int topStatRandom = arc4random() % 6;
     
@@ -258,22 +261,22 @@ const PositionSide PSNil = {PositionCount, SideCount};
         NSDictionary* record = [self getProbResultFromTable:@"FreeKickPlayerPS_ZF_dy" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
         
         FromPositionSide =[self getPositionSideFromTextWithPosition:[record objectForKey:@"OUTPOSITION"] Side:[record objectForKey:@"OUTSIDE"]];
-        FromPlayer = (MatchPlayer*) [thisTeam.currentTactic getPlayerAtPositionSide:FromPositionSide];
+        FromPlayer = [thisTeam.currentTactic getPlayerAtPositionSide:FromPositionSide];
     }
 }
 
-- (MatchPlayer*) getTopPlayerFromArray:(NSArray*) data InStat1:(NSString*) stat1 Stat2:(NSString*) stat2
+- (Player*) getTopPlayerFromArray:(NSArray*) data InStat1:(NSString*) stat1 Stat2:(NSString*) stat2
 {
-    NSArray *sorted = [data sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        double a = [[((MatchPlayer*) obj1).Stats objectForKey:stat1]doubleValue];
+    NSArray *sorted = [data sortedArrayUsingComparator:^NSComparisonResult(Player* obj1, Player* obj2) {
+        double a = [[obj1.Stats objectForKey:stat1]doubleValue];
         if (![stat2 isEqualToString:@""]) {
             a *=100;
-            a +=[[((MatchPlayer*) obj1).Stats objectForKey:stat2]doubleValue];
+            a +=[[obj1.Stats objectForKey:stat2]doubleValue];
         }
-        double b = [[((MatchPlayer*) obj2).Stats objectForKey:stat1]doubleValue];
+        double b = [[obj2.Stats objectForKey:stat1]doubleValue];
         if (![stat2 isEqualToString:@""]) {
             b *=100;
-            b +=[[((MatchPlayer*) obj2).Stats objectForKey:stat2]doubleValue];
+            b +=[[obj2.Stats objectForKey:stat2]doubleValue];
         }
         
         if (a < b) {
@@ -283,7 +286,7 @@ const PositionSide PSNil = {PositionCount, SideCount};
         }
         return NSOrderedSame;
     }];
-    return [sorted objectAtIndex:[sorted count]];
+    return [sorted objectAtIndex:[sorted count]-1];
 }
 
 
@@ -407,14 +410,23 @@ const PositionSide PSNil = {PositionCount, SideCount};
 {
     NSMutableDictionary* whereData = [[NSMutableDictionary alloc]init];
     
-    [whereData setObject:[self getZoneString:zf] forKey:@"INZONE"];
-    [whereData setObject:[self getFlankString:zf] forKey:@"INFLANK"];
-    [whereData setObject:[self getPositionString:ps] forKey:@"INPOSITION"];
-    [whereData setObject:[self getSideString:ps] forKey:@"INSIDE"];
-    [whereData setObject:atype forKey:@"INATTACKTYPE"];
-    [whereData setObject:dtype forKey:@"INDEFENSETYPE"];
-    NSArray* data = [[[DatabaseModel alloc]init]getArrayFrom:tbl whereData:whereData sortFieldAsc:@"PROB"];
-    
+    if (zf.zone != ZoneCount)
+        [whereData setObject:[self getZoneString:zf] forKey:@"INZONE"];
+    if (zf.flank != FlankCount)
+        [whereData setObject:[self getFlankString:zf] forKey:@"INFLANK"];
+    if (ps.position != PositionCount)
+        [whereData setObject:[Structs getPositionString:ps] forKey:@"INPOSITION"];
+    if (ps.side != SideCount)
+        [whereData setObject:[Structs getSideString:ps] forKey:@"INSIDE"];
+    if (![atype isEqual:@""])
+        [whereData setObject:atype forKey:@"INATTACKTYPE"];
+    if (![dtype isEqual:@""])
+        [whereData setObject:dtype forKey:@"INDEFENSETYPE"];
+    NSArray* data = [[DatabaseModel myDB]getArrayFrom:tbl whereData:whereData sortFieldAsc:@"PROB"];
+    if ([data count]==0) {
+        NSLog(@"%@ %@",tbl, whereData);
+        [NSException raise:@"zero data returned" format:@"zero data returned from table %@",tbl ];
+    }
     return [self getProbDictionaryRecordWithArray:data isProbDy:isProbDy Team:team PositionSideToExclude:exPS];
 }
 
@@ -422,31 +434,31 @@ const PositionSide PSNil = {PositionCount, SideCount};
 {
     PositionSide retPositionSide;
     
-    if ([[position uppercaseString] caseInsensitiveCompare:@"DEF"]) {
+    if ([[position uppercaseString] isEqualToString:@"DEF"]) {
         retPositionSide.position = Def;
-    } else if (([[position uppercaseString] caseInsensitiveCompare:@"DM"])) {
+    } else if (([[position uppercaseString] isEqualToString:@"DM"])) {
         retPositionSide.position = DM;
-    } else if ([[position uppercaseString] caseInsensitiveCompare:@"MID"]) {
+    } else if ([[position uppercaseString] isEqualToString:@"MID"]) {
         retPositionSide.position  = Mid;
-    } else if ([[position uppercaseString] caseInsensitiveCompare:@"AM"]) {
+    } else if ([[position uppercaseString] isEqualToString:@"AM"]) {
         retPositionSide.position  = AM;
-    } else if ([[position uppercaseString] caseInsensitiveCompare:@"SC"]) {
+    } else if ([[position uppercaseString] isEqualToString:@"SC"]) {
         retPositionSide.position  = SC;
-    } else if ([[position uppercaseString] caseInsensitiveCompare:@"GK"]) {
+    } else if ([[position uppercaseString] isEqualToString:@"GK"]) {
         retPositionSide.position  = GKPosition;
     }
     
-    if ([[side uppercaseString] caseInsensitiveCompare:@"LEFT"]) {
+    if ([[side uppercaseString] isEqualToString:@"LEFT"]) {
         retPositionSide.side = Left;
-    } else if (([[side uppercaseString] caseInsensitiveCompare:@"LEFTCENTRE"])) {
+    } else if (([[side uppercaseString] isEqualToString:@"LEFTCENTRE"])) {
         retPositionSide.side = LeftCentre;
-    } else if ([[side uppercaseString] caseInsensitiveCompare:@"CENTRE"]) {
+    } else if ([[side uppercaseString] isEqualToString:@"CENTRE"]) {
         retPositionSide.side = Centre;
-    } else if ([[side uppercaseString] caseInsensitiveCompare:@"RIGHTCENTRE"]) {
+    } else if ([[side uppercaseString] isEqualToString:@"RIGHTCENTRE"]) {
         retPositionSide.side = RightCentre;
-    } else if ([[side uppercaseString] caseInsensitiveCompare:@"RIGHT"]) {
+    } else if ([[side uppercaseString] isEqualToString:@"RIGHT"]) {
         retPositionSide.side = Right;
-    } else if ([[side uppercaseString] caseInsensitiveCompare:@"GK"]) {
+    } else if ([[side uppercaseString] isEqualToString:@"GK"]) {
         retPositionSide.side = GKSide;
     }
     return retPositionSide;
@@ -455,23 +467,23 @@ const PositionSide PSNil = {PositionCount, SideCount};
 - (ZoneFlank) getZoneFlankFromTextWithZone:(NSString*)zone Flank:(NSString*) flank
 {
     ZoneFlank retZoneFlank;
-    if ([[zone uppercaseString] caseInsensitiveCompare:@"LEFT"]) {
+    if ([[flank uppercaseString] isEqualToString:@"LEFT"]) {
         retZoneFlank.flank = LeftFlank;
-    } else if (([[zone uppercaseString] caseInsensitiveCompare:@"CENTRE"])) {
+    } else if (([[flank uppercaseString] isEqualToString:@"CENTRE"])) {
         retZoneFlank.flank = CentreFlank;
-    } else if ([[zone uppercaseString] caseInsensitiveCompare:@"RIGHT"]) {
+    } else if ([[flank uppercaseString] isEqualToString:@"RIGHT"]) {
         retZoneFlank.flank = RightFlank;
-    } else if ([[zone uppercaseString] caseInsensitiveCompare:@"GK"]) {
+    } else if ([[flank uppercaseString] isEqualToString:@"GK"]) {
         retZoneFlank.flank = GKFlank;
     }
     
-    if ([[flank uppercaseString] caseInsensitiveCompare:@"OWN"]) {
+    if ([[zone uppercaseString] isEqualToString:@"OWN"]) {
         retZoneFlank.zone = Own;
-    } else if (([[flank uppercaseString] caseInsensitiveCompare:@"OPP"])) {
+    } else if (([[zone uppercaseString] isEqualToString:@"OPP"])) {
         retZoneFlank.zone = Opp;
-    } else if ([[flank uppercaseString] caseInsensitiveCompare:@"AREA"]) {
+    } else if ([[zone uppercaseString] isEqualToString:@"AREA"]) {
         retZoneFlank.zone = Area;
-    } else if ([[flank uppercaseString] caseInsensitiveCompare:@"GK"]) {
+    } else if ([[zone uppercaseString] isEqualToString:@"GK"]) {
         retZoneFlank.zone = GK;
     }
     return retZoneFlank;
@@ -503,39 +515,7 @@ const PositionSide PSNil = {PositionCount, SideCount};
     return @"";
 }
 
-- (NSString*) getPositionString:(PositionSide) ps
-{
-    if (ps.position == GKPosition)
-        return @"GK";
-    if (ps.position == Def)
-        return @"Def";
-    if (ps.position == DM)
-        return @"DM";
-    if (ps.position == Mid)
-        return @"Mid";
-    if (ps.position == AM)
-        return @"AM";
-    if (ps.position == SC)
-        return @"SC";
-    return @"";
-}
 
-- (NSString*) getSideString:(PositionSide) ps
-{
-    if (ps.side == Left)
-        return @"Left";
-    if (ps.side == LeftCentre)
-        return @"LeftCentre";
-    if (ps.side == Centre)
-        return @"Centre";
-    if (ps.side == RightCentre)
-        return @"RightCentre";
-    if (ps.side == Right)
-        return @"Right";
-    if (ps.side == GKSide)
-        return @"GK";
-    return @"";
-}
 
 - (void) setCommentary
 {
@@ -558,7 +538,6 @@ const PositionSide PSNil = {PositionCount, SideCount};
     } else {
         Commentary = [NSString stringWithFormat:@"%@ from %@\n%@ from Player %@",AttackType,FromPlayer.DisplayName,DefenseType,OppPlayer.DisplayName];
     }
-    NSLog(@"%@",Commentary);
 }
 
 
@@ -567,17 +546,23 @@ const PositionSide PSNil = {PositionCount, SideCount};
     
     NSMutableArray* dataNew;
     __block NSDictionary* retDict;
-    double prob = (double) (arc4random() % 10000);
+    __block double prob = (double) (arc4random() % 10000);
     __block double sumProb = 0;
-    
+    __block double cumuProb = 0;
+
     if (isProbDy) {
         dataNew  =[[NSMutableArray alloc]init];
         [data enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            PositionSide ps = [self getPositionSideFromTextWithPosition:[obj objectForKey:@"POSITION"] Side:[obj objectForKey:@"SIDE"]];
-            if ([team.currentTactic hasPlayerAtPositionSide:ps] && ![team.currentTactic hasPlayerAtPositionSide:exPS]) {
-                sumProb += [[obj objectForKey:@"PROB"]doubleValue];
-                [dataNew addObject:obj];
+
+            if ([obj objectForKey:@"OUTPOSITION"] ) {
+                PositionSide ps = [self getPositionSideFromTextWithPosition:[obj objectForKey:@"OUTPOSITION"] Side:[obj objectForKey:@"OUTSIDE"]];
+                if (![team.currentTactic hasPlayerAtPositionSide:ps])
+                    return;
+                if (ps.position == exPS.position && ps.side == exPS.side)
+                    return;
             }
+            sumProb += [[obj objectForKey:@"PROB"]doubleValue];
+            [dataNew addObject:obj];
         }];
     } else {
         dataNew = [[NSMutableArray alloc]initWithArray:data];
@@ -586,7 +571,13 @@ const PositionSide PSNil = {PositionCount, SideCount};
     
     
     [dataNew enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if (([[obj objectForKey:@"PROB"]doubleValue]/sumProb * 10000) > prob){
+        if (isProbDy) {
+            cumuProb += ([[obj objectForKey:@"PROB"]doubleValue]/sumProb * 10000);
+        } else {
+            cumuProb = ([[obj objectForKey:@"PROB"]doubleValue]/sumProb * 10000);
+        }
+        
+        if (cumuProb > prob){
             retDict = (NSDictionary*) obj;
             *stop = YES;
         }

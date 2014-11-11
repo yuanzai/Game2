@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "Tactic.h"
 
 @interface Player : NSObject
 {
@@ -36,6 +36,7 @@
     BOOL isGoalKeeper;
     BOOL isInjured;
 }
+
 @property NSInteger PlayerID;
 @property NSInteger TeamID;
 @property NSString* DisplayName;
@@ -47,6 +48,7 @@
 @property NSInteger Potential;
 @property NSInteger Form;
 @property double Condition;
+@property BOOL isInjured;
 
 @property NSMutableDictionary* PreferredPosition;
 @property NSInteger TrainingID;
@@ -59,9 +61,26 @@
 @property BOOL isGoalKeeper;
 @property double Valuation;
 
+//In Game Stats
+@property NSMutableDictionary* matchStats;
+@property double PosCoeff;
+@property struct PositionSide currentPositionSide;
+@property BOOL yellow;
+@property BOOL red;
+@property double att;
+@property double def;
+@property BOOL hasPlayed;
+
+
 
 - (id) initWithPlayerID:(NSInteger) InputID;
 - (BOOL) updatePlayerInDatabaseStats:(BOOL) UpdateStats GameStat:(BOOL)UpdateGameStat Team: (BOOL) UpdateTeam Position: (BOOL) UpdatePosition Valuation:(BOOL) UpdateValuation;
+
+- (double) getPositionCoeffForPositionSide:(PositionSide)ps;
 - (BOOL) valuePlayer;
 
+//  game
+- (void) populatePosCoeff;
+- (void) populateMatchStats;
+- (void) clearMatchVariable;
 @end

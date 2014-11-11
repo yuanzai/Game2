@@ -11,6 +11,7 @@
 #import "GlobalVariableModel.h"
 #import "DatabaseModel.h"
 #import "GameModel.h"
+#import "Tactic.h"
 
 @implementation Player
 @synthesize PlayerID;
@@ -24,6 +25,7 @@
 @synthesize Potential;
 @synthesize Form;
 @synthesize Condition;
+@synthesize isInjured;
 
 @synthesize PreferredPosition;
 @synthesize TrainingID;
@@ -37,25 +39,28 @@
 @synthesize isGoalKeeper;
 @synthesize Valuation;
 
+@synthesize matchStats, PosCoeff, currentPositionSide, yellow, red, att, def, hasPlayed;
+
 - (id) initWithPlayerID:(NSInteger) InputID {
 	if (!(self = [super init]))
 		return nil;
-    NSDictionary* record = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"players" withKeyField:@"PlayerID" withKey:InputID];
+    NSDictionary* record = [[DatabaseModel myDB]getResultDictionaryForTable:@"players" withKeyField:@"PlayerID" withKey:InputID];
     PlayerID = InputID;
-    TeamID = [[record objectForKey:@"TeamID"] integerValue];
-    DisplayName= [record objectForKey:@"DisplayName"];
-    LastName= [record objectForKey:@"LastName"];
-    FirstName= [record objectForKey:@"FirstName"];
+    TeamID = [[record objectForKey:@"TEAMID"] integerValue];
+    DisplayName= [record objectForKey:@"DISPLAYNAME"];
+    LastName= [record objectForKey:@"LASTNAME"];
+    FirstName= [record objectForKey:@"FIRSTNAME"];
     
+    Consistency = [[record objectForKey:@"CONSISTENCY"] integerValue];
+    Potential = [[record objectForKey:@"POTENTIAL"] integerValue];
+    Form = [[record objectForKey:@"FORM"] integerValue];
+    Condition = [[record objectForKey:@"CONDITION"] doubleValue];
     
-    Consistency = [[record objectForKey:@"Consistency"] integerValue];
-    Potential = [[record objectForKey:@"Potential"] integerValue];
-    Form = [[record objectForKey:@"Form"] integerValue];
-    Condition = [[record objectForKey:@"Condition"] doubleValue];
-    
+    Stats =[NSMutableDictionary dictionary];
+    PreferredPosition = [NSMutableDictionary dictionary];
     if ([[record objectForKey:@"GK"] integerValue] == 1) {
         isGoalKeeper = YES;
-        NSDictionary* gkrecord = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"players" withKeyField:@"PlayerID" withKey:self.PlayerID];
+        NSDictionary* gkrecord = [[DatabaseModel myDB]getResultDictionaryForTable:@"players" withKeyField:@"PLAYERID" withKey:self.PlayerID];
         [[GlobalVariableModel gkStatList]enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             [Stats setObject:[gkrecord objectForKey:obj] forKey:obj];
         }];
@@ -89,7 +94,7 @@
     [TrainingExp setObject:[record objectForKey:@"TACTICSEXP"] forKey:@"TACTICSEXP"];
     [TrainingExp setObject:[record objectForKey:@"SKILLSEXP"] forKey:@"SKILLSEXP"];
     
-    Valuation = [[record objectForKey:@"Valuation"] integerValue];
+    Valuation = [[record objectForKey:@"VALUATION"] integerValue];
     if (Condition < 0.01)
         isInjured = YES;
     return self;
@@ -110,7 +115,7 @@
     
     if (UpdateStats) {
         if (isGoalKeeper){
-            [[[DatabaseModel alloc]init]updateDatabaseTable:@"gk" withKeyField:@"PlayerID" withKey:PlayerID withDictionary:Stats];
+            [[DatabaseModel myDB]updateDatabaseTable:@"gk" withKeyField:@"PlayerID" withKey:PlayerID withDictionary:Stats];
         }else{
             [updateDictionary addEntriesFromDictionary:Stats];
         }
@@ -122,7 +127,7 @@
         [updateDictionary setObject:[NSNumber numberWithInteger:Valuation] forKey:@"Valuation"];
     }
     
-    [[[DatabaseModel alloc]init]updateDatabaseTable:@"players" withKeyField:@"PlayerID" withKey:PlayerID withDictionary:updateDictionary];
+    [[DatabaseModel myDB]updateDatabaseTable:@"players" withKeyField:@"PlayerID" withKey:PlayerID withDictionary:updateDictionary];
     return YES;
 }
 
@@ -130,17 +135,18 @@
 {
 
     //Value from Ability
-    __block NSInteger sumStat = 0;
+    __block double sumStat = 0.0;
     [Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         sumStat += [(NSNumber*) obj integerValue];
     }];
 
     if (isGoalKeeper)
-        sumStat = sumStat / [[GlobalVariableModel gkStatList]count] * 20;
+        sumStat = sumStat / (double)[[GlobalVariableModel gkStatList]count] * 20;
     
     Valuation = [self statValuation:sumStat];
-    //NSLog(@"%f",Valuation);
-    __block NSInteger coreStat = 0;
+
+
+    __block double coreStat = 0.0;
     __block double positionMultiplier = 1.0;
     
     if (isGoalKeeper) {
@@ -209,12 +215,15 @@
     return MIN(pow(10,(stat/100+1.8)),100000) + MAX(0,stat-320)*1000;
 }
 
-- (NSInteger) positionStatWithPosition:(NSString*)position Side:(NSString*) side
+- (double) positionStatWithPosition:(NSString*)position Side:(NSString*) side
 {
     __block double maxStat = 0.0;
+    double statCount = [[GlobalVariableModel playerStatList]count];
+
     NSDictionary* valuationTable;
     if ([position isEqualToString:@"GK"]) {
         valuationTable = [GlobalVariableModel valuationStatListForFlank:@"GK"];
+        statCount = [[GlobalVariableModel gkStatList]count];
     } else if ([[side uppercaseString] isEqualToString:@"CENTRE"]) {
         valuationTable = [[GlobalVariableModel valuationStatListForFlank:@"CENTRE"] objectForKey:position];
     } else {
@@ -226,6 +235,145 @@
             maxStat +=  [obj doubleValue];
     }];
     
-    return maxStat/[valuationTable count]*[Stats count];
+    return maxStat/statCount*20;
 }
+- (void) populateMatchStats
+{
+    if (!matchStats)
+        matchStats = [[NSMutableDictionary alloc]init];
+    
+    [Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        [matchStats setObject:[NSNumber numberWithDouble:[self getMatchStatWithBaseStat:[obj doubleValue] Consistency:(double) Consistency]] forKey:key];
+    }];
+    [[self getFormSet] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if (Form > 0) {
+            [matchStats setObject:MAX([matchStats objectForKey:obj],[NSNumber numberWithDouble:[self getMatchStatWithBaseStat:[obj doubleValue] Consistency:(double) Consistency]])  forKey:obj];
+        } else {
+            [matchStats setObject:MIN([matchStats objectForKey:obj],[NSNumber numberWithDouble:[self getMatchStatWithBaseStat:[obj doubleValue] Consistency:(double) Consistency]])  forKey:obj];
+        }
+    }];
+    
+    att = [self getEventStat:@"ATT"];
+    def = [self getEventStat:@"DEF"];
+}
+
+- (void) populatePosCoeff
+{
+    PosCoeff = [self getPositionCoeffForPositionSide:currentPositionSide];
+}
+
+
+- (double) getPositionCoeffForPositionSide:(PositionSide) ps
+{
+    double result = 0.0;
+    
+    if ([[PreferredPosition objectForKey:[Structs getPositionString:ps]]integerValue] == 1) {
+        result = 1;
+    } else {
+        if (ps.position == Def) {
+            if ([[PreferredPosition objectForKey:@"DM"]integerValue]==1) {
+                result = 0.9;
+            } else {
+                result = 0.8;
+            }
+        } else if (ps.position == SC) {
+            if ([[PreferredPosition objectForKey:@"AM"]integerValue]==1) {
+                result = 0.9;
+            } else {
+                result = 0.8;
+            }
+        } else {
+            result = 0.95;
+        }
+    }
+    
+    NSInteger left =[[PreferredPosition objectForKey:@"LEFT"]integerValue];
+    NSInteger right =[[PreferredPosition objectForKey:@"RIGHT"]integerValue];
+    NSInteger centre =[[PreferredPosition objectForKey:@"CENTRE"]integerValue];
+    
+    if (ps.side == Left) {
+        result +=(left-1) * 0.1;
+    }else if (ps.side == LeftCentre){
+        result += (centre-1) * 0.1;
+        result += ((centre-1) * (left)) * 0.05;
+    }else if (ps.side == Centre) {
+        result += (centre-1) * 0.1;
+    }else if (ps.side == RightCentre) {
+        result += (centre-1) * 0.1;
+        result += ((centre-1) * (right)) * 0.05;
+    }else if (ps.side == Right) {
+        result += (right-1) * 0.1;
+    }
+    return result;
+}
+
+- (double) getMatchStatWithBaseStat:(double)stat Consistency:(double) consistency{
+    NSDictionary* sdTable = [[NSDictionary alloc]initWithDictionary:[GlobalVariableModel standardDeviationTable]];
+    //normal dist 0 mean 1 sd
+    double u =(double)(arc4random() %100000 + 1)/100000; //for precision
+    double v =(double)(arc4random() %100000 + 1)/100000; //for precision
+    double x = sqrt(-2*log(u))*cos(2*M_PI*v);   //or sin(2*pi*v)
+    
+    //stat constant
+    double k2 = 0.05 * (double)consistency + 2 * stat -21;
+    double mean = log(24.5 - stat);
+    
+    //stat sd
+    double sd = [[sdTable objectForKey:[NSString stringWithFormat:@"%i",(int)stat]]doubleValue];
+    
+    //log normal X
+    double matchStat = exp(mean + sd * x) + k2;
+    matchStat = MAX(matchStat,1);
+    matchStat = MIN(matchStat, 30);
+    return matchStat;
+}
+
+- (NSArray*) getFormSet {
+    NSMutableArray* tempArray = [[NSMutableArray alloc]initWithArray:[Stats allKeys]];
+    
+    int rollCount = Form * (3 + (isGoalKeeper ? -1 : 0));
+    
+    NSUInteger count = [tempArray count];
+    for (uint i = 0; i < count; ++i)
+    {
+        // Select a random element between i and end of array to swap with.
+        int nElements = count - i;
+        int n = arc4random_uniform(nElements) + i;
+        [tempArray exchangeObjectAtIndex:i withObjectAtIndex:n];
+    }
+    
+    NSMutableArray* formSet = [NSMutableArray array];
+    for (int i = 0; i < ABS(rollCount); i++) {
+        [formSet addObject:[tempArray objectAtIndex:i]];
+    }
+    return formSet;
+}
+
+- (double) getEventStat:(NSString*) type
+{
+    NSDictionary* eventStatsRecord = [[DatabaseModel myDB] getResultDictionaryForTable:@"statsEvent" withDictionary:
+                                      [[NSDictionary alloc]initWithObjectsAndKeys:
+                                       type,@"TYPE",
+                                       [Structs getPositionString:currentPositionSide],@"POSITION",
+                                       [Structs getSideString:currentPositionSide],@"SIDE",nil]];
+    
+    __block double sum = 0.0;
+    [matchStats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        sum += [[eventStatsRecord objectForKey:key]doubleValue]*[obj doubleValue];
+    }];
+    return sum;
+}
+
+- (void) clearMatchVariable
+{
+    matchStats = nil;
+    PosCoeff = 0.0;
+    currentPositionSide = (PositionSide) {0,0};
+    yellow = NO;
+    red = NO;
+    att = 0.0;
+    def = 0.0;
+    hasPlayed = NO;
+}
+
 @end

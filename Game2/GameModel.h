@@ -10,6 +10,7 @@
 #import "SinglePlayerData.h"
 
 @class SinglePlayerData;
+@class Match;
 @interface GameModel : NSObject
 @property SinglePlayerData* myData;
 @property NSInteger GameID;
@@ -129,8 +130,16 @@
  - process single player fixture
 
 */
-- (void) newWithGameID:(NSInteger) GameID;
+
+//Static Method
+
 + (id)myGame;
+
+
+//Save Load
+- (void) newWithGameID:(NSInteger) thisGameID;
+- (void) loadWithGameID:(NSInteger) thisGameID;
+- (void) saveThisGame;
 
 
 //Seaons
@@ -145,6 +154,8 @@
 - (void) enterPostTask;
 - (void) enterPreGame;
 - (void) enterGame;
+
+
 - (void) enterPostGame;
 
 @end

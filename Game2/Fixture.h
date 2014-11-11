@@ -25,7 +25,7 @@
 
 - (BOOL) createFixturesForSeason:(NSInteger)season;
 - (NSArray*) getAllFixturesForSeason:(NSInteger)season;
-- (NSArray*) getFixturesForTeam:(Team*) team ForSeason:(NSInteger)season;
+- (NSArray*) getFixturesForTeam:(Team*) team ForSeason:(NSInteger)season Remaining:(BOOL) remainingOnly;
 - (NSArray*) getLeagueTableForSeason:(NSInteger)season;
 - (void) getPromotionAndRelegationForSeason:(NSInteger) season;
 
@@ -34,15 +34,6 @@
 
 
 @interface Fixture : NSObject
-@property BOOL hasPenalties;
-@property BOOL hasExtraTime;
-@property Tournament* thisTournement;
-@property NSInteger Week;
-@property NSInteger team1ID;
-@property NSInteger team2ID;
-@property Team* team1;
-@property Team* team2;
-
 @property NSInteger MATCHID;
 @property NSInteger TOURNAMENTID;
 @property NSInteger SEASON;

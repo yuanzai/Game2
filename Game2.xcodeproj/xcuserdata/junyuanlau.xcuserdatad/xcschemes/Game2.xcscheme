@@ -41,6 +41,18 @@
                <Test
                   Identifier = "Game2Tests/testGenerate">
                </Test>
+               <Test
+                  Identifier = "NewGameTest/testGenerate">
+               </Test>
+               <Test
+                  Identifier = "NewGameTest/testLoadGame">
+               </Test>
+               <Test
+                  Identifier = "NewGameTest/testNewGame">
+               </Test>
+               <Test
+                  Identifier = "NewGameTest/testNextFixture">
+               </Test>
             </SkippedTests>
          </TestableReference>
       </Testables>

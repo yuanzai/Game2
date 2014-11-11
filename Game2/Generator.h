@@ -20,7 +20,6 @@
 - (void) generateNewGameWithTeamName:(NSString*) myTeamName;
 
 - (void) generatePlayersWithSeason:(NSInteger) season NumberOfPlayers:(NSInteger) number;
-- (void) generateNewGame;
 
 @end
 

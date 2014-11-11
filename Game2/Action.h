@@ -7,10 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Structs.h"
+#import "GlobalVariableModel.h"
+#import "DatabaseModel.h"
 #import "LineUp.h"
 
 @class LineUp;
-@class MatchPlayer;
+@class Player;
 typedef enum {
     GK,
     Own,
@@ -61,17 +64,17 @@ typedef enum {
     ZoneFlank ToZoneFlank;
     
     PositionSide OppPositionSide;
-    MatchPlayer* FromPlayer;
-    MatchPlayer* ToPlayer;
-    MatchPlayer* OppPlayer;
-    MatchPlayer* OppKeeper;
+    Player* FromPlayer;
+    Player* ToPlayer;
+    Player* OppPlayer;
+    Player* OppKeeper;
     
     LineUp* thisTeam;
     LineUp* oppTeam;
     
     NSString* NextAttack;
     ActionResult result;
-    MatchPlayer* injuredPlayer;
+    Player* injuredPlayer;
     NSString* Commentary;
     double attQuotient;
     double defQuotient;
@@ -86,17 +89,17 @@ typedef enum {
 @property ZoneFlank FromZoneFlank;
 @property ZoneFlank ToZoneFlank;
 @property PositionSide OppPositionSide;
-@property MatchPlayer* FromPlayer;
-@property MatchPlayer* ToPlayer;
-@property MatchPlayer* OppPlayer;
-@property MatchPlayer* OppKeeper;
+@property Player* FromPlayer;
+@property Player* ToPlayer;
+@property Player* OppPlayer;
+@property Player* OppKeeper;
 
 @property LineUp* thisTeam;
 @property LineUp* oppTeam;
 
 @property NSString* NextAttack;
 @property ActionResult result;
-@property MatchPlayer* injuredPlayer;
+@property Player* injuredPlayer;
 @property NSString* Commentary;
 @property double attQuotient;
 @property double defQuotient;

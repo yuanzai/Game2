@@ -46,14 +46,14 @@ static GlobalVariableModel* myGlobalVariableModel;
     NSArray* tempArray;
     if ([flank isEqualToString:@"GK"]) {
         if (!myGlobalVariableModel.valuationStatListGK ){
-            NSDictionary* tempDictionary = [[[DatabaseModel alloc]init]getResultDictionaryForTable:@"valuation" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@"GK",@"FLANKCENTRE", nil]];
+            NSDictionary* tempDictionary = [[DatabaseModel myDB]getResultDictionaryForTable:@"valuation" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@"GK",@"FLANKCENTRE", nil]];
             [[GlobalVariableModel myGlobalVariableModel] setValuationStatListGK:tempDictionary];
         }
         return myGlobalVariableModel.valuationStatListGK;
 
     } else if ([flank isEqualToString:@"CENTRE"]) {
         if (!myGlobalVariableModel.valuationStatListCentre ){
-            tempArray = [[[DatabaseModel alloc]init]getArrayFrom:@"valuation" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"CENTRE",@"FLANKCENTRE", nil] sortFieldAsc:@""];
+            tempArray = [[DatabaseModel myDB]getArrayFrom:@"valuation" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"CENTRE",@"FLANKCENTRE", nil] sortFieldAsc:@""];
             NSMutableDictionary* tempDictionary = [NSMutableDictionary dictionary];
             [tempArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 [tempDictionary setObject:obj forKey:[(NSDictionary*) obj objectForKey:@"POSITION"]];
@@ -66,7 +66,7 @@ static GlobalVariableModel* myGlobalVariableModel;
                [flank isEqualToString:@"LEFT"] ||
                [flank isEqualToString:@"RIGHT"]) {
         if (!myGlobalVariableModel.valuationStatListFlank){
-            tempArray = [[[DatabaseModel alloc]init]getArrayFrom:@"valuation" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"FLANK",@"FLANKCENTRE", nil] sortFieldAsc:@""];
+            tempArray = [[DatabaseModel myDB]getArrayFrom:@"valuation" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"FLANK",@"FLANKCENTRE", nil] sortFieldAsc:@""];
             
             NSMutableDictionary* tempDictionary = [NSMutableDictionary dictionary];
             [tempArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {

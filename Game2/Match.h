@@ -10,7 +10,7 @@
 @class LineUp;
 @class Action;
 @class Fixture;
-@class MatchPlayer;
+@class Player;
 @interface Match : NSObject
 {
     LineUp *team1;
@@ -35,6 +35,8 @@
 @property BOOL retainTeam;
 @property Action* lastAction;
 
+- (id) initWithFixture:(Fixture*) fixture WithSinglePlayerTeam:(LineUp*) sp;
+
 - (BOOL) startMatch;
 - (NSArray*) nextMinute;
 - (void) printScore;
@@ -44,5 +46,5 @@
 - (void) resumeMatch;
 - (void) upPlayerStats;
 
-- (BOOL) subIn:(MatchPlayer*) sub ForPlayer:(MatchPlayer*) player;
+- (BOOL) subIn:(Player*) sub ForPlayer:(Player*) player;
 @end

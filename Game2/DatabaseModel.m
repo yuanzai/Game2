@@ -280,7 +280,7 @@ const NSInteger insertQueueMax = 10;
 {
     if ([keyField isEqualToString:@""])
         return [self getArrayFrom:table whereData:[[NSDictionary alloc]init] sortFieldAsc:sortAsc];
-    return [self getArrayFrom:table whereData:[[NSDictionary alloc]initWithObjectsAndKeys:keyField, key, nil] sortFieldAsc:sortAsc];
+    return [self getArrayFrom:table whereData:[[NSDictionary alloc]initWithObjectsAndKeys:key,keyField, nil] sortFieldAsc:sortAsc];
 }
 
 - (BOOL) updateDatabaseTable:(NSString*) table withKeyField:(NSString*)keyField withKey:(NSInteger)key withDictionary:(NSDictionary*) data

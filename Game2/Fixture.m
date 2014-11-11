@@ -92,7 +92,7 @@
     NSInteger k = 0;
     for (NSInteger round = 0; round < [teamsArray count]-1; round++) {
         for (NSInteger i = 0; i < [teamsArray count]/2;i++){
-            NSInteger date = season * 52 + round;
+            NSInteger date = (season-1) * 52 + round + 1;
             NSDictionary* data =
             [[NSDictionary alloc]
              initWithObjectsAndKeys:
@@ -102,9 +102,8 @@
              [NSNumber numberWithInteger:round + 1],@"ROUND",
              [teamsArray objectAtIndex:[[homeList objectAtIndex:k]integerValue]],@"HOMETEAM",
              [teamsArray objectAtIndex:[[awayList objectAtIndex:k]integerValue]],@"AWAYTEAM",
-             @0,@"HASET",
-             @0,@"HASPENALTIES",
-             @0,@"PLAYED",
+             @"HOME",@"HOMELOGJSON",
+             @"AWAY",@"AWAYLOGJSON",
              nil];
             [[DatabaseModel myDB]insertDatabaseTable:@"fixtures" withData:data];
             k++;
@@ -127,9 +126,9 @@
     
     k = 0;
     
-    for (NSInteger round = [teamsArray count]-1; round < ([teamsArray count]-1)*2; round++) {
+    for (NSInteger round = [teamsArray count] -1; round < ([teamsArray count]-1)*2; round++) {
         for (NSInteger i = 0; i < [teamsArray count]/2;i++){
-            NSInteger date = ([[GameModel gameData]season]-1) * 52 + round;
+            NSInteger date = (season-1) * 52 + round + 1;
             NSDictionary* data =
             [[NSDictionary alloc]
              initWithObjectsAndKeys:
@@ -137,10 +136,10 @@
              [NSNumber numberWithInteger:season],@"SEASON",
              [NSNumber numberWithInteger:date],@"DATE",
              [NSNumber numberWithInteger:round + 1],@"ROUND",
-             [teamsArray objectAtIndex:[[homeList objectAtIndex:k]integerValue]],@"HOMETEAM",
-             [teamsArray objectAtIndex:[[awayList objectAtIndex:k]integerValue]],@"AWAYTEAM",
-             @0,@"HASET",
-             @0,@"HASPENALTIES",
+             [teamsArray objectAtIndex:[[awayList objectAtIndex:k]integerValue]],@"HOMETEAM",
+             [teamsArray objectAtIndex:[[homeList objectAtIndex:k]integerValue]],@"AWAYTEAM",
+             @"HOME",@"HOMELOGJSON",
+             @"AWAY",@"AWAYLOGJSON",
              nil];
             [[DatabaseModel myDB]insertDatabaseTable:@"fixtures" withData:data];
             k++;
@@ -155,7 +154,7 @@
     return [[DatabaseModel myDB]getArrayFrom:@"fixtures" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInteger:tournamentID],@"TOURNAMENTID", [NSNumber numberWithInteger:season],@"SEASON", nil] sortFieldAsc:@"DATE"];
 }
 
-- (NSArray*) getFixturesForTeam:(Team*) team ForSeason:(NSInteger)season Remaining:(BOOL) remainingOnly;
+- (NSArray*) getFixturesForTeam:(Team*) team ForSeason:(NSInteger)season Remaining:(BOOL) remainingOnly
 {
     NSArray* homeArray = [[DatabaseModel myDB]getArrayFrom:@"fixtures" whereData:
             [[NSDictionary alloc]initWithObjectsAndKeys:

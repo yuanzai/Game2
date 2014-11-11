@@ -10,6 +10,7 @@
 #import "Fixture.h"
 #import "DatabaseModel.h"
 #import "LineUp.h"
+#import "Match.h"
 
 @implementation GameModel
 @synthesize myData;
@@ -17,13 +18,13 @@
 
 #pragma mark Initialization Methods
 
-+ (id)myGame {
-    static GameModel *myGame = nil;
++ (id)myGame
+{
+    static GameModel *myGame;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         myGame = [[self alloc] init];
     });
-    
     return myGame;
 }
 
@@ -36,11 +37,15 @@
 
 #pragma mark Data Methods
 
-- (void) newWithGameID:(NSInteger) GameID
+- (void) newWithGameID:(NSInteger) thisGameID
 {
+    myData = [[SinglePlayerData alloc]init];
+    self.GameID = thisGameID;
     myData.season = 0;
     myData.weekdate = 0;
     myData.week = 0;
+    [myData setCurrentLeagueTournament];
+    [myData setMyTeam];
 }
 
 - (void) loadWithGameID:(NSInteger) thisGameID
@@ -54,13 +59,14 @@
         if ([savedData objectForKey:@"SinglePlayerData"] != nil) {
             self.myData = [savedData objectForKey:@"SinglePlayerData"];
         }
-    }              
+    }
 }
 
 - (void) saveThisGame
 {
-    NSDictionary* savedData = [[NSDictionary alloc]initWithObjectsAndKeys:myData,@"SinglePlayerData", nil];
+    NSDictionary* savedData = [[NSDictionary alloc]initWithObjectsAndKeys:self.myData,@"SinglePlayerData", nil];
     [NSKeyedArchiver archiveRootObject:savedData toFile:[self getGamePath]];
+
 }
 
 - (NSString*) getGamePath
@@ -68,6 +74,8 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectoryPath = [paths objectAtIndex:0];
     NSString *filePath = [documentsDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"SaveGame%i",GameID]];
+    ///Users/junyuanlau/Library/Application Support/iPhone Simulator/7.1/Applications/BB7CF23F-D46F-4F01-A585-322FA24E7E27/Documents
+
     return  filePath;
 }
 
@@ -85,7 +93,8 @@
         [self startSeason];
     }
     myData.week++;
-    [myData setNextMatch];
+    [myData setNextFixture];
+    [myData setNextMatchOpponents];
 }
 
 - (void) enterPreTask
@@ -111,17 +120,15 @@
 
 - (void) enterPreGame
 {
-    myData.currentLineup = (LineUp*) myData.myTeam;
+    myData.currentLineup = [[LineUp alloc]initWithTeam: myData.myTeam];
     myData.currentLineup.currentTactic = myData.currentTactic;
     [myData.currentLineup populateMatchDayForm];
-    
-    myData.nextMatchOpponents = (LineUp*) myData.nextMatchOpponents;
 }
 
 - (void) enterGame
 {
     //TODO: - process opponent selection
-
+    [myData setNextMatch];
 }
 
 - (void) enterPostGame
@@ -134,14 +141,14 @@
 - (void) startSeason
 {
     myData.season++;
-    NSArray* tournamentList = [[[DatabaseModel alloc]init]getArrayFrom:@"tournaments" withSelectField:@"TOURNAMENTID" WhereString:@"" OrderBy:@"" Limit:@""];
+    NSArray* tournamentList = [[DatabaseModel myDB]getArrayFrom:@"tournaments" withSelectField:@"TOURNAMENTID" WhereString:@"" OrderBy:@"" Limit:@""];
+    NSLog(@"Fixture season %i",myData.season);
     [tournamentList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         Tournament* thisTournament = [[Tournament alloc]initWithTournamentID:[obj integerValue]];
         [thisTournament createFixturesForSeason:myData.season];
     }];
     
     [myData setCurrentLeagueTournament];
-    
 }
 
 - (void) endSeason

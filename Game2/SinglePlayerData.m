@@ -11,10 +11,15 @@
 #import "Team.h"
 #import "Fixture.h"
 #import "Tactic.h"
+#import "Match.h"
+#import "LineUp.h"
 
 @implementation SinglePlayerData
 @synthesize SaveGameID;
 @synthesize myTeam;
+@synthesize currentLineup;
+
+@synthesize nextFixture;
 @synthesize nextMatch;
 @synthesize lastMatch;
 @synthesize currentLeagueTournament;
@@ -35,8 +40,10 @@
     self.season = [decoder decodeIntegerForKey:@"season"];
     self.money = [decoder decodeIntegerForKey:@"money"];
     [self setCurrentLeagueTournament];
-    [self setNextMatch];
+    [self setNextFixture];
     [self setCurrentTactic];
+    [self setMyTeam];
+    [self setCurrentLineup];
     return self;
 }
 
@@ -53,15 +60,15 @@
 
 }
 
-- (void) setNextMatch
+- (void) setNextFixture
 {
-    self.nextMatch = [self.currentLeagueTournament getMatchForTeamID:0 Date:weekdate];
+    self.nextFixture = [self.currentLeagueTournament getMatchForTeamID:0 Date:weekdate];
 
 }
 
 - (void) setNextMatchOpponents
 {
-    NSInteger OppID = nextMatch.HOMETEAM == 0 ? nextMatch.AWAYTEAM : nextMatch.HOMETEAM;
+    NSInteger OppID = nextFixture.HOMETEAM == 0 ? nextFixture.AWAYTEAM : nextFixture.HOMETEAM;
     self.nextMatchOpponents = [[Team alloc]initWithTeamID:OppID];
 }
         
@@ -70,6 +77,21 @@
     self.currentTactic = [[Tactic alloc]initWithTacticID:0];
 }
 
+- (void) setMyTeam
+{
+    myTeam = [[Team alloc]initWithTeamID:0];
+}
+
+- (void) setNextMatch
+{
+    nextMatch = [[Match alloc]initWithFixture:nextFixture WithSinglePlayerTeam:currentLineup];
+}
+
+- (void) setCurrentLineup
+{
+    currentLineup = [[LineUp alloc]initWithTeamID:0];
+    currentLineup.currentTactic = [[Tactic alloc]initWithTacticID:0];
+}
 /*
 - (void) setLastMatch;
 {

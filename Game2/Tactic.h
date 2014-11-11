@@ -7,61 +7,36 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Structs.h"
+
 @class Player;
-typedef enum {
-    Left,
-    LeftCentre,
-    Centre,
-    RightCentre,
-    Right,
-    GKSide,
-    SideCount
-} SideChoices;
-
-typedef enum {
-    Def,
-    DM,
-    Mid,
-    AM,
-    SC,
-    GKPosition,
-    PositionCount
-} PositionChoices;
-
-struct PositionSide {
-    PositionChoices position;
-    SideChoices side;
-};
-
-typedef struct PositionSide PositionSide;
-
 @interface Tactic : NSObject
-{
-    NSInteger TacticID;
-    //NSString* name;
-    
-    BOOL formationArray[5][5];
+{    
+    __block BOOL formationArray[5][5];
     Player* playerArray[5][5];
-    Player* GoalKeeper;
     NSArray* SubList;
 }
 @property NSInteger TacticID;
 @property Player* GoalKeeper;
 @property NSArray* SubList;
 
-//@property NSString* name;
 - (NSArray*) getOutFieldPlayers;
 - (NSArray*) getAllPlayers;
 
 
 - (id) initWithTacticID:(NSInteger) InputID;
-- (BOOL) populatePlayer:(Player*) player Position:(PositionChoices)position Side:(SideChoices)side;
+- (BOOL) populatePlayer:(Player*) player PositionSide:(PositionSide) ps ForceSwap:(BOOL) swap;
+- (BOOL) removePlayerAtPositionSide:(PositionSide) ps;
 
 - (Player*) getPlayerAtPositionSide:(PositionSide) ps;
 - (BOOL) hasPlayerAtPositionSide:(PositionSide) ps;
 
-- (Player*) getPlayerAtPosition:(PositionChoices)position Side:(SideChoices)side;
-- (BOOL) movePlayerAtPosition:(PositionChoices)fromposition AtSide:(SideChoices)fromside ToPosition:(PositionChoices)toposition ToSide:(SideChoices)toside;
+- (BOOL) movePlayerAtPositionSide:(PositionSide) fromPS ToPositionSide:(PositionSide) toPS;
+
+- (BOOL) isFormationFilled;
+- (BOOL) hasPositionAtPositionSide: (PositionSide) ps;
+
+
 - (BOOL) updateTacticsInDatabase;
 
 @end

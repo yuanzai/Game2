@@ -9,6 +9,7 @@
 #import "Generator.h"
 #import "DatabaseModel.h"
 #import "Training.h"
+#import "GameModel.h"
 
 @implementation Generator
 {
@@ -22,7 +23,7 @@
 
 
 
-const NSInteger playerBatch = 330;
+const NSInteger playerBatch = 360;
 const NSInteger maxTurn = 16;
 
 - (id) init {
@@ -40,21 +41,23 @@ const NSInteger maxTurn = 16;
 
 - (void) generateNewGameWithTeamName:(NSString*) myTeamName
 {
+    NSLog(@"Generating New Teams");
     [self generateNewTeamsWithTeamName:myTeamName];
-    NSLog(@"New Teams");
 
-    //[self generatePlayersForNewGame];
-    NSLog(@"New Players");
+    NSLog(@"Generating New Players");
+    [self generatePlayersForNewGame];
 
-    //[self assignPlayersToTeams];
-    NSLog(@"New Assignments");
-
+    NSLog(@"Assigning Players");
+    [self assignPlayersToTeams];
+    
+    [[DatabaseModel myDB]deleteFromTable:@"fixtures" withData:nil];
+ 
 }
 
 - (void) generateNewTeamsWithTeamName:(NSString*) myTeamName
 {
     NSInteger myLeague = 81 + arc4random() % 4;
-    
+    __block NSMutableSet* teamNamesSet =[NSMutableSet set];
     [[DatabaseModel myDB]deleteFromTable:@"teams" withData:nil];
 	NSArray* tournaments = [[DatabaseModel myDB]getArrayFrom:@"tournaments" whereData:nil sortFieldAsc:@""];
 	[tournaments enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -70,8 +73,8 @@ const NSInteger maxTurn = 16;
                 if (arc4random() % 5 < 3) {
                     teamName = [NSString stringWithFormat:@"%@ %@",teamName, [TeamNamesSuffix objectAtIndex:arc4random() % [TeamNamesSuffix count]]];
                 }
-            } while ([[[DatabaseModel myDB]getArrayFrom:@"teams" withSelectField:@"TEAMID" whereKeyField:@"NAME" hasKey:teamName]count] == 0);
-
+            } while ([teamNamesSet containsObject:teamName]);
+            [teamNamesSet addObject:teamName];
             
             if ([[obj objectForKey:@"TOURNAMENTID"] integerValue] == myLeague && i == 0) {
                 [newTeam setObject:myTeamName forKey:@"NAME"];
@@ -157,7 +160,7 @@ const NSInteger maxTurn = 16;
     
     {
         case 0:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND GK = 0" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
             break;
             
         case 1:
@@ -202,7 +205,7 @@ const NSInteger maxTurn = 16;
             [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
             break;
         case 16:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"RANDOM()" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
+            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND GK = 0" OrderBy:@"RANDOM()" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
             break;
             
         default:
@@ -438,7 +441,7 @@ const NSInteger statBiasMax = 63;
     [PreferredPosition setObject:@0 forKey:@"SC"];
     
     
-    if (r < 11) {
+    if (r < 12) {
         [PreferredPosition setObject:@1 forKey:@"GK"];
         [PreferredPosition setObject:@0 forKey:@"RIGHT"];
         [PreferredPosition setObject:@0 forKey:@"CENTRE"];
@@ -489,37 +492,43 @@ const NSInteger statBiasMax = 63;
     [newPlayer setObject:FirstName forKey:@"FirstName"];
     [newPlayer setObject:LastName forKey:@"LastName"];
     [newPlayer setObject:DisplayName forKey:@"DisplayName"];
-
     //WkOfBirth
     BirthYear =  season;
     [newPlayer setObject:[NSNumber numberWithInteger:BirthYear] forKey:@"BirthYear"];
 
     //Stats
+    NSArray* statList = [GlobalVariableModel playerStatList];
+    if (isGoalKeeper) {
+        statList = [GlobalVariableModel gkStatList];
+        ability = (double) ability / (double)[[GlobalVariableModel playerStatList] count] * (double)[[GlobalVariableModel gkStatList]count];
+    }
     
     Stats = [NSMutableDictionary dictionary];
-    [[GlobalVariableModel playerStatList]enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    [statList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         [Stats setObject:@1 forKey:obj];
     }];
-    
-    for (NSInteger i = 0; i < ability - 20; i++) {
-        r = arc4random() % 20;
-        NSInteger stat = [[Stats objectForKey:[[GlobalVariableModel playerStatList]objectAtIndex:r]]integerValue];
+
+    for (NSInteger i = 0; i < ability - [statList count]; i++) {
+        r = arc4random() % [statList count];
+        NSInteger stat = [[Stats objectForKey:[statList objectAtIndex:r]]integerValue];
         if (stat == 20) {
             i--;
         } else {
-            [Stats setObject:[NSNumber numberWithInteger:stat+1] forKey:[[GlobalVariableModel playerStatList]objectAtIndex:r]];
+            [Stats setObject:[NSNumber numberWithInteger:stat+1] forKey:[statList objectAtIndex:r]];
         }
-    }
-    
-    Plan* newPlayerTraining = [[Plan alloc]initWithPotential:potential Age:1-BirthYear];
-    
-    for (NSInteger i = BirthYear; i<1; i ++){
-        [newPlayerTraining runTrainingPlanForPlayer:self Times:5 ExpReps:17 Season:i];
     }
 
     
-    [newPlayer addEntriesFromDictionary:Stats];
+    if (!isGoalKeeper) {
+        Plan* newPlayerTraining = [[Plan alloc]initWithPotential:potential Age:1-BirthYear];
+        
+        for (NSInteger i = BirthYear; i<1; i ++){
+            [newPlayerTraining runTrainingPlanForPlayer:self Times:5 ExpReps:17 Season:i];
+        }
+    }
     
+    [newPlayer addEntriesFromDictionary:Stats];
+
     //TEAMID
     TeamID = -1;
     [newPlayer setObject:[NSNumber numberWithInteger:TeamID] forKey:@"TeamID"];
@@ -537,7 +546,8 @@ const NSInteger statBiasMax = 63;
     Form = 1;
     [newPlayer setObject:[NSNumber numberWithDouble:Form] forKey:@"Form"];
     [self valuePlayer];
-    
+
+
     [newPlayer setObject:[NSNumber numberWithDouble:Valuation] forKey:@"Valuation"];
     
     return [[DatabaseModel myDB]insertDatabaseTable:@"players" withData:newPlayer];

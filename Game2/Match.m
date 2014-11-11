@@ -10,6 +10,7 @@
 #import "Event.h"
 #import "LineUp.h"
 #import "Fixture.h"
+#import "GameModel.h"
 
 @implementation Match
 @synthesize team1;
@@ -23,9 +24,53 @@
 @synthesize retainTeam;
 @synthesize lastAction;
 
+- (id) initWithFixture:(Fixture*) fixture WithSinglePlayerTeam:(LineUp*) sp
+{
+    self = [super init];
+    if (self ) {
+        thisFixture = fixture;
+        if (fixture.HOMETEAM == 0) {
+            team1 = sp;
+            team1.Location = home;
+        } else {
+            team1 = [[LineUp alloc]initWithTeamID:fixture.HOMETEAM];
+            team1.Location = home;
+            team1.currentTactic = [[Tactic alloc]initWithTacticID:2];
+            [team1 populateMatchDayForm];
+            [team1 removeAllPlayers];
+            [team1 fillGoalkeeper];
+            [team1 fillOutfieldPlayers];
+        }
+        
+        if (fixture.AWAYTEAM == 0) {
+            team2 = sp;
+            team2.Location = away;
+        } else {
+            team2 = [[LineUp alloc]initWithTeamID:fixture.AWAYTEAM];
+            team2.Location = away;
+            team2.currentTactic = [[Tactic alloc]initWithTacticID:2];
+            [team2 populateMatchDayForm];
+            [team2 removeAllPlayers];
+            [team2 fillGoalkeeper];
+            [team2 fillOutfieldPlayers];
+        }
+        
+        [team1 populateAllPlayersStats];
+        [team1 populateSubsStats];
+        [team1 populateTeamAttDefStats];
+        
+        [team2 populateAllPlayersStats];
+        [team2 populateSubsStats];
+        [team2 populateTeamAttDefStats];
+    } return self;
+}
+
 - (BOOL) startMatch
 {
     if (team1 == nil || team2 == nil)
+        return NO;
+    
+    if (![team1 validateTactic] || ![team2 validateTactic])
         return NO;
     
     isPaused = NO;
@@ -72,28 +117,28 @@
 
 - (void) updateFatigue
 {
-    [[team1.currentTactic getAllPlayers]enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    [[team1.currentTactic getAllPlayers]enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
         double factor = 0.0;
         
-        if (((MatchPlayer*) obj).currentPositionSide.position == GKPosition) {
+        if (p.currentPositionSide.position == GKPosition) {
             factor = 0.1;
-        } else if (((MatchPlayer*) obj).currentPositionSide.position == Def) {
+        } else if (p.currentPositionSide.position == Def) {
             factor = 0.7;
-        } else if (((MatchPlayer*) obj).currentPositionSide.position == DM) {
+        } else if (p.currentPositionSide.position == DM) {
             factor = 1;
-        } else if (((MatchPlayer*) obj).currentPositionSide.position == Mid) {
+        } else if (p.currentPositionSide.position == Mid) {
             factor = 1;
-        } else if (((MatchPlayer*) obj).currentPositionSide.position == AM) {
+        } else if (p.currentPositionSide.position == AM) {
             factor = 0.9;
-        } else if (((MatchPlayer*) obj).currentPositionSide.position == SC) {
+        } else if (p.currentPositionSide.position == SC) {
             factor = 0.7;
         }
         
-        double fitFactor = ((60.0 - [[((MatchPlayer*) obj).matchStats objectForKey:@"FIT"]doubleValue]) * 0.005);
-        double worFactor = ([[((MatchPlayer*) obj).matchStats objectForKey:@"WOR"]doubleValue] * .002);
+        double fitFactor = ((60.0 - [[p.matchStats objectForKey:@"FIT"]doubleValue]) * 0.005);
+        double worFactor = ([[p.matchStats objectForKey:@"WOR"]doubleValue] * .002);
         
         factor = (fitFactor + worFactor) * ((arc4random() % 25 + 75)/100 * factor) / 100;
-        ((MatchPlayer*) obj).Condition -= factor;
+        p.Condition -= factor;
     }];
 }
 
@@ -102,7 +147,7 @@
         isPaused = YES;
         return @"Half Time";
     } else if (matchMinute == 90) {
-        if (thisFixture.hasExtraTime && team1.score == team2.score) {
+        if (thisFixture.HASET == 1 && team1.score == team2.score) {
             isPaused = YES;
             return @"End of 90 Min Time";
         } else {
@@ -134,11 +179,11 @@
     
 }
 
-- (BOOL) subIn:(MatchPlayer*) sub ForPlayer:(MatchPlayer*) player
+- (BOOL) subIn:(Player*) sub ForPlayer:(Player*) player
 {
     if (sub.hasPlayed)
         return NO;
-    MatchPlayer* tempPlayer;
+    Player* tempPlayer;
     tempPlayer = sub;
     sub = player;
     player = tempPlayer;

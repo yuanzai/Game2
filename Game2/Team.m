@@ -32,11 +32,12 @@
 
 - (void) updateFromDatabase
 {
-    PlayerIDList = [[NSMutableArray alloc]initWithArray:[[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"PlayerID" whereKeyField:@"TeamID" hasKey:[NSNumber numberWithInteger:TeamID]]];
-    tableData = [[NSMutableDictionary alloc]initWithDictionary:[[[DatabaseModel alloc]init]getResultDictionaryForTable:@"teams" withKeyField:@"TeamID" withKey:TeamID]];
+    PlayerIDList = [[NSMutableArray alloc]initWithArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PlayerID" whereKeyField:@"TeamID" hasKey:[NSNumber numberWithInteger:TeamID]]];
+    tableData = [[NSMutableDictionary alloc]initWithDictionary:[[DatabaseModel myDB]getResultDictionaryForTable:@"teams" withKeyField:@"TeamID" withKey:TeamID]];
     Name = [tableData objectForKey:@"NAME"];
     PlayerList = [[NSMutableArray alloc]init];
     PlayerDictionary = [NSMutableDictionary dictionary];
+
 
     [PlayerIDList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         Player* thisPlayer = [[Player alloc]initWithPlayerID:[obj integerValue]];
@@ -47,7 +48,7 @@
 
 - (BOOL) updateToDatabase
 {
-    return [[[DatabaseModel alloc]init]updateDatabaseTable:@"teams" withKeyField:@"TeamID" withKey:TeamID withDictionary:tableData];
+    return [[DatabaseModel myDB]updateDatabaseTable:@"teams" withKeyField:@"TeamID" withKey:TeamID withDictionary:tableData];
 }
 
 - (Player*) getPlayerWithID:(NSInteger) PlayerID

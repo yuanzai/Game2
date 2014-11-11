@@ -12,6 +12,7 @@
 @class Tournament;
 @class LineUp;
 @class Tactic;
+@class Match;
 
 @interface SinglePlayerData : NSObject <NSCoding>
 @property NSInteger SaveGameID;
@@ -19,7 +20,8 @@
 @property LineUp* currentLineup;
 @property Tactic* currentTactic;
 
-@property Fixture* nextMatch;
+@property Fixture* nextFixture;
+@property Match* nextMatch;
 @property Fixture* lastMatch;
 
 @property Team* nextMatchOpponents;
@@ -31,8 +33,10 @@
 @property NSInteger season;
 @property NSInteger money;
 
-- (void) setNextMatch;
+- (void) setNextFixture;
 - (void) setCurrentLeagueTournament;
 - (void) setCurrentTactic;
-
+- (void) setNextMatchOpponents;
+- (void) setMyTeam;
+- (void) setNextMatch;
 @end

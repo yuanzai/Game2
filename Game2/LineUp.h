@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Structs.h"
 #import "Team.h"
 #import "Player.h"
-#import "Tactic.h"
 #import "DatabaseModel.h"
 
 typedef enum {
@@ -18,23 +18,8 @@ typedef enum {
     neutral
 } VenueType;
 
-@interface MatchPlayer : Player
-@property NSMutableDictionary* matchStats;
-@property double PosCoeff;
-@property struct PositionSide currentPositionSide;
-@property BOOL yellow;
-@property BOOL red;
-@property double att;
-@property double def;
-@property BOOL hasPlayed;
-//@property Player* player;
 
-- (id) initWithPlayer:(Player*) thisPlayer;
-- (void) populateMatchStats;
-- (double) getMatchStatWithBaseStat:(double)stat Consistency:(double) consistency;
-@end
-
-@interface LineUp : Team
+@interface LineUp : NSObject
 @property Tactic* currentTactic;
 @property Team* team;
 @property VenueType Location;
@@ -51,9 +36,18 @@ typedef enum {
 @property NSInteger offside;
 
 @property NSMutableArray* matchLog;
+- (id) initWithTeam:(Team*) thisTeam;
+- (id) initWithTeamID:(NSInteger) thisTeamID;
+
+//Squad
+- (void) removeAllPlayers;
+- (void) fillGoalkeeper;
+- (void) fillOutfieldPlayers;
 
 //Pre Match
 - (void) populateMatchDayForm;
+- (BOOL) validateTactic;
+
 
 //Match
 - (void) populateAllPlayersStats;
@@ -61,6 +55,10 @@ typedef enum {
 
 //Event
 - (void) populateTeamAttDefStats;
+
+//Debug
+- (void) printFormation;
+
 
 @end
 
