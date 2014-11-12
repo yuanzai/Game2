@@ -73,7 +73,7 @@
     
     XCTAssertTrue([[GameModel myGame]myData].currentLineup);
 
-    for (int i =0;i<15;i++) {
+    for (int i =0;i<1;i++) {
         [[GameModel myGame]enterGame];
         NSLog(@"Next Match ID %i",[[GameModel myGame]myData].nextFixture.MATCHID);
 

@@ -21,6 +21,7 @@
 @synthesize promoteCount;
 @synthesize relegateCount;
 @synthesize playerCount;
+@synthesize currentLeagueTable;
 
 - (id) initWithTournamentID:(NSInteger) TournamentID
 {
@@ -193,6 +194,10 @@
     return fixtureList;
 }
 
+- (void) setCurrentLeagueTable
+{
+    currentLeagueTable = [self getLeagueTableForSeason:[[[GameModel myGame]myData]season]];
+}
 
 - (void) getPromotionAndRelegationForSeason:(NSInteger) season
 {

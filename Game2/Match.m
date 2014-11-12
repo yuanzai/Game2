@@ -201,6 +201,16 @@
     isPaused = NO;
 }
 
+- (void) playFullGame
+{
+    [self startMatch];
+    while (!isOver) {
+        if(!isPaused)
+            [self resumeMatch];
+        [self nextMinute];
+    }
+}
+
 - (void) UpdateMatchFixture
 {
     thisFixture.HOMESCORE = team1.score;

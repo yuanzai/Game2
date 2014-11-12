@@ -48,5 +48,6 @@
 
 - (BOOL) subIn:(Player*) sub ForPlayer:(Player*) player;
 
+- (void) playFullGame;
 - (void) UpdateMatchFixture;
 @end

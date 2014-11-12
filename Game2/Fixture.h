@@ -19,6 +19,7 @@
 @property NSInteger promoteCount;
 @property NSInteger relegateCount;
 @property NSInteger playerCount;
+@property NSArray* currentLeagueTable;
 
 
 - (id) initWithTournamentID:(NSInteger) TournamentID;
@@ -33,6 +34,8 @@
 
 
 - (Fixture*) getMatchForTeamID:(NSInteger) teamID Date:(NSInteger) date;
+
+- (void) setCurrentLeagueTable;
 @end
 
 

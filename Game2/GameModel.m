@@ -143,10 +143,11 @@
     [tournamentList enumerateKeysAndObjectsUsingBlock:^(id key, Tournament* t, BOOL *stop) {
         [[t getFixturesForNonSinglePlayerForDate:myData.weekdate] enumerateObjectsUsingBlock:^(Fixture* fx, NSUInteger idx, BOOL *stop) {
             Match* simulateMatch = [[Match alloc]initWithFixture:fx WithSinglePlayerTeam:nil];
+            [simulateMatch playFullGame];
+            [simulateMatch UpdateMatchFixture];
         }];
+        [t setCurrentLeagueTable];
     }];
-    
-    
 }
 
 - (void) startSeason
