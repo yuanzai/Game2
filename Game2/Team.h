@@ -25,4 +25,5 @@
 - (void) updateFromDatabase;
 - (BOOL) updateToDatabase;
 - (Player*) getPlayerWithID:(NSInteger) PlayerID;
+- (void) updateConditionPreGame;
 @end

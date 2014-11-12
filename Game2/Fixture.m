@@ -183,6 +183,17 @@
     return ret;
 }
 
+- (NSArray*) getFixturesForNonSinglePlayerForDate:(NSInteger)date
+{
+    NSArray* matchList = [[DatabaseModel myDB]getArrayFrom:@"fixtures" withSelectField:@"MATCHID" WhereString:[NSString stringWithFormat:@"HOMETEAM != 0 AND AWAYTEAM != 0 AND DATE = %i",date] OrderBy:@"" Limit:@""];
+    __block NSMutableArray* fixtureList = [NSMutableArray array];
+    [matchList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [fixtureList addObject:[[Fixture alloc]initWithMatchID:[obj integerValue]]];
+    }];
+    return fixtureList;
+}
+
+
 - (void) getPromotionAndRelegationForSeason:(NSInteger) season
 {
     //TODO: promotion relegation at end of season
@@ -252,6 +263,10 @@
 //TODO: update fixture
 -(void) updateFixtureInDatabase
 {
-    // todo
+    NSMutableDictionary* updateData = [NSMutableDictionary dictionary];
+    [updateData setObject:@(HOMESCORE) forKey:@"HOMESCORE"];
+    [updateData setObject:@(AWAYSCORE) forKey:@"AWAYSCORE"];
+    [updateData setObject:@(1) forKey:@"PLAYED"];
+    [[DatabaseModel myDB]updateDatabaseTable:@"fixtures" withKeyField:@"MATCHID" withKey:MATCHID withDictionary:updateData];
 }
 @end

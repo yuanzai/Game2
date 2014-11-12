@@ -29,6 +29,9 @@
 - (NSArray*) getLeagueTableForSeason:(NSInteger)season;
 - (void) getPromotionAndRelegationForSeason:(NSInteger) season;
 
+- (NSArray*) getFixturesForNonSinglePlayerForDate:(NSInteger)date;
+
+
 - (Fixture*) getMatchForTeamID:(NSInteger) teamID Date:(NSInteger) date;
 @end
 

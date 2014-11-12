@@ -23,9 +23,13 @@
 @property NSDictionary* ageProfile;
 @property NSDictionary* statBiasTable;
 
+//Match Variables
 @property NSDictionary* standardDeviationTable;
 @property NSDictionary* actionStartTable;
 @property NSDictionary* tournamentTable;
+
+//TournamentList
+@property NSDictionary* tournamentList;
 
 + (GlobalVariableModel*)myGlobalVariableModel;
 - (void)setEventOccurenceFactorTableFromDB;

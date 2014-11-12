@@ -56,7 +56,10 @@
 
 - (void) setCurrentLeagueTournament
 {
-    self.currentLeagueTournament = [[Tournament alloc]initWithTournamentID: [[[[DatabaseModel myDB]getArrayFrom:@"teams" withSelectField:@"TOURNAMENTID" whereKeyField:@"TEAMID" hasKey:@0]objectAtIndex:0]integerValue]];
+    NSInteger tournamentID = [[[[DatabaseModel myDB]getArrayFrom:@"teams" withSelectField:@"TOURNAMENTID" whereKeyField:@"TEAMID" hasKey:@0]objectAtIndex:0]integerValue];
+    
+    self.currentLeagueTournament = [[[GlobalVariableModel myGlobalVariableModel]tournamentList] objectForKey:
+    [NSString stringWithFormat:@"%i",tournamentID]];
 
 }
 

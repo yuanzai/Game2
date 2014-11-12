@@ -45,11 +45,9 @@
 
     [[GameModel myGame]enterPreWeek];
     [[GameModel myGame]saveThisGame];
-    NSLog(@"Season %i",[[GameModel myGame]myData].season);
-    NSLog(@"Week %i",[[GameModel myGame]myData].weekdate);
     
+    NSLog(@"Season %i | Week %i",[[GameModel myGame]myData].season, [[GameModel myGame]myData].weekdate);
     NSLog(@"Tournament Name %@",[[GameModel myGame]myData].currentLeagueTournament.tournamentName);
-
     NSLog(@"Next Match ID %i",[[GameModel myGame]myData].nextFixture.MATCHID);
 }
 
@@ -57,8 +55,7 @@
 {
     [[GameModel myGame]loadWithGameID:1];
     
-    NSLog(@"Season %i",[[GameModel myGame]myData].season);
-    NSLog(@"Week %i",[[GameModel myGame]myData].weekdate);
+    NSLog(@"Season %i | Week %i",[[GameModel myGame]myData].season, [[GameModel myGame]myData].weekdate);
     
     NSLog(@"Tournament Name %@",[[GameModel myGame]myData].currentLeagueTournament.tournamentName);
     NSLog(@"Next Match ID %i",[[GameModel myGame]myData].nextFixture.MATCHID);
@@ -104,7 +101,7 @@
         NSLog(@"Score %i-%i",playGame.team1.score,playGame.team2.score);
         NSLog(@"Yellow %i-%i",playGame.team1.yellowCard,playGame.team2.yellowCard);
         NSLog(@"Red %i-%i",playGame.team1.redCard,playGame.team2.redCard);
-        
+        [[GameModel myGame]enterPostGame];
         [[GameModel myGame]enterPreWeek];
         [[GameModel myGame]enterPreGame];
         [[GameModel myGame]enterGame];
@@ -128,8 +125,10 @@
     
 }
 
-- (void) ttestScout {
+- (void) testScout {
     Scout* newScout = [[Scout alloc]initWithScoutID:0];
+    
+    NSMutableArray* ary = [NSMutableArray array];
 }
 
 - (void) ttestSinglePlayerData

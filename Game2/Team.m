@@ -55,4 +55,9 @@
 {
     return [PlayerDictionary objectForKey:[NSString stringWithFormat:@"%i",PlayerID]];
 }
+
+- (void) updateConditionPreGame
+{
+//TODO update condition method
+}
 @end

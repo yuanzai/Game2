@@ -47,4 +47,6 @@
 - (void) upPlayerStats;
 
 - (BOOL) subIn:(Player*) sub ForPlayer:(Player*) player;
+
+- (void) UpdateMatchFixture;
 @end

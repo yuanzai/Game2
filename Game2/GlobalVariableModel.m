@@ -8,10 +8,11 @@
 
 #import "GlobalVariableModel.h"
 #import "DatabaseModel.h"
+#import "Fixture.h"
 
 @implementation GlobalVariableModel
 
-@synthesize playerStatList,gkStatList, allStatList,eventOccurenceFactorTable, playerGroupStatList, standardDeviationTable, actionStartTable, valuationStatListCentre, valuationStatListFlank, tournamentTable ;
+@synthesize playerStatList,gkStatList, allStatList,eventOccurenceFactorTable, playerGroupStatList, standardDeviationTable, actionStartTable, valuationStatListCentre, valuationStatListFlank, tournamentTable, tournamentList ;
 
 static GlobalVariableModel* myGlobalVariableModel;
 
@@ -85,6 +86,18 @@ static GlobalVariableModel* myGlobalVariableModel;
         [[GlobalVariableModel myGlobalVariableModel] setStandardDeviationTable: [[[DatabaseModel alloc]init]getStandardDeviationTable]];
     }
     return myGlobalVariableModel.standardDeviationTable;
+}
+
++ (NSDictionary*) tournamentList
+{
+    if (!myGlobalVariableModel.tournamentList){
+        NSMutableDictionary* result = [NSMutableDictionary dictionary];
+        [[[DatabaseModel myDB]getArrayFrom:@"tournaments" withSelectField:@"TOURNAMENTID" whereKeyField:@"" hasKey:@""] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [result setObject:[[Tournament alloc]initWithTournamentID:[obj integerValue]] forKey:[NSString stringWithFormat:@"%@",obj]];
+        }];
+        [[GlobalVariableModel myGlobalVariableModel]setTournamentList:result];
+    }
+    return myGlobalVariableModel.tournamentList;
 }
 
 # pragma mark Training Methods

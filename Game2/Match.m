@@ -139,7 +139,7 @@
         double worFactor = ([[p.matchStats objectForKey:@"WOR"]doubleValue] * .002);
         
         factor = (fitFactor + worFactor) * ((arc4random() % 25 + 75)/100 * factor) / 100;
-        //p.Condition -= factor;
+        p.Condition -= factor;
     }];
 }
 
@@ -201,4 +201,15 @@
     isPaused = NO;
 }
 
+- (void) UpdateMatchFixture
+{
+    thisFixture.HOMESCORE = team1.score;
+    thisFixture.AWAYSCORE = team2.score;
+    thisFixture.HOMEYELLOW = team1.yellowCard;
+    thisFixture.AWAYYELLOW = team2.yellowCard;
+    thisFixture.HOMERED = team1.redCard;
+    thisFixture.AWAYRED = team2.redCard;
+    thisFixture.PLAYED = 1;
+    [thisFixture updateFixtureInDatabase];
+}
 @end
