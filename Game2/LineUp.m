@@ -43,6 +43,19 @@
     } return self;
 }
 
+- (void) clearTeamProperty
+{
+    self.events = 0;
+    self.score = 0;
+    self.shots = 0;
+    self.onTarget = 0;
+    self.offside = 0;
+    self.foul = 0;
+    self.yellowCard = 0;
+    self.redCard = 0;
+}
+
+
 //TODO: Set Pre Match Form
 - (void) populateMatchDayForm
 {

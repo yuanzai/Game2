@@ -38,6 +38,7 @@ typedef enum {
 @property NSMutableArray* matchLog;
 - (id) initWithTeam:(Team*) thisTeam;
 - (id) initWithTeamID:(NSInteger) thisTeamID;
+- (void) clearTeamProperty;
 
 //Squad
 - (void) removeAllPlayers;

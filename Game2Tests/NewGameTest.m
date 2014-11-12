@@ -61,13 +61,14 @@
     NSLog(@"Week %i",[[GameModel myGame]myData].weekdate);
     
     NSLog(@"Tournament Name %@",[[GameModel myGame]myData].currentLeagueTournament.tournamentName);
-    
     NSLog(@"Next Match ID %i",[[GameModel myGame]myData].nextFixture.MATCHID);
 }
 
 - (void)testNextFixture
 {
     [[GameModel myGame]loadWithGameID:1];
+    [[GameModel myGame]enterPreGame];
+
     [[[GameModel myGame]myData].currentLineup removeAllPlayers];
     [[[GameModel myGame]myData].currentLineup fillOutfieldPlayers];
     [[[GameModel myGame]myData].currentLineup fillGoalkeeper];
@@ -75,28 +76,40 @@
     
     XCTAssertTrue([[GameModel myGame]myData].currentLineup);
 
-    [[GameModel myGame]enterGame];
-    NSLog(@"Current %@",[GameModel gameData].currentLineup.team.Name);
+    for (int i =0;i<15;i++) {
+        [[GameModel myGame]enterGame];
+        NSLog(@"Next Match ID %i",[[GameModel myGame]myData].nextFixture.MATCHID);
 
-    
-    Match* playGame = [[GameModel myGame]myData].nextMatch;
-    XCTAssertTrue(playGame.team2);
+        Match* playGame = [[GameModel myGame]myData].nextMatch;
+        NSLog(@"Team %@-%@",playGame.team1.team.Name,playGame.team2.team.Name);
 
-    XCTAssertTrue([playGame.team1 validateTactic]);
-    XCTAssertTrue([playGame.team2 validateTactic]);
-    XCTAssertTrue([playGame startMatch]);
-
-    
-    while (!playGame.isOver && !playGame.isPaused) {
-        [playGame nextMinute];
+        XCTAssertTrue(playGame.team2);
+        XCTAssertTrue([playGame.team1 validateTactic]);
+        XCTAssertTrue([playGame.team2 validateTactic]);
+        XCTAssertTrue([playGame startMatch]);
+        
+        
+        while (!playGame.isOver && !playGame.isPaused) {
+            //NSLog(@"%i",playGame.matchMinute);
+            [playGame nextMinute];
+        }
+        
+        playGame.isPaused = NO;
+        
+        while (!playGame.isOver && !playGame.isPaused) {
+            //NSLog(@"%i",playGame.matchMinute);
+            [playGame nextMinute];
+        }
+        
+        NSLog(@"Score %i-%i",playGame.team1.score,playGame.team2.score);
+        NSLog(@"Yellow %i-%i",playGame.team1.yellowCard,playGame.team2.yellowCard);
+        NSLog(@"Red %i-%i",playGame.team1.redCard,playGame.team2.redCard);
+        
+        [[GameModel myGame]enterPreWeek];
+        [[GameModel myGame]enterPreGame];
+        [[GameModel myGame]enterGame];
     }
-    
-    NSLog(@"Season %i",[[GameModel myGame]myData].season);
-    NSLog(@"Week %i",[[GameModel myGame]myData].weekdate);
-    
-    NSLog(@"Tournament Name %@",[[GameModel myGame]myData].currentLeagueTournament.tournamentName);
-    
-    NSLog(@"Next Match ID %i",[[GameModel myGame]myData].nextFixture.MATCHID);
+
 }
 
 

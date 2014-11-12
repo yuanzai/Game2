@@ -28,8 +28,6 @@
     retainTeam = NO;
     [self setEventOwnerTeam1:team1 Team2:team2];
     [self setCommentary];
-    NSLog(@"Minute %i",matchMinute);
-    NSLog(@"%@",eventCommentary);
 }
 
 -(void) setEventOwnerTeam1:(LineUp*) team1 Team2:(LineUp*) team2
@@ -133,6 +131,14 @@
             ownTeam.onTarget++;
             break;
         }
+
+        if (thisAction.result == Fail) {
+            [eventCommentary addObject:thisAction.Commentary];
+            //ownTeam.shots++;
+            //ownTeam.onTarget++;
+            break;
+        }
+
         
         if (thisAction.result == Save) {
             [eventCommentary addObject:thisAction.Commentary];

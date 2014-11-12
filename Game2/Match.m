@@ -54,16 +54,18 @@
             [team2 fillGoalkeeper];
             [team2 fillOutfieldPlayers];
         }
-        
+        [team1 clearTeamProperty];
         [team1 populateAllPlayersStats];
         [team1 populateSubsStats];
         [team1 populateTeamAttDefStats];
         
+        [team2 clearTeamProperty];
         [team2 populateAllPlayersStats];
         [team2 populateSubsStats];
         [team2 populateTeamAttDefStats];
     } return self;
 }
+
 
 - (BOOL) startMatch
 {
@@ -76,7 +78,6 @@
     isPaused = NO;
     isOver = NO;
     matchMinute = 0;
-    NSLog(@"Kick Off");
     return YES;
 }
 
@@ -138,7 +139,7 @@
         double worFactor = ([[p.matchStats objectForKey:@"WOR"]doubleValue] * .002);
         
         factor = (fitFactor + worFactor) * ((arc4random() % 25 + 75)/100 * factor) / 100;
-        p.Condition -= factor;
+        //p.Condition -= factor;
     }];
 }
 

@@ -15,12 +15,12 @@
 @synthesize ToPositionSide;
 @synthesize FromZoneFlank;
 @synthesize ToZoneFlank;
-@synthesize OppPositionSide;
 @synthesize FromPlayer;
 @synthesize ToPlayer;
 
 //DEFENDERS
 @synthesize DefenseType;
+@synthesize OppPositionSide;
 @synthesize OppPlayer;
 @synthesize OppKeeper;
 
@@ -40,11 +40,19 @@
 const ZoneFlank ZFNil = {ZoneCount, FlankCount};
 const PositionSide PSNil = {PositionCount, SideCount};
 
+- (id) init
+{
+    self = [super init];
+    if (self) {
+        FromZoneFlank = (ZoneFlank) {ZoneCount,FlankCount};
+        ToZoneFlank = (ZoneFlank) {ZoneCount,FlankCount};
+        FromPositionSide = (PositionSide) {PositionCount,SideCount};
+        ToPositionSide = (PositionSide) {PositionCount,SideCount};
+    }; return self;
+}
 
 - (void) setActionProperties
 {
-    
-    
     actionCount = previousAction.actionCount + 1;
     [self setActionFromPrevious];
     
@@ -80,14 +88,22 @@ const PositionSide PSNil = {PositionCount, SideCount};
         FromPlayer = previousAction.ToPlayer;
         FromPositionSide = previousAction.ToPositionSide;
     }
+    if (!AttackType) {
+        [self printAction];
+        [NSException raise:@"No AttackType" format:@"No AttackType"];
+    }
+
 }
 
 - (void) setOffense 
 {
+
     NSDictionary* record;
     
-    if (!AttackType)
+    if (!AttackType) {
+        [self printAction];
         [NSException raise:@"No AttackType" format:@"No AttackType"];
+    }
     
     if ([self isSetPiecePenaltyCorner:AttackType])
         [self getSetPieceTakers];
@@ -109,10 +125,15 @@ const PositionSide PSNil = {PositionCount, SideCount};
 
 - (void) setDefense 
 {
+
     NSDictionary* record;
     OppKeeper = oppTeam.currentTactic.GoalKeeper;
     
-    if (![self isSetPieceShot:AttackType]) {
+    if ([AttackType isEqualToString:@"FreekickShortPass"]||
+        [AttackType isEqualToString:@"FreekickLongPass"]||
+        [AttackType isEqualToString:@"FreekickCross"]) {
+        DefenseType = AttackType;
+    } else if (!([self isSetPieceShot:AttackType] || FromZoneFlank.zone == GK)) {
         
         record = [self getProbResultFromTable:@"DefenseType_ZFAtt_dy" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
         DefenseType = [record objectForKey:@"OUTDEFENSETYPE"];
@@ -123,15 +144,15 @@ const PositionSide PSNil = {PositionCount, SideCount};
         
         if ([DefenseType isEqualToString:@"Caught"])
             OppPlayer = OppKeeper;
+        
     } else {
         DefenseType = @"Save";
         OppPlayer = OppKeeper;
     }
-    if (!DefenseType)
+    if (!DefenseType) {
         [NSException raise:@"No DefenseType" format:@"No DefenseType"];
-    if (!OppPlayer)
-        [NSException raise:@"No OppPlayer" format:@"No OppPlayer"];
-
+        [self printAction];
+    }
     defQuotient = [self getExecutionQualityWithPlayer:OppPlayer ExecutionType:DefenseType];
 }
 
@@ -166,7 +187,11 @@ const PositionSide PSNil = {PositionCount, SideCount};
     double QDistRandom = arc4random() % 15;
     double TopQDistRandom = arc4random() % 10;
     
-    return ((80 - QDistRandom) * (((80 - TopQDistRandom) * CoEffQ +  (80 + TopQDistRandom) * TopQ)/100) + (20 + QDistRandom) * StatQ) * thisPlayer.Condition;
+    return (  (80 - QDistRandom) * (
+                                    ((80 - TopQDistRandom) * CoEffQ
+                                    +(20 + TopQDistRandom) * TopQ)
+                                    /100)
+            + (20 + QDistRandom) * StatQ)/100 * thisPlayer.Condition;
 }
 
 - (void) getResult;
@@ -215,6 +240,7 @@ const PositionSide PSNil = {PositionCount, SideCount};
     if (arc4random()%10000 < foulProb) {
         record = [self getProbResultFromTable:@"NextAttackType_ZFAtt" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"FoulDef" DefenseType:@"" isDynamicProb:NO Team:thisTeam PositionSideToExclude:PSNil];
         NextAttack = [record objectForKey:@"OUTATTACKTYPE"];
+        ToZoneFlank = FromZoneFlank;
         
         if (arc4random()%10000 < yellowProb) {
             
@@ -232,6 +258,8 @@ const PositionSide PSNil = {PositionCount, SideCount};
         else {
             result = DefenseFoul;
         }
+        if (!NextAttack)
+            [NSException raise:@"No Next Attack after foul" format:@"No Next Attack after foul"];
         return;
     }
     
@@ -276,6 +304,7 @@ const PositionSide PSNil = {PositionCount, SideCount};
         FromPlayer = [self getTopPlayerFromArray:outFieldPlayers InStat1:@"PEN" Stat2:@"SHO"];
         OppPlayer = OppKeeper;
     } else {
+        
         NSDictionary* record = [self getProbResultFromTable:@"FreeKickPlayerPS_ZF_dy" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
         
         FromPositionSide =[self getPositionSideFromTextWithPosition:[record objectForKey:@"OUTPOSITION"] Side:[record objectForKey:@"OUTSIDE"]];
@@ -310,11 +339,12 @@ const PositionSide PSNil = {PositionCount, SideCount};
 
 - (BOOL) isGoalAttempt:(NSString*) type
 {
-    return ([AttackType isEqualToString:@"HeaderShot"]||
-            [AttackType isEqualToString:@"LongShot"]||
-            [AttackType isEqualToString:@"Shot"]||
-            [AttackType isEqualToString:@"FreekickLongShot"]||
-            [AttackType isEqualToString:@"FreekickShot"]);
+    return ([type isEqualToString:@"HeaderShot"]||
+            [type isEqualToString:@"LongShot"]||
+            [type isEqualToString:@"Shot"]||
+            [type isEqualToString:@"FreekickLongShot"]||
+            [type isEqualToString:@"FreekickShot"]||
+            [type isEqualToString:@"Penalty"]);
 }
 
 - (BOOL) isSetPiecePenaltyCorner:(NSString*) type {
@@ -339,6 +369,7 @@ const PositionSide PSNil = {PositionCount, SideCount};
     int r = arc4random() % 20;
     if (previousAction)
         onTarget = previousAction.attQuotient * (10+r)/100 + attQuotient * (90-r)/100;
+
     
     if (arc4random() % 10000 < ((onTarget/30)*10000)){
         result = OffTarget;
@@ -364,31 +395,52 @@ const PositionSide PSNil = {PositionCount, SideCount};
             }
         }
     }
+
 }
 
 - (void) getNonGoalAttemptResult
 {
     NSDictionary* record;
-    record = [[DatabaseModel myDB]getResultDictionaryForTable:@"AttackOutcome_ZFAtt" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@"INZONE",[self getZoneString:FromZoneFlank],@"INFLANK",[self getFlankString:FromZoneFlank],@"INATTACKTYPE",AttackType, nil]];
-    NSInteger prob = 0;
-    if (record)
-        prob = [[record objectForKey:@"PROB"]integerValue];
+    
+    if ([AttackType isEqualToString:@"FreekickLongPass"] ||
+        [AttackType isEqualToString:@"FreekickShortPass"] ||
+        [AttackType isEqualToString:@"FreekickCross"]) {
         
-    if (prob > (arc4random() % 10000)) {
-        record = [self getProbResultFromTable:@"FailOut_ZF" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:NO Team:thisTeam PositionSideToExclude:PSNil];
-        NSString* recordOutcome = [record objectForKey:@"OUTCORNER"];
+        NSString* freekickAttack = [AttackType stringByReplacingOccurrencesOfString:@"Freekick" withString:@""];
         
-        //result = ThrowIn;
-        //Out disabled - assumed to be fail
-        if ([recordOutcome isEqualToString:@"Corner"]) {
-            result = Corner;
-        } else if (arc4random() % 10000 < (attQuotient / (defQuotient + attQuotient) * 10000)) {
+        record = [[DatabaseModel myDB]getResultDictionaryForTable:@"AttackOutcome_ZFAtt" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@"INZONE",[self getZoneString:FromZoneFlank],@"INFLANK",[self getFlankString:FromZoneFlank],@"INATTACKTYPE",freekickAttack, nil]];
+        NSInteger prob = 0;
+        if (record)
+            prob = [[record objectForKey:@"PROB"]integerValue];
+        
+        if (prob > (arc4random() % 10000)) {
             result = Fail;
         } else {
             result = Success;
         }
     } else {
-        result = Success;
+    
+        record = [[DatabaseModel myDB]getResultDictionaryForTable:@"AttackOutcome_ZFAtt" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@"INZONE",[self getZoneString:FromZoneFlank],@"INFLANK",[self getFlankString:FromZoneFlank],@"INATTACKTYPE",AttackType, nil]];
+        NSInteger prob = 0;
+        if (record)
+            prob = [[record objectForKey:@"PROB"]integerValue];
+        
+        if (prob > (arc4random() % 10000)) {
+            record = [self getProbResultFromTable:@"FailOut_ZF" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:NO Team:thisTeam PositionSideToExclude:PSNil];
+            NSString* recordOutcome = [record objectForKey:@"OUTCORNER"];
+            
+            //result = ThrowIn;
+            //Out disabled - assumed to be fail
+            if ([recordOutcome isEqualToString:@"Corner"]) {
+                result = Corner;
+            } else if (arc4random() % 10000 < (attQuotient / (defQuotient + attQuotient) * 10000)) {
+                result = Fail;
+            } else {
+                result = Success;
+            }
+        } else {
+            result = Success;
+        }
     }
 }
 
@@ -610,4 +662,32 @@ const PositionSide PSNil = {PositionCount, SideCount};
     return retDict;
 }
 
+- (void) printAction
+{
+    @try {
+        NSLog(@"Attack - %@", self.AttackType);
+        NSLog(@"Next Attack - %@", self.NextAttack);
+        NSLog(@"Defense - %@", self.DefenseType);
+        NSLog(@"From ZF - %@,%@", [self getZoneString:FromZoneFlank], [self getFlankString:FromZoneFlank]);
+        NSLog(@"To ZF - %@,%@", [self getZoneString:ToZoneFlank], [self getFlankString:ToZoneFlank]);
+        NSLog(@"AttQ %f, DefQ %f", attQuotient, defQuotient);
+        NSLog(@"Fail prob %f", ((defQuotient - attQuotient)*.08 + .6) *10000);
+
+        if (previousAction)  {
+            NSLog(@"p.Attack - %@", previousAction.AttackType);
+            NSLog(@"p.Next Attack - %@", previousAction.NextAttack);
+            NSLog(@"p.Defense - %@", previousAction.DefenseType);
+            NSLog(@"p.Result - %i", previousAction.result);
+        }
+        
+    }
+    @catch (NSException *exception) {
+        
+    }
+    @finally {
+        
+    }
+    //NSLog(@"From ZF - %@", thisAction.FromZoneFlank);
+    //NSLog(@"To ZF - %@", thisAction.ToZoneFlank);
+}
 @end
