@@ -186,7 +186,7 @@
 
 - (NSArray*) getFixturesForNonSinglePlayerForDate:(NSInteger)date
 {
-    NSArray* matchList = [[DatabaseModel myDB]getArrayFrom:@"fixtures" withSelectField:@"MATCHID" WhereString:[NSString stringWithFormat:@"HOMETEAM != 0 AND AWAYTEAM != 0 AND DATE = %i",date] OrderBy:@"" Limit:@""];
+    NSArray* matchList = [[DatabaseModel myDB]getArrayFrom:@"fixtures" withSelectField:@"MATCHID" WhereString:[NSString stringWithFormat:@"HOMETEAM != 0 AND AWAYTEAM != 0 AND DATE = %i AND TOURNAMENTID = %i",date,tournamentID] OrderBy:@"" Limit:@""];
     __block NSMutableArray* fixtureList = [NSMutableArray array];
     [matchList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         [fixtureList addObject:[[Fixture alloc]initWithMatchID:[obj integerValue]]];
@@ -226,6 +226,13 @@
                                  nil]];
     NSInteger matchID = [[result objectForKey:@"MATCHID"]integerValue];
     return [[Fixture alloc]initWithMatchID:matchID];
+}
+
+- (void) printTable
+{
+    [currentLeagueTable enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
+        NSLog(@"%@",obj);
+    }];
 }
 @end
 

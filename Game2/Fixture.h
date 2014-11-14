@@ -36,6 +36,8 @@
 - (Fixture*) getMatchForTeamID:(NSInteger) teamID Date:(NSInteger) date;
 
 - (void) setCurrentLeagueTable;
+- (void) printTable;
+
 @end
 
 

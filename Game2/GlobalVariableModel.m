@@ -10,9 +10,10 @@
 #import "DatabaseModel.h"
 #import "Fixture.h"
 
+#import "LineUp.h"
 @implementation GlobalVariableModel
 
-@synthesize playerStatList,gkStatList, allStatList,eventOccurenceFactorTable, playerGroupStatList, standardDeviationTable, actionStartTable, valuationStatListCentre, valuationStatListFlank, tournamentTable, tournamentList ;
+@synthesize playerStatList,gkStatList, allStatList,eventOccurenceFactorTable, playerGroupStatList, standardDeviationTable, valuationStatListCentre, valuationStatListFlank, tournamentTable,probTables,sGridTables ;
 
 static GlobalVariableModel* myGlobalVariableModel;
 
@@ -22,7 +23,6 @@ static GlobalVariableModel* myGlobalVariableModel;
         myGlobalVariableModel = [[GlobalVariableModel alloc] init];
         [myGlobalVariableModel setAllStatList];
         [myGlobalVariableModel setEventOccurenceFactorTableFromDB];
-        
     }
     return myGlobalVariableModel;
 }
@@ -83,7 +83,7 @@ static GlobalVariableModel* myGlobalVariableModel;
 
 + (NSDictionary *)standardDeviationTable {
     if (!myGlobalVariableModel.standardDeviationTable){
-        [[GlobalVariableModel myGlobalVariableModel] setStandardDeviationTable: [[[DatabaseModel alloc]init]getStandardDeviationTable]];
+        [[GlobalVariableModel myGlobalVariableModel] setStandardDeviationTable: [[DatabaseModel myDB]getStandardDeviationTable]];
     }
     return myGlobalVariableModel.standardDeviationTable;
 }
@@ -105,7 +105,7 @@ static GlobalVariableModel* myGlobalVariableModel;
 + (NSDictionary*) statBiasTable {
     if (!myGlobalVariableModel.statBiasTable){
         
-        NSArray* statBiasList = [[[DatabaseModel alloc]init]getArrayFrom:@"statBias" whereData:nil sortFieldAsc:@""];
+        NSArray* statBiasList = [[DatabaseModel myDB]getArrayFrom:@"statBias" whereData:nil sortFieldAsc:@""];
         NSMutableDictionary* result = [NSMutableDictionary dictionary];
         [statBiasList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             [result setObject:obj forKey:[[obj objectForKey:@"STATBIASID"]stringValue]];
@@ -122,7 +122,7 @@ static GlobalVariableModel* myGlobalVariableModel;
     if (!myGlobalVariableModel.ageProfile){
         NSMutableDictionary* result = [NSMutableDictionary dictionary];
         
-        NSArray* allProfiles = [[[DatabaseModel alloc]init]getArrayFrom:@"trainingProfile" whereData:nil sortFieldAsc:@""];
+        NSArray* allProfiles = [[DatabaseModel myDB]getArrayFrom:@"trainingProfile" whereData:nil sortFieldAsc:@""];
         [allProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             if ([result objectForKey:[[obj objectForKey:@"AGE"]stringValue]]) {
                 NSMutableDictionary* profile = [result objectForKey:[obj objectForKey:@"AGE"]];
@@ -167,19 +167,6 @@ static GlobalVariableModel* myGlobalVariableModel;
 }
 */
 
-+ (NSDictionary*) actionStartTable
-{
-    if (!myGlobalVariableModel.actionStartTable){
-        NSArray* data = [[[DatabaseModel alloc]init]getArrayFrom:@"ActionStartTable" whereKeyField:@"" hasKey:@"" sortFieldAsc:@"PROB"];
-        NSMutableDictionary* result = [[NSMutableDictionary alloc]init];
-        [data enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            [result setObject:obj forKey:[NSString stringWithFormat:@"%i",[[obj objectForKey:@"PROB"]integerValue]]];
-        }];
-        myGlobalVariableModel.actionStartTable = result;
-    }
-    return myGlobalVariableModel.actionStartTable;
-}
-
 + (NSMutableArray*) playerStatList{
     return [[NSMutableArray alloc]initWithObjects:
      @"PAS", @"LPA", @"HEA",  @"SHO", @"TAC", @"AGI", @"CRO",  @"DRI", @"MOV", @"POS",
@@ -214,38 +201,133 @@ static GlobalVariableModel* myGlobalVariableModel;
 - (void) setAllStatList
 {
     allStatList = [[NSMutableArray alloc]initWithObjects:
-                      @"PAS",
-                      @"LPA",
-                      @"HEA",
-                      @"SHO",
-                      @"TAC",
-                      @"AGI",
-                      @"CRO",
-                      @"DRI",
-                      @"MOV",
-                      @"POS",
-                      @"LSH",
-                      @"PEN",
-                      @"FRE",
-                      @"SPE",
-                      @"STR",
-                      @"FIT",
-                      @"WOR",
-                      @"TEC",
-                      @"INT",
-                      @"TEA",
-                      @"DIS",
-                      @"HAN",
-                      @"REF",
-                      @"PHY",
-                      @"COM",
-                      nil];
+                      @"PAS", @"LPA", @"HEA", @"SHO", @"TAC",
+                      @"AGI", @"CRO", @"DRI", @"MOV", @"POS",
+                      @"LSH", @"PEN", @"FRE", @"SPE", @"STR",
+                      @"FIT", @"WOR", @"TEC", @"INT", @"TEA",
+                      @"DIS", @"HAN", @"REF", @"PHY", @"COM", nil];
 }
 
 - (void) setEventOccurenceFactorTableFromDB
 {
-    eventOccurenceFactorTable = [[[DatabaseModel alloc]init]getEventOccurenceFactorTable];
+    eventOccurenceFactorTable = [[DatabaseModel myDB]getEventOccurenceFactorTable];
 }
 
+
++ (NSDictionary*) getProbResultFromTable:(NSString*) tbl ZoneFlank:(ZoneFlank)zf PositionSide:(PositionSide) ps AttackType:(NSString*) atype DefenseType:(NSString*) dtype isDynamicProb:(BOOL) isProbDy Team:(LineUp*) team PositionSideToExclude:(PositionSide) exPS
+{
+    if (!myGlobalVariableModel.probTables)
+        myGlobalVariableModel.probTables = [NSMutableDictionary dictionary];
+    
+    __block NSMutableArray* resultList = [NSMutableArray array];
+    __block NSInteger sumProb = 0;
+    __block NSInteger cumuProb = 0;
+    __block double prob = (double) (arc4random() % 10000);
+    __block NSDictionary* result;
+    
+    if (![myGlobalVariableModel.probTables objectForKey:tbl]) {
+        NSArray* dataTable = [[DatabaseModel myDB]getArrayFrom:tbl whereData:nil sortFieldAsc:@""];
+        [myGlobalVariableModel.probTables setObject:dataTable forKey:tbl];
+    }
+    NSArray* enumList = [myGlobalVariableModel.probTables objectForKey:tbl];
+    [enumList enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
+        if (zf.zone != ZoneCount) {
+            if (![[obj objectForKey:@"INZONE"] isEqualToString:[Structs getZoneString:zf]])
+                return;
+            if (![[obj objectForKey:@"INFLANK"] isEqualToString:[Structs getFlankString:zf]])
+                return;
+        }
+        if (ps.position != PositionCount) {
+            if (![[obj objectForKey:@"INPOSITION"] isEqualToString:[Structs getPositionString:ps]])
+                return;
+            if (![[obj objectForKey:@"INSIDE"] isEqualToString:[Structs getSideString:ps]])
+                return;
+        }
+        if (![atype isEqual:@""]) {
+            if (![[obj objectForKey:@"INATTACKTYPE"] isEqualToString:atype])
+                return;
+        }
+        if (![dtype isEqual:@""]) {
+            if (![[obj objectForKey:@"INDEFENSETYPE"] isEqualToString:dtype])
+                return;
+            
+        }
+        
+        if (isProbDy) {
+            
+            //if (![obj objectForKey:@"PROB"])
+              //  [NSException raise:@"table returns no prob" format:@"table %@ returns no prob",tbl];
+            
+            if (exPS.position != PositionCount ) {
+                PositionSide ps = [Structs getPositionSideFromTextWithPosition:[obj objectForKey:@"OUTPOSITION"] Side:[obj objectForKey:@"OUTSIDE"]];
+                if (![team.currentTactic hasPlayerAtPositionSide:ps])
+                    return;
+                if (ps.position == exPS.position && ps.side == exPS.side)
+                    return;
+            }
+            sumProb += [[obj objectForKey:@"PROB"]integerValue];
+            [resultList addObject:obj];
+        } else {
+            if ([[obj objectForKey:@"PROB"]integerValue] > prob) {
+                result =  obj;
+                *stop = YES;
+            }
+        }
+    }];
+    
+    if (isProbDy) {
+        if ([resultList count] ==0)
+            [NSException raise:@"table returns 0" format:@"table %@ returns zero count",tbl];
+        [resultList enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
+            cumuProb += [[obj objectForKey:@"PROB"]integerValue];
+            if ((double)cumuProb/(double)sumProb*10000 > prob){
+                result = obj;
+                *stop = YES;
+            }
+        }];
+    }
+    
+    if (!result)
+        [NSException raise:@"table returns no result" format:@"table %@ returns no result",tbl];
+    
+    return result;
+}
+
++ (NSDictionary*) getSGridForType:(NSString*)type Coeff:(NSString*)coeff {
+    NSString* key = [NSString stringWithFormat:@"%@%@",type,coeff];
+    if (!myGlobalVariableModel.sGridTables)
+        myGlobalVariableModel.sGridTables = [NSMutableDictionary dictionary];
+    
+    if (![myGlobalVariableModel.sGridTables objectForKey:key]) {
+        NSDictionary* grid = [[DatabaseModel myDB]getResultDictionaryForTable:@"SGrid" withDictionary:[[NSMutableDictionary alloc]initWithObjectsAndKeys:type,@"TYPE",coeff,@"STATTYPE", nil]];
+        if (!grid)
+            [NSException raise:@"empty sGrid" format:@"empty SGrid %@",key];
+        [myGlobalVariableModel.sGridTables setObject:grid forKey:key];
+    }
+    
+    
+    return [myGlobalVariableModel.sGridTables objectForKey:key];
+}
+
++ (NSInteger) getAttackOutcomesForZoneFlank:(ZoneFlank) zf AttackType:(NSString*) type
+{
+    if (!myGlobalVariableModel.attackOutcomeTables)
+        myGlobalVariableModel.attackOutcomeTables = [[DatabaseModel myDB]getArrayFrom:@"AttackOutcome_ZFAtt" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"OUTCOME",@"Fail", nil] sortFieldAsc:@""];
+    __block double result = 0.0;
+    
+    [myGlobalVariableModel.attackOutcomeTables enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
+        if (zf.zone != ZoneCount) {
+            if (![[obj objectForKey:@"INZONE"] isEqualToString:[Structs getZoneString:zf]])
+                return;
+            if (![[obj objectForKey:@"INFLANK"] isEqualToString:[Structs getFlankString:zf]])
+                return;
+        }
+        if (![[obj objectForKey:@"INATTACKTYPE"] isEqualToString:type])
+            return;
+        *stop=YES;
+        result = [[obj objectForKey:@"PROB"]integerValue];
+    }];
+    return result;
+}
 
 @end

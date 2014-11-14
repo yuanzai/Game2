@@ -7,14 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "Structs.h"
+@class LineUp;
 @interface GlobalVariableModel : NSObject
 @property NSMutableArray* playerStatList;
 @property NSMutableArray* gkStatList;
 @property NSMutableDictionary* playerGroupStatList;
 @property NSMutableArray* allStatList;
-@property NSMutableDictionary* eventOccurenceFactorTable;
 
+//Valuations
 @property NSDictionary* valuationStatListCentre;
 @property NSDictionary* valuationStatListFlank;
 @property NSDictionary* valuationStatListGK;
@@ -24,26 +25,36 @@
 @property NSDictionary* statBiasTable;
 
 //Match Variables
+@property NSMutableDictionary* eventOccurenceFactorTable;
 @property NSDictionary* standardDeviationTable;
-@property NSDictionary* actionStartTable;
 @property NSDictionary* tournamentTable;
+@property NSMutableDictionary* probTables;
+@property NSMutableDictionary* sGridTables;
+@property NSArray* attackOutcomeTables;
 
 //TournamentList
 @property NSDictionary* tournamentList;
++ (NSDictionary*) tournamentList;
+
 
 + (GlobalVariableModel*)myGlobalVariableModel;
 - (void)setEventOccurenceFactorTableFromDB;
 
 // Stat List
-+ (NSDictionary*)valuationStatListForFlank:(NSString*) flank;
 
 + (NSMutableArray*) playerStatList;
 + (NSMutableArray*) gkStatList;
 + (NSMutableDictionary*) playerGroupStatList;
 
+//Valuatons
++ (NSDictionary*)valuationStatListForFlank:(NSString*) flank;
+
+
 // Game Engine Prob Tables
 + (NSDictionary *)standardDeviationTable;
-+ (NSDictionary*) actionStartTable;
++ (NSDictionary*) getProbResultFromTable:(NSString*) tbl ZoneFlank:(ZoneFlank)zf PositionSide:(PositionSide) ps AttackType:(NSString*) atype DefenseType:(NSString*) dtype isDynamicProb:(BOOL) isProbDy Team:(LineUp*) team PositionSideToExclude:(PositionSide) exPS;
++ (NSDictionary*) getSGridForType:(NSString*)type Coeff:(NSString*)coeff;
++ (NSInteger) getAttackOutcomesForZoneFlank:(ZoneFlank) zf AttackType:(NSString*) type;
 
 // Training Tables
 + (NSDictionary*) statBiasTable;

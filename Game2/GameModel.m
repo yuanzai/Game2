@@ -139,10 +139,12 @@
     [myData.nextMatch UpdateMatchFixture];
 
     //TODO: - process tournament games played
-    NSDictionary* tournamentList = [[GlobalVariableModel myGlobalVariableModel]tournamentList];
+    NSDictionary* tournamentList = [GlobalVariableModel tournamentList];
     [tournamentList enumerateKeysAndObjectsUsingBlock:^(id key, Tournament* t, BOOL *stop) {
         [[t getFixturesForNonSinglePlayerForDate:myData.weekdate] enumerateObjectsUsingBlock:^(Fixture* fx, NSUInteger idx, BOOL *stop) {
             Match* simulateMatch = [[Match alloc]initWithFixture:fx WithSinglePlayerTeam:nil];
+            NSLog(@"%i %i %@ v %@",t.tournamentID,fx.MATCHID,simulateMatch.team1.team.Name, simulateMatch.team2.team.Name);
+
             [simulateMatch playFullGame];
             [simulateMatch UpdateMatchFixture];
         }];

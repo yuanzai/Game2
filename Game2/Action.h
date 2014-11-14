@@ -14,28 +14,6 @@
 
 @class LineUp;
 @class Player;
-typedef enum {
-    GK,
-    Own,
-    Opp,
-    Area,
-    ZoneCount
-} Zone;
-
-typedef enum {
-    GKFlank,
-    LeftFlank,
-    CentreFlank,
-    RightFlank,
-    FlankCount
-} Flank;
-
-struct ZoneFlank {
-    Zone zone;
-    Flank flank;
-};
-
-typedef struct ZoneFlank ZoneFlank;
 
 
 typedef enum {
@@ -108,4 +86,6 @@ typedef enum {
 @property int actionCount;
 
 - (void) setActionProperties;
++ (double) addToRuntime:(int)no amt:(double) amt;
+
 @end

@@ -23,6 +23,8 @@
 @synthesize thisAction;
 @synthesize previousAction;
 
+const NSInteger max_action = 10;
+
 - (void) getEvents:(LineUp*) team1 Team2:(LineUp*) team2;
 {
     retainTeam = NO;
@@ -85,7 +87,7 @@
         return;
     }    
     // Event probability model
-    while(eventCount < 14){
+    while(eventCount < max_action){
         thisAction = [[Action alloc]init];
         thisAction.thisTeam = ownTeam;
         thisAction.oppTeam = oppTeam;

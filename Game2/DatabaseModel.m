@@ -151,7 +151,7 @@ const NSInteger insertQueueMax = 10;
                        " CASE WHEN HOMESCORE = AWAYSCORE THEN '1'else '0' END as DRAW,"
                        " CASE WHEN HOMESCORE > AWAYSCORE THEN '1'else '0' END as LOSS"
                        " FROM fixtures WHERE"
-                       " TOURNAMENTID = %i AND SEASON = %i"
+                       " TOURNAMENTID = %i AND SEASON = %i AND PLAYED = 1"
                        " UNION ALL"
                        " SELECT HOMETEAM as TEAM, HOMESCORE as GOALSFOR, AWAYSCORE as GOALSAGAINST,"
                        " CASE WHEN HOMESCORE > AWAYSCORE THEN '3' WHEN HOMESCORE = AWAYSCORE THEN '1' else '0' end as POINT,"
@@ -159,7 +159,7 @@ const NSInteger insertQueueMax = 10;
                        " CASE WHEN HOMESCORE = AWAYSCORE THEN '1'else '0' END as DRAW,"
                        " CASE WHEN HOMESCORE < AWAYSCORE THEN '1'else '0' END as LOSS"
                        " FROM fixtures WHERE"
-                       " TOURNAMENTID = %i AND SEASON = %i",tournamentID,season,tournamentID,season];
+                       " TOURNAMENTID = %i AND SEASON = %i AND PLAYED = 1",tournamentID,season,tournamentID,season];
     
     query = [NSString stringWithFormat:@"SELECT TEAM, SUM(WIN) + SUM(DRAW) + SUM(LOSS) as GP, SUM(WIN) as WIN, SUM(DRAW) as DRAW, SUM(LOSS) as LOSS, SUM(POINT) as POINTS, SUM(GOALSFOR) as GF, SUM(GOALSAGAINST) as GA, (SUM(GOALSFOR) - SUM(GOALSAGAINST)) as GD FROM (%@) GROUP BY TEAM ORDER BY POINTS DESC",query];
     
@@ -264,8 +264,12 @@ const NSInteger insertQueueMax = 10;
         sortSQL = [NSString stringWithFormat:@"ORDER BY %@ ASC", sortAsc];
     }
     
-    query = [NSString stringWithFormat:@"SELECT * FROM %@ %@ %@", table, [self getWhereSQL:data],sortSQL];
-
+    if (data) {
+        query = [NSString stringWithFormat:@"SELECT * FROM %@ %@ %@", table, [self getWhereSQL:data],sortSQL];
+    } else {
+        query = [NSString stringWithFormat:@"SELECT * FROM %@ %@", table ,sortSQL];
+    }
+    
     FMResultSet* result = [db executeQuery:query];
     NSMutableArray *resultArray = [[NSMutableArray alloc]init];
     while ([result next]){

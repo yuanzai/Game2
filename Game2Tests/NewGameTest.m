@@ -14,6 +14,7 @@
 #import "Scouting.h"
 #import "Fixture.h"
 #import "Match.h"
+#import "Action.h"
 @interface NewGameTest : XCTestCase
 
 @end
@@ -64,6 +65,8 @@
 - (void)testNextFixture
 {
     [[GameModel myGame]loadWithGameID:1];
+    //[[GameModel myGame]enterPreWeek];
+
     [[GameModel myGame]enterPreGame];
 
     [[[GameModel myGame]myData].currentLineup removeAllPlayers];
@@ -73,7 +76,7 @@
     
     XCTAssertTrue([[GameModel myGame]myData].currentLineup);
 
-    for (int i =0;i<1;i++) {
+    for (int i =0;i<2;i++) {
         [[GameModel myGame]enterGame];
         NSLog(@"Next Match ID %i",[[GameModel myGame]myData].nextFixture.MATCHID);
 
@@ -104,9 +107,12 @@
         [[GameModel myGame]enterPostGame];
         [[GameModel myGame]enterPreWeek];
         [[GameModel myGame]enterPreGame];
-        [[GameModel myGame]enterGame];
+        //[[GameModel myGame]enterGame];
     }
-
+    NSLog(@"%f",[Action addToRuntime:1 amt:0]);
+    NSLog(@"%f",[Action addToRuntime:2 amt:0]);
+    NSLog(@"%f",[Action addToRuntime:3 amt:0]);
+    [[[[GameModel myGame] myData]currentLeagueTournament]printTable];
 }
 
 
@@ -118,9 +124,46 @@
     
 }
 
+-(void) testDictionaryAccess
+{
+    NSDate *date = [NSDate date];
+    
+    for (int i =0; i<10000; i++){
+        NSInteger r = arc4random()%1000;
+        
+    }
+    
+    NSLog(@"%f",[date timeIntervalSinceNow] * -1);
+    
+    date = [NSDate date];
+    for (int i =0; i<10000; i++){
+        NSInteger r = arc4random_uniform(1000);
+    }
+    NSLog(@"%f",[date timeIntervalSinceNow] * -1);
+
+    
+    date = [NSDate date];
+    for (int i =0; i<10000; i++){
+        NSDictionary* ageP = [GlobalVariableModel ageProfile];
+        NSDictionary* pid = [ageP objectForKey:@(0)];
+        NSInteger r = arc4random_uniform(20);
+        NSDictionary* profile = [pid objectForKey:[NSString stringWithFormat:@"%i",r]];
+    }
+    NSLog(@"%f",[date timeIntervalSinceNow] * -1);
+    
+    date = [NSDate date];
+    for (int i =0; i<10000; i++){
+        NSString* h = @"HELLO";
+        NSString* h2 = @"HELLO";
+        [h isEqualToString:h];
+    }
+    NSLog(@"%f",[date timeIntervalSinceNow] * -1);
+    
+}
+
 - (void)ttestDatabase
 {
-    NSArray* players = [[[DatabaseModel alloc]init]getArrayFrom:@"players" withSelectField:@"DISPLAYNAME" whereKeyField:@"PLAYERID" hasKey:@2];
+    NSArray* players = [[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"DISPLAYNAME" whereKeyField:@"PLAYERID" hasKey:@2];
     XCTAssertTrue([players count] == 1,@"get 1 player in players table");
     
 }

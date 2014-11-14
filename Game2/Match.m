@@ -205,7 +205,7 @@
 {
     [self startMatch];
     while (!isOver) {
-        if(!isPaused)
+        if(isPaused)
             [self resumeMatch];
         [self nextMinute];
     }
