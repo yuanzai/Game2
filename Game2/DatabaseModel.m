@@ -34,22 +34,8 @@ const NSInteger insertQueueMax = 10;
 	if (!(self = [super init]))
 		return nil;
     databasePath = [(AppDelegate *)[[UIApplication sharedApplication] delegate] databasePath];
-    
-    if (!databasePath) {
-        //For unit test purpose as app delegate did not run
-        /*
-          NSString* databaseName = @"database.db";
-          databasePath = [[[NSBundle bundleForClass:[self class]] resourcePath] stringByAppendingPathComponent:databaseName];
-          [self getDBPath];
-          [self createAndCheckDatabase];
-         */
-    }
-
-
     db = [FMDatabase databaseWithPath:databasePath];
-    insertQueue = [NSMutableArray array];
     [db open];
-
     return self;
 }
 
@@ -108,7 +94,7 @@ const NSInteger insertQueueMax = 10;
 
 - (NSMutableDictionary*) getStatsEventTable
 {
-    NSArray* matchStatsTable =[[GlobalVariableModel myGlobalVariableModel]playerStatList];
+    NSArray* matchStatsTable =[GlobalVariableModel playerStatList];
     NSMutableDictionary* resultTable = [[NSMutableDictionary alloc] init];
     FMResultSet *results = [db executeQuery:@"SELECT * FROM statsEvent"];
     
@@ -289,6 +275,9 @@ const NSInteger insertQueueMax = 10;
 
 - (BOOL) updateDatabaseTable:(NSString*) table withKeyField:(NSString*)keyField withKey:(NSInteger)key withDictionary:(NSDictionary*) data
 {
+    [db closeOpenResultSets];
+    NSString* query;
+    /*
     NSString* query = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = %i", table, keyField,key];
     FMResultSet* result = [db executeQuery:query];
     if ([result next]) {
@@ -298,6 +287,7 @@ const NSInteger insertQueueMax = 10;
     } else {
         return NO; //has 0 entry in this key field
     }
+     */
     NSMutableArray* UpdateValues = [[NSMutableArray alloc]init];
     [data enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         //[obj class];
@@ -309,7 +299,8 @@ const NSInteger insertQueueMax = 10;
     }];
     NSString* setString = [UpdateValues componentsJoinedByString:@","];
     
-    query = [NSString   stringWithFormat:@"UPDATE %@ SET %@ WHERE %@ = %i",table,setString, keyField,key];
+    query = [NSString stringWithFormat:@"UPDATE %@ SET %@ WHERE %@ = %i",table,setString, keyField,key];
+
     if ([db executeUpdate:query]) {
         return YES;
     } else {

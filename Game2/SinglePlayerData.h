@@ -13,6 +13,7 @@
 @class LineUp;
 @class Tactic;
 @class Match;
+@class GameModel;
 
 @interface SinglePlayerData : NSObject <NSCoding>
 @property NSInteger SaveGameID;
@@ -28,10 +29,14 @@
 
 @property Tournament* currentLeagueTournament;
 
+@property GameModel* myGame;
+
 @property NSInteger weekdate;
 @property NSInteger week;
 @property NSInteger season;
 @property NSInteger money;
+
+- (void) setUpData;
 
 - (void) setNextFixture;
 - (void) setCurrentLeagueTournament;

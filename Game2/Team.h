@@ -14,6 +14,8 @@
 
 @property NSInteger TeamID;
 @property NSString* Name;
+@property NSInteger TournamentID;
+
 @property NSMutableArray* PlayerList;
 @property NSMutableArray* PlayerIDList;
 @property NSMutableDictionary* PlayerDictionary;

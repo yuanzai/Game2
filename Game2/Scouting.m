@@ -7,6 +7,7 @@
 //
 
 #import "Scouting.h"
+#import "GameModel.h"
 #import "DatabaseModel.h"
 
 @implementation Scouting
@@ -30,7 +31,7 @@
 - (id) initWithScoutID: (NSInteger) thisScoutID {
     self = [super init];
     if (self) {
-        NSDictionary* result = [[DatabaseModel myDB]getResultDictionaryForTable:@"scouts" withKeyField:@"SCOUTID" withKey:thisScoutID];
+        NSDictionary* result = [[GameModel myDB]getResultDictionaryForTable:@"scouts" withKeyField:@"SCOUTID" withKey:thisScoutID];
         [result enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
             [self setValuesForKeysWithDictionary:result];
             

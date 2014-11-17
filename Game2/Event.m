@@ -8,6 +8,7 @@
 
 #import "Event.h"
 #import "Action.h"
+#import "GameModel.h"
 
 @implementation Event
 @synthesize matchMinute;
@@ -15,13 +16,14 @@
 
 @synthesize ownTeam;
 @synthesize oppTeam;
-@synthesize eventOutcome;
 @synthesize retainTeam;
 
 @synthesize eventCommentary;
 
 @synthesize thisAction;
 @synthesize previousAction;
+
+@synthesize injuryList;
 
 const NSInteger max_action = 10;
 
@@ -34,10 +36,9 @@ const NSInteger max_action = 10;
 
 -(void) setEventOwnerTeam1:(LineUp*) team1 Team2:(LineUp*) team2
 {
-    NSDictionary* factorTable=[[GlobalVariableModel myGlobalVariableModel]eventOccurenceFactorTable];
+    NSDictionary* factorTable=[[GameModel myGlobalVariableModel] eventOccurenceFactorTable];
     [team1 populateTeamAttDefStats];
     [team2 populateTeamAttDefStats];
-    
     
     double k1 = [[factorTable objectForKey:@"k1"]doubleValue];
     double k2 = [[factorTable objectForKey:@"k2"]doubleValue];
@@ -83,7 +84,6 @@ const NSInteger max_action = 10;
 
     if (!ownTeam) {
         eventCommentary = nil;
-        eventOutcome = nil;
         return;
     }    
     // Event probability model
@@ -97,7 +97,14 @@ const NSInteger max_action = 10;
         
         [thisAction setActionProperties];
         previousAction = thisAction;
-
+        
+        
+        if (thisAction.injuredPlayer) {
+            if (!injuryList)
+                injuryList = [NSMutableArray array];
+            [injuryList addObject:thisAction.injuredPlayer];
+        }
+        
         eventCount++;
 
         //actions to continue

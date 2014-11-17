@@ -7,217 +7,185 @@
 //
 
 #import "GlobalVariableModel.h"
-#import "DatabaseModel.h"
+#import "GameModel.h"
 #import "Fixture.h"
 
 #import "LineUp.h"
 @implementation GlobalVariableModel
-
-@synthesize playerStatList,gkStatList, allStatList,eventOccurenceFactorTable, playerGroupStatList, standardDeviationTable, valuationStatListCentre, valuationStatListFlank, tournamentTable,probTables,sGridTables ;
-
-static GlobalVariableModel* myGlobalVariableModel;
-
-+ (GlobalVariableModel*)myGlobalVariableModel
 {
-    if (!myGlobalVariableModel) {
-        myGlobalVariableModel = [[GlobalVariableModel alloc] init];
-        [myGlobalVariableModel setAllStatList];
-        [myGlobalVariableModel setEventOccurenceFactorTableFromDB];
-    }
-    return myGlobalVariableModel;
-}
-
-
-/*
-+ (id)myGlobalVariableModel {
-    static GlobalVariableModel *myGlobalVariableModel = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        myGlobalVariableModel = [[self alloc] init];
-        [myGlobalVariableModel setAllStatList];
-        [myGlobalVariableModel setEventOccurenceFactorTableFromDB];
-
-    });
+    NSDictionary* ageProfile;
     
-    return myGlobalVariableModel;
-}
-*/
-+ (NSDictionary*) valuationStatListForFlank:(NSString*) flank;
-{
-    NSArray* tempArray;
-    if ([flank isEqualToString:@"GK"]) {
-        if (!myGlobalVariableModel.valuationStatListGK ){
-            NSDictionary* tempDictionary = [[DatabaseModel myDB]getResultDictionaryForTable:@"valuation" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@"GK",@"FLANKCENTRE", nil]];
-            [[GlobalVariableModel myGlobalVariableModel] setValuationStatListGK:tempDictionary];
-        }
-        return myGlobalVariableModel.valuationStatListGK;
-
-    } else if ([flank isEqualToString:@"CENTRE"]) {
-        if (!myGlobalVariableModel.valuationStatListCentre ){
-            tempArray = [[DatabaseModel myDB]getArrayFrom:@"valuation" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"CENTRE",@"FLANKCENTRE", nil] sortFieldAsc:@""];
-            NSMutableDictionary* tempDictionary = [NSMutableDictionary dictionary];
-            [tempArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                [tempDictionary setObject:obj forKey:[(NSDictionary*) obj objectForKey:@"POSITION"]];
-            }];
-            [[GlobalVariableModel myGlobalVariableModel] setValuationStatListCentre:tempDictionary];
-        }
-            return myGlobalVariableModel.valuationStatListCentre;
-        
-    } else if ([flank isEqualToString:@"FLANK"] ||
-               [flank isEqualToString:@"LEFT"] ||
-               [flank isEqualToString:@"RIGHT"]) {
-        if (!myGlobalVariableModel.valuationStatListFlank){
-            tempArray = [[DatabaseModel myDB]getArrayFrom:@"valuation" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"FLANK",@"FLANKCENTRE", nil] sortFieldAsc:@""];
-            
-            NSMutableDictionary* tempDictionary = [NSMutableDictionary dictionary];
-            [tempArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                [tempDictionary setObject:obj forKey:[(NSDictionary*) obj objectForKey:@"POSITION"]];
-            }];
-            [[GlobalVariableModel myGlobalVariableModel] setValuationStatListFlank:tempDictionary];
-        }
-        return myGlobalVariableModel.valuationStatListFlank;
-    }
-    return  nil;
-}
-
-
-+ (NSDictionary *)standardDeviationTable {
-    if (!myGlobalVariableModel.standardDeviationTable){
-        [[GlobalVariableModel myGlobalVariableModel] setStandardDeviationTable: [[DatabaseModel myDB]getStandardDeviationTable]];
-    }
-    return myGlobalVariableModel.standardDeviationTable;
-}
-
-+ (NSDictionary*) tournamentList
-{
-    if (!myGlobalVariableModel.tournamentList){
-        NSMutableDictionary* result = [NSMutableDictionary dictionary];
-        [[[DatabaseModel myDB]getArrayFrom:@"tournaments" withSelectField:@"TOURNAMENTID" whereKeyField:@"" hasKey:@""] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            [result setObject:[[Tournament alloc]initWithTournamentID:[obj integerValue]] forKey:[NSString stringWithFormat:@"%@",obj]];
-        }];
-        [[GlobalVariableModel myGlobalVariableModel]setTournamentList:result];
-    }
-    return myGlobalVariableModel.tournamentList;
-}
-
-# pragma mark Training Methods
-
-+ (NSDictionary*) statBiasTable {
-    if (!myGlobalVariableModel.statBiasTable){
-        
-        NSArray* statBiasList = [[DatabaseModel myDB]getArrayFrom:@"statBias" whereData:nil sortFieldAsc:@""];
-        NSMutableDictionary* result = [NSMutableDictionary dictionary];
-        [statBiasList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            [result setObject:obj forKey:[[obj objectForKey:@"STATBIASID"]stringValue]];
-        }];
-        [[GlobalVariableModel myGlobalVariableModel] setStatBiasTable:result];
-    }
+    NSDictionary* valuationStatListCentre;
+    NSDictionary* valuationStatListFlank;
+    NSDictionary* valuationStatListGK;
     
-    return myGlobalVariableModel.statBiasTable ;
+    NSDictionary* statBiasTable;
+    
+    NSDictionary* eventOccurenceFactorTable;
+    NSDictionary* standardDeviationTable;
+    NSDictionary* tournamentTable;
+    NSMutableDictionary* probTables;
+    NSMutableDictionary* sGridTables;
+    NSArray* attackOutcomeTables;
+
+    NSMutableDictionary* tournamentList;
+    NSMutableDictionary* teamList;
+    NSMutableDictionary* playerList;
+    
 }
 
-
-+ (NSDictionary*) ageProfile
-{
-    if (!myGlobalVariableModel.ageProfile){
-        NSMutableDictionary* result = [NSMutableDictionary dictionary];
-        
-        NSArray* allProfiles = [[DatabaseModel myDB]getArrayFrom:@"trainingProfile" whereData:nil sortFieldAsc:@""];
-        [allProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            if ([result objectForKey:[[obj objectForKey:@"AGE"]stringValue]]) {
-                NSMutableDictionary* profile = [result objectForKey:[obj objectForKey:@"AGE"]];
-                [profile setObject:obj forKey:[[obj objectForKey:@"PROFILEID"]stringValue]];
-            } else {
-                NSMutableDictionary* profile = [NSMutableDictionary dictionary];
-                [profile setObject:obj forKey:[[obj objectForKey:@"PROFILEID"]stringValue]];
-                [result setObject:profile forKey:[[obj objectForKey:@"AGE"]stringValue]];
-            }
-        }];
-        
-        [[GlobalVariableModel myGlobalVariableModel]setAgeProfile:result];
-    }
-    return myGlobalVariableModel.ageProfile;
-}
-
-
-/*
-+ (NSArray*) decayProfile
-{
-    if (!myGlobalVariableModel.decayProfile){
-        NSMutableArray* profileArray = [NSMutableArray array];
-        
-        NSMutableDictionary* result = [NSMutableDictionary dictionary];
-        
-        NSArray* allProfiles = [[[DatabaseModel alloc]init]getArrayFrom:@"trainingProfile" whereData:nil sortFieldAsc:@""];
-        
-        [allProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            if ([result objectForKey:[[obj objectForKey:@"AGE"]stringValue]]) {
-                NSMutableDictionary* profile = [result objectForKey:[obj objectForKey:@"AGE"]];
-                [profile setObject:obj forKey:[[obj objectForKey:@"PROFILEID"]stringValue]];
-            } else {
-                NSMutableDictionary* profile = [NSMutableDictionary dictionary];
-                [profile setObject:obj forKey:[[obj objectForKey:@"PROFILEID"]stringValue]];
-                [result setObject:profile forKey:[[obj objectForKey:@"AGE"]stringValue]];
-            }
-        }];
-        
-        [[GlobalVariableModel myGlobalVariableModel]setDecayProfile:result];
-    }
-    return myGlobalVariableModel.decayProfile;
-}
-*/
+# pragma mark STATIC STATS LIST
 
 + (NSMutableArray*) playerStatList{
     return [[NSMutableArray alloc]initWithObjects:
-     @"PAS", @"LPA", @"HEA",  @"SHO", @"TAC", @"AGI", @"CRO",  @"DRI", @"MOV", @"POS",
-     @"LSH", @"PEN", @"FRE", @"SPE", @"STR",  @"FIT", @"WOR", @"TEC", @"INT",  @"TEA",nil];
+            @"PAS", @"LPA", @"HEA",  @"SHO", @"TAC", @"AGI", @"CRO",  @"DRI", @"MOV", @"POS",
+            @"LSH", @"PEN", @"FRE", @"SPE", @"STR",  @"FIT", @"WOR", @"TEC", @"INT",  @"TEA",nil];
+}
+
++ (NSMutableArray*) gkStatList{
+    return [[NSMutableArray alloc]initWithObjects:
+            @"DIS", @"HAN", @"AGI", @"REF", @"PHY", @"COM",
+            @"POS", @"PEN", @"INT", @"FRE", @"TEC", @"TEA",nil];
 }
 
 + (NSMutableDictionary*) playerGroupStatList {
     NSMutableDictionary* List = [NSMutableDictionary dictionary];
     [List setObject: [[NSMutableArray alloc]initWithObjects:
-                     @"PAS", @"LPA", @"CRO", @"MOV", nil] forKey:@"DRILLS"];
-
+                      @"PAS", @"LPA", @"CRO", @"MOV", nil] forKey:@"DRILLS"];
+    
     [List setObject: [[NSMutableArray alloc]initWithObjects:
-                     @"SHO", @"LSH", @"PEN", @"FRE", nil] forKey:@"SHOOTING"];
-
+                      @"SHO", @"LSH", @"PEN", @"FRE", nil] forKey:@"SHOOTING"];
+    
     [List setObject: [[NSMutableArray alloc]initWithObjects:
-                     @"POS", @"WOR", @"INT", @"TEA", nil] forKey:@"TACTICS"];
-
+                      @"POS", @"WOR", @"INT", @"TEA", nil] forKey:@"TACTICS"];
+    
     [List setObject: [[NSMutableArray alloc]initWithObjects:
-                     @"AGI", @"SPE", @"STR", @"FIT", nil] forKey:@"PHYSICAL"];
-
+                      @"AGI", @"SPE", @"STR", @"FIT", nil] forKey:@"PHYSICAL"];
+    
     [List setObject: [[NSMutableArray alloc]initWithObjects:
-                     @"TEC", @"HEA", @"DRI", @"TAC", nil] forKey:@"SKILLS"];
+                      @"TEC", @"HEA", @"DRI", @"TAC", nil] forKey:@"SKILLS"];
     return List;
 }
 
-+ (NSMutableArray*) gkStatList{
-    return [[NSMutableArray alloc]initWithObjects:
-    @"DIS", @"HAN", @"AGI", @"REF", @"PHY", @"COM",
-    @"POS", @"PEN", @"INT", @"FRE", @"TEC", @"TEA",nil];
+- (NSDictionary*) valuationStatListForFlank:(NSString*) flank;
+{
+    NSArray* tempArray;
+    if ([flank isEqualToString:@"GK"]) {
+        if (!valuationStatListGK ){
+            valuationStatListGK = [[GameModel myDB]getResultDictionaryForTable:@"valuation" withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@"GK",@"FLANKCENTRE", nil]];
+        }
+        return valuationStatListGK;
+
+    } else if ([flank isEqualToString:@"CENTRE"]) {
+        if (!valuationStatListCentre ){
+            tempArray = [[GameModel myDB]getArrayFrom:@"valuation" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"CENTRE",@"FLANKCENTRE", nil] sortFieldAsc:@""];
+            NSMutableDictionary* tempDictionary = [NSMutableDictionary dictionary];
+            [tempArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                [tempDictionary setObject:obj forKey:[(NSDictionary*) obj objectForKey:@"POSITION"]];
+            }];
+            valuationStatListCentre = tempDictionary;
+        }
+            return valuationStatListCentre;
+        
+    } else if ([flank isEqualToString:@"FLANK"] ||
+               [flank isEqualToString:@"LEFT"] ||
+               [flank isEqualToString:@"RIGHT"]) {
+        if (!valuationStatListFlank){
+            tempArray = [[GameModel myDB]getArrayFrom:@"valuation" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"FLANK",@"FLANKCENTRE", nil] sortFieldAsc:@""];
+            
+            NSMutableDictionary* tempDictionary = [NSMutableDictionary dictionary];
+            [tempArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                [tempDictionary setObject:obj forKey:[(NSDictionary*) obj objectForKey:@"POSITION"]];
+            }];
+            valuationStatListFlank = tempDictionary;
+        }
+        return valuationStatListFlank;
+    }
+    return  nil;
 }
 
-- (void) setAllStatList
-{
-    allStatList = [[NSMutableArray alloc]initWithObjects:
-                      @"PAS", @"LPA", @"HEA", @"SHO", @"TAC",
-                      @"AGI", @"CRO", @"DRI", @"MOV", @"POS",
-                      @"LSH", @"PEN", @"FRE", @"SPE", @"STR",
-                      @"FIT", @"WOR", @"TEC", @"INT", @"TEA",
-                      @"DIS", @"HAN", @"REF", @"PHY", @"COM", nil];
+
+- (NSDictionary *)standardDeviationTable {
+    if (!standardDeviationTable){
+        standardDeviationTable = [[GameModel myDB]getStandardDeviationTable];
+    }
+    return standardDeviationTable;
 }
 
-- (void) setEventOccurenceFactorTableFromDB
+- (NSDictionary*) tournamentList
 {
-    eventOccurenceFactorTable = [[DatabaseModel myDB]getEventOccurenceFactorTable];
+    NSLog(@"%@",self);
+
+    if (!tournamentList){
+        NSMutableDictionary* result = [NSMutableDictionary dictionary];
+        [[[GameModel myDB]getArrayFrom:@"tournaments" withSelectField:@"TOURNAMENTID" whereKeyField:@"" hasKey:@""] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [result setObject:[[Tournament alloc]initWithTournamentID:[obj integerValue]] forKey:[NSString stringWithFormat:@"%@",obj]];
+        }];
+        tournamentList = result;
+    }
+    return tournamentList;
 }
 
-
-+ (NSDictionary*) getProbResultFromTable:(NSString*) tbl ZoneFlank:(ZoneFlank)zf PositionSide:(PositionSide) ps AttackType:(NSString*) atype DefenseType:(NSString*) dtype isDynamicProb:(BOOL) isProbDy Team:(LineUp*) team PositionSideToExclude:(PositionSide) exPS
+- (NSDictionary*) teamList
 {
-    if (!myGlobalVariableModel.probTables)
-        myGlobalVariableModel.probTables = [NSMutableDictionary dictionary];
+    if (!teamList){
+        NSMutableDictionary* result = [NSMutableDictionary dictionary];
+        [[[GameModel myDB]getArrayFrom:@"teams" withSelectField:@"TEAMID" whereKeyField:@"" hasKey:@""] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [result setObject:[[Team alloc]initWithTeamID:[obj integerValue]] forKey:[NSString stringWithFormat:@"%@",obj]];
+        }];
+        teamList = result;
+    }
+    return teamList;
+}
+
+# pragma mark Training Methods
+
+- (NSDictionary*) statBiasTable {
+    if (!statBiasTable){
+        
+        NSArray* statBiasList = [[GameModel myDB]getArrayFrom:@"statBias" whereData:nil sortFieldAsc:@""];
+        NSMutableDictionary* result = [NSMutableDictionary dictionary];
+        [statBiasList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [result setObject:obj forKey:[[obj objectForKey:@"STATBIASID"]stringValue]];
+        }];
+        statBiasTable = result;
+    }
+    return statBiasTable ;
+}
+
+- (NSDictionary*) ageProfile
+{
+    if (!ageProfile){
+        NSMutableDictionary* result = [NSMutableDictionary dictionary];
+        
+        NSArray* allProfiles = [[GameModel myDB]getArrayFrom:@"trainingProfile" whereData:nil sortFieldAsc:@""];
+        [allProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            if ([result objectForKey:[[obj objectForKey:@"AGE"]stringValue]]) {
+                NSMutableDictionary* profile = [result objectForKey:[obj objectForKey:@"AGE"]];
+                [profile setObject:obj forKey:[[obj objectForKey:@"PROFILEID"]stringValue]];
+            } else {
+                NSMutableDictionary* profile = [NSMutableDictionary dictionary];
+                [profile setObject:obj forKey:[[obj objectForKey:@"PROFILEID"]stringValue]];
+                [result setObject:profile forKey:[[obj objectForKey:@"AGE"]stringValue]];
+            }
+        }];
+        
+        ageProfile = result;
+    }
+    return ageProfile;
+}
+
+- (NSDictionary*) eventOccurenceFactorTable
+{
+    if (!eventOccurenceFactorTable)
+        eventOccurenceFactorTable = [[GameModel myDB]getEventOccurenceFactorTable];
+    return eventOccurenceFactorTable;
+}
+
+- (NSDictionary*) getProbResultFromTable:(NSString*) tbl ZoneFlank:(ZoneFlank)zf PositionSide:(PositionSide) ps AttackType:(NSString*) atype DefenseType:(NSString*) dtype isDynamicProb:(BOOL) isProbDy Team:(LineUp*) team PositionSideToExclude:(PositionSide) exPS
+{
+    if (!probTables)
+        probTables = [NSMutableDictionary dictionary];
     
     __block NSMutableArray* resultList = [NSMutableArray array];
     __block NSInteger sumProb = 0;
@@ -225,11 +193,11 @@ static GlobalVariableModel* myGlobalVariableModel;
     __block double prob = (double) (arc4random() % 10000);
     __block NSDictionary* result;
     
-    if (![myGlobalVariableModel.probTables objectForKey:tbl]) {
-        NSArray* dataTable = [[DatabaseModel myDB]getArrayFrom:tbl whereData:nil sortFieldAsc:@""];
-        [myGlobalVariableModel.probTables setObject:dataTable forKey:tbl];
+    if (![probTables objectForKey:tbl]) {
+        NSArray* dataTable = [[GameModel myDB]getArrayFrom:tbl whereData:nil sortFieldAsc:@""];
+        [probTables setObject:dataTable forKey:tbl];
     }
-    NSArray* enumList = [myGlobalVariableModel.probTables objectForKey:tbl];
+    NSArray* enumList = [probTables objectForKey:tbl];
     [enumList enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
         if (zf.zone != ZoneCount) {
             if (![[obj objectForKey:@"INZONE"] isEqualToString:[Structs getZoneString:zf]])
@@ -293,29 +261,29 @@ static GlobalVariableModel* myGlobalVariableModel;
     return result;
 }
 
-+ (NSDictionary*) getSGridForType:(NSString*)type Coeff:(NSString*)coeff {
+- (NSDictionary*) getSGridForType:(NSString*)type Coeff:(NSString*)coeff {
     NSString* key = [NSString stringWithFormat:@"%@%@",type,coeff];
-    if (!myGlobalVariableModel.sGridTables)
-        myGlobalVariableModel.sGridTables = [NSMutableDictionary dictionary];
+    if (!sGridTables)
+        sGridTables = [NSMutableDictionary dictionary];
     
-    if (![myGlobalVariableModel.sGridTables objectForKey:key]) {
-        NSDictionary* grid = [[DatabaseModel myDB]getResultDictionaryForTable:@"SGrid" withDictionary:[[NSMutableDictionary alloc]initWithObjectsAndKeys:type,@"TYPE",coeff,@"STATTYPE", nil]];
+    if (![sGridTables objectForKey:key]) {
+        NSDictionary* grid = [[GameModel myDB]getResultDictionaryForTable:@"SGrid" withDictionary:[[NSMutableDictionary alloc]initWithObjectsAndKeys:type,@"TYPE",coeff,@"STATTYPE", nil]];
         if (!grid)
             [NSException raise:@"empty sGrid" format:@"empty SGrid %@",key];
-        [myGlobalVariableModel.sGridTables setObject:grid forKey:key];
+        [sGridTables setObject:grid forKey:key];
     }
     
     
-    return [myGlobalVariableModel.sGridTables objectForKey:key];
+    return [sGridTables objectForKey:key];
 }
 
-+ (NSInteger) getAttackOutcomesForZoneFlank:(ZoneFlank) zf AttackType:(NSString*) type
+- (NSInteger) getAttackOutcomesForZoneFlank:(ZoneFlank) zf AttackType:(NSString*) type
 {
-    if (!myGlobalVariableModel.attackOutcomeTables)
-        myGlobalVariableModel.attackOutcomeTables = [[DatabaseModel myDB]getArrayFrom:@"AttackOutcome_ZFAtt" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"OUTCOME",@"Fail", nil] sortFieldAsc:@""];
+    if (!attackOutcomeTables)
+        attackOutcomeTables = [[GameModel myDB]getArrayFrom:@"AttackOutcome_ZFAtt" whereData:[[NSDictionary alloc]initWithObjectsAndKeys:@"OUTCOME",@"Fail", nil] sortFieldAsc:@""];
     __block double result = 0.0;
     
-    [myGlobalVariableModel.attackOutcomeTables enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
+    [attackOutcomeTables enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
         if (zf.zone != ZoneCount) {
             if (![[obj objectForKey:@"INZONE"] isEqualToString:[Structs getZoneString:zf]])
                 return;

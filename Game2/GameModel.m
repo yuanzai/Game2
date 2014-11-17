@@ -15,7 +15,8 @@
 @implementation GameModel
 @synthesize myData;
 @synthesize GameID;
-
+@synthesize myDB;
+@synthesize myGlobalVariableModel;
 #pragma mark Initialization Methods
 
 + (id)myGame
@@ -24,6 +25,8 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         myGame = [[self alloc] init];
+        myGame.myDB = [DatabaseModel new];
+        myGame.myGlobalVariableModel = [GlobalVariableModel new];
     });
     return myGame;
 }
@@ -35,29 +38,54 @@
     return [[self myGame]myData];
 }
 
++ (DatabaseModel*) myDB
+{
+    if (![[self myGame]myDB]){
+        GameModel* myGame = [self myGame];
+        myGame.myDB = [DatabaseModel new];
+    }
+    return [[self myGame]myDB];
+}
+
+
++ (GlobalVariableModel*) myGlobalVariableModel
+{
+    if (![[self myGame]myGlobalVariableModel]){
+        GameModel* myGame = [self myGame];
+        myGame.myGlobalVariableModel = [GlobalVariableModel new];
+    }
+    return [[self myGame]myGlobalVariableModel];
+}
+
+
 #pragma mark Data Methods
 
 - (void) newWithGameID:(NSInteger) thisGameID
 {
     myData = [[SinglePlayerData alloc]init];
-    self.GameID = thisGameID;
+    GameID = thisGameID;
     myData.season = 0;
     myData.weekdate = 0;
     myData.week = 0;
-    [myData setCurrentLeagueTournament];
+    myData.SaveGameID = thisGameID;
+    [myData setMyGame:self];
     [myData setMyTeam];
+    [myData setCurrentLeagueTournament];
 }
 
 - (void) loadWithGameID:(NSInteger) thisGameID
 {
     GameID = thisGameID;
-    
+
     if ([[NSFileManager defaultManager] fileExistsAtPath:[self getGamePath]]) {
         NSData *data = [NSData dataWithContentsOfFile:[self getGamePath]];
         NSDictionary *savedData = [NSKeyedUnarchiver unarchiveObjectWithData:data];
         
         if ([savedData objectForKey:@"SinglePlayerData"] != nil) {
             self.myData = [savedData objectForKey:@"SinglePlayerData"];
+            self.myData.SaveGameID = thisGameID;
+            self.myData.myGame = self;
+            [myData setUpData];
         }
     }
 }
@@ -136,18 +164,22 @@
 - (void) enterPostGame
 {
     //TODO: - process single player fixture
-    [myData.nextMatch UpdateMatchFixture];
+    [myData.nextMatch updateMatchFixture];
 
     //TODO: - process tournament games played
-    NSDictionary* tournamentList = [GlobalVariableModel tournamentList];
+    NSDictionary* tournamentList = [myGlobalVariableModel tournamentList];
+    
+
     [tournamentList enumerateKeysAndObjectsUsingBlock:^(id key, Tournament* t, BOOL *stop) {
-        [[t getFixturesForNonSinglePlayerForDate:myData.weekdate] enumerateObjectsUsingBlock:^(Fixture* fx, NSUInteger idx, BOOL *stop) {
+        NSArray* thisT = [t getFixturesForNonSinglePlayerForDate:myData.weekdate];
+        for (Fixture* fx in thisT) {
             Match* simulateMatch = [[Match alloc]initWithFixture:fx WithSinglePlayerTeam:nil];
             NSLog(@"%i %i %@ v %@",t.tournamentID,fx.MATCHID,simulateMatch.team1.team.Name, simulateMatch.team2.team.Name);
-
+            
             [simulateMatch playFullGame];
-            [simulateMatch UpdateMatchFixture];
-        }];
+            [simulateMatch updateMatchFixture];
+
+        }
         [t setCurrentLeagueTable];
     }];
 }
@@ -155,13 +187,12 @@
 - (void) startSeason
 {
     myData.season++;
-    NSArray* tournamentList = [[DatabaseModel myDB]getArrayFrom:@"tournaments" withSelectField:@"TOURNAMENTID" WhereString:@"" OrderBy:@"" Limit:@""];
+    NSDictionary* tournamentList = [myGlobalVariableModel tournamentList];
     NSLog(@"Fixture season %i",myData.season);
-    [tournamentList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        Tournament* thisTournament = [[Tournament alloc]initWithTournamentID:[obj integerValue]];
-        [thisTournament createFixturesForSeason:myData.season];
+    [tournamentList enumerateKeysAndObjectsUsingBlock:^(id key, Tournament* t, BOOL *stop) {
+        [t createFixturesForSeason:myData.season];
     }];
-    
+     
     [myData setCurrentLeagueTournament];
 }
 

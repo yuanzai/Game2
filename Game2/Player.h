@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "Tactic.h"
 
+@class LineUp;
 @interface Player : NSObject
 {
     NSInteger PlayerID;
@@ -70,6 +71,7 @@
 @property double att;
 @property double def;
 @property BOOL hasPlayed;
+@property LineUp* lineup;
 
 
 

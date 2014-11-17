@@ -7,6 +7,7 @@
 //
 
 #import "SinglePlayerData.h"
+#import "GameModel.h"
 #import "DatabaseModel.h"
 #import "Team.h"
 #import "Fixture.h"
@@ -30,6 +31,8 @@
 @synthesize season;
 @synthesize money;
 
+@synthesize myGame;
+
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super init];
     if (!self) {
@@ -39,11 +42,6 @@
     self.week = [decoder decodeIntegerForKey:@"week"];
     self.season = [decoder decodeIntegerForKey:@"season"];
     self.money = [decoder decodeIntegerForKey:@"money"];
-    [self setCurrentLeagueTournament];
-    [self setNextFixture];
-    [self setCurrentTactic];
-    [self setMyTeam];
-    [self setCurrentLineup];
     return self;
 }
 
@@ -54,11 +52,20 @@
     [encoder encodeInteger:self.money forKey:@"money"];
 }
 
+- (void) setUpData
+{
+    [self setMyTeam];
+    [self setCurrentLeagueTournament];
+    [self setNextFixture];
+    [self setCurrentTactic];
+    [self setCurrentLineup];
+}
+
 - (void) setCurrentLeagueTournament
 {
-    NSInteger tournamentID = [[[[DatabaseModel myDB]getArrayFrom:@"teams" withSelectField:@"TOURNAMENTID" whereKeyField:@"TEAMID" hasKey:@0]objectAtIndex:0]integerValue];
-    
-    self.currentLeagueTournament = [[[GlobalVariableModel myGlobalVariableModel]tournamentList] objectForKey:
+    NSInteger tournamentID = myTeam.TournamentID;
+    NSLog(@"%@",myGame);
+    self.currentLeagueTournament = [[myGame.myGlobalVariableModel tournamentList] objectForKey:
     [NSString stringWithFormat:@"%i",tournamentID]];
 
 }
@@ -82,7 +89,7 @@
 
 - (void) setMyTeam
 {
-    myTeam = [[Team alloc]initWithTeamID:0];
+    myTeam = [[[GameModel myGlobalVariableModel] teamList]objectForKey:@"0"];
 }
 
 - (void) setNextMatch

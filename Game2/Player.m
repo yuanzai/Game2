@@ -39,12 +39,12 @@
 @synthesize isGoalKeeper;
 @synthesize Valuation;
 
-@synthesize matchStats, PosCoeff, currentPositionSide, yellow, red, att, def, hasPlayed;
+@synthesize matchStats, PosCoeff, currentPositionSide, yellow, red, att, def, hasPlayed, lineup;
 
 - (id) initWithPlayerID:(NSInteger) InputID {
 	if (!(self = [super init]))
 		return nil;
-    NSDictionary* record = [[DatabaseModel myDB]getResultDictionaryForTable:@"players" withKeyField:@"PlayerID" withKey:InputID];
+    NSDictionary* record = [[GameModel myDB]getResultDictionaryForTable:@"players" withKeyField:@"PlayerID" withKey:InputID];
     PlayerID = InputID;
     TeamID = [[record objectForKey:@"TEAMID"] integerValue];
     DisplayName= [record objectForKey:@"DISPLAYNAME"];
@@ -60,7 +60,7 @@
     PreferredPosition = [NSMutableDictionary dictionary];
     if ([[record objectForKey:@"GK"] integerValue] == 1) {
         isGoalKeeper = YES;
-        NSDictionary* gkrecord = [[DatabaseModel myDB]getResultDictionaryForTable:@"players" withKeyField:@"PLAYERID" withKey:self.PlayerID];
+        NSDictionary* gkrecord = [[GameModel myDB]getResultDictionaryForTable:@"players" withKeyField:@"PLAYERID" withKey:self.PlayerID];
         [[GlobalVariableModel gkStatList]enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             [Stats setObject:[gkrecord objectForKey:obj] forKey:obj];
         }];
@@ -115,7 +115,7 @@
     
     if (UpdateStats) {
         if (isGoalKeeper){
-            [[DatabaseModel myDB]updateDatabaseTable:@"gk" withKeyField:@"PlayerID" withKey:PlayerID withDictionary:Stats];
+            [[GameModel myDB]updateDatabaseTable:@"gk" withKeyField:@"PlayerID" withKey:PlayerID withDictionary:Stats];
         }else{
             [updateDictionary addEntriesFromDictionary:Stats];
         }
@@ -127,7 +127,7 @@
         [updateDictionary setObject:[NSNumber numberWithInteger:Valuation] forKey:@"Valuation"];
     }
     
-    [[DatabaseModel myDB]updateDatabaseTable:@"players" withKeyField:@"PlayerID" withKey:PlayerID withDictionary:updateDictionary];
+    [[GameModel myDB]updateDatabaseTable:@"players" withKeyField:@"PlayerID" withKey:PlayerID withDictionary:updateDictionary];
     return YES;
 }
 
@@ -222,12 +222,12 @@
 
     NSDictionary* valuationTable;
     if ([position isEqualToString:@"GK"]) {
-        valuationTable = [GlobalVariableModel valuationStatListForFlank:@"GK"];
+        valuationTable = [[GameModel myGlobalVariableModel] valuationStatListForFlank:@"GK"];
         statCount = [[GlobalVariableModel gkStatList]count];
     } else if ([[side uppercaseString] isEqualToString:@"CENTRE"]) {
-        valuationTable = [[GlobalVariableModel valuationStatListForFlank:@"CENTRE"] objectForKey:position];
+        valuationTable = [[[GameModel myGlobalVariableModel] valuationStatListForFlank:@"CENTRE"] objectForKey:position];
     } else {
-        valuationTable = [[GlobalVariableModel valuationStatListForFlank:@"FLANK"] objectForKey:position];
+        valuationTable = [[[GameModel myGlobalVariableModel] valuationStatListForFlank:@"FLANK"] objectForKey:position];
     }
     
     [Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
@@ -308,7 +308,7 @@
 }
 
 - (double) getMatchStatWithBaseStat:(double)stat Consistency:(double) consistency{
-    NSDictionary* sdTable = [[NSDictionary alloc]initWithDictionary:[GlobalVariableModel standardDeviationTable]];
+    NSDictionary* sdTable = [[NSDictionary alloc]initWithDictionary:[[GameModel myGlobalVariableModel] standardDeviationTable]];
     //normal dist 0 mean 1 sd
     double u =(double)(arc4random() %100000 + 1)/100000; //for precision
     double v =(double)(arc4random() %100000 + 1)/100000; //for precision
@@ -351,7 +351,7 @@
 
 - (double) getEventStat:(NSString*) type
 {
-    NSDictionary* eventStatsRecord = [[DatabaseModel myDB] getResultDictionaryForTable:@"statsEvent" withDictionary:
+    NSDictionary* eventStatsRecord = [[GameModel myDB] getResultDictionaryForTable:@"statsEvent" withDictionary:
                                       [[NSDictionary alloc]initWithObjectsAndKeys:
                                        type,@"TYPE",
                                        [Structs getPositionString:currentPositionSide],@"POSITION",

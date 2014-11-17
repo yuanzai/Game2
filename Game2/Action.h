@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "Structs.h"
 #import "GlobalVariableModel.h"
-#import "DatabaseModel.h"
 #import "LineUp.h"
 
 @class LineUp;

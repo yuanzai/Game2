@@ -12,20 +12,11 @@
 @class Fixture;
 @class Player;
 @interface Match : NSObject
-{
-    LineUp *team1;
-    LineUp *team2;
-    Fixture* thisFixture;
-    NSInteger matchMinute;
-    
-    BOOL isPaused;
-    BOOL isOver;
-    
-    BOOL retainTeam;
-    Action* lastAction;
-}
 @property LineUp *team1;
 @property LineUp *team2;
+
+@property LineUp *spTeam;
+@property BOOL hasSP;
 
 @property Fixture* thisFixture;
 @property NSInteger matchMinute;
@@ -34,20 +25,28 @@
 @property BOOL isOver;
 @property BOOL retainTeam;
 @property Action* lastAction;
+@property NSMutableArray* preCommentary;
+@property NSMutableArray* postCommentary;
+
 
 - (id) initWithFixture:(Fixture*) fixture WithSinglePlayerTeam:(LineUp*) sp;
 
 - (BOOL) startMatch;
 - (NSArray*) nextMinute;
-- (void) printScore;
-- (void) endMatch;
-
 - (void) pauseMatch;
 - (void) resumeMatch;
-- (void) upPlayerStats;
+- (void) endMatch;
 
 - (BOOL) subIn:(Player*) sub ForPlayer:(Player*) player;
 
+- (void) printMatch;
+
+
+
+// AI
 - (void) playFullGame;
-- (void) UpdateMatchFixture;
+
+//CRUD
+- (void) updateMatchFixture;
+- (void) updatePlayerData;
 @end

@@ -27,6 +27,7 @@
 @synthesize redCard;
 @synthesize foul;
 @synthesize offside;
+@synthesize subLeft;
 
 @synthesize matchLog;
 
@@ -91,19 +92,19 @@
         if (p.Condition <= 0) {
             isValid = NO;
             *stop = YES;
-            NSLog(@"Player Condition");
+            //NSLog(@"Player Condition");
         }
         if ([playerList containsObject:p]) {
             isValid = NO;
             *stop = YES;
-            NSLog(@"Player Dupe");
+            //NSLog(@"Player Dupe");
         }
         [playerList addObject:p];
 
             }];
     if ([[currentTactic getAllPlayers]count]!=11) {
         isValid = NO;
-        NSLog(@"Player Count");
+        //NSLog(@"Player Count");
     }
     
     return isValid;
@@ -209,7 +210,88 @@
     return NO;
 }
 
+- (BOOL) subPlayer:(Player*) thisPlayer Sub:(Player*)sub
+{
+    if (subLeft ==0)
+        return NO;
+    if (![[currentTactic getAllPlayers] containsObject:thisPlayer])
+        return NO;
+    
+    [currentTactic removePlayerAtPositionSide:thisPlayer.currentPositionSide];
+    [currentTactic populatePlayer:sub PositionSide:thisPlayer.currentPositionSide ForceSwap:NO];
+    return YES;
+}
+
 #pragma mark AI Generators
+
+- (BOOL) subInjured
+{
+    __block BOOL result = NO;
+    if (currentTactic.GoalKeeper.Condition ==0) {
+        NSMutableArray* gkArray = [[NSMutableArray alloc]initWithArray:[self getGKSubArray]];
+        if ([gkArray count] > 0) {
+            currentTactic.GoalKeeper = [gkArray objectAtIndex:0];
+            currentTactic.GoalKeeper.hasPlayed = YES;
+            result = YES;
+        }
+    }
+    
+    
+
+    [[currentTactic getOutFieldPlayers]enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+        if (p.Condition ==0) {
+            [currentTactic removePlayerAtPositionSide:p.currentPositionSide];
+            subLeft--;
+        }
+        if (subLeft ==0) {
+            *stop = YES;
+        }
+        
+    }];
+    
+    __block NSMutableArray* outfieldArray = [[NSMutableArray alloc]initWithArray:[self getOutfieldSubArray]];
+    
+    [outfieldArray enumerateObjectsUsingBlock:^(Player *p, NSUInteger idx, BOOL *stop) {
+        if ([self fillPlayer:p CoeffThreshold:1.0]) {
+            [outfieldArray removeObjectAtIndex:idx];
+            p.hasPlayed = YES;
+            result = YES;
+        } else {
+            if ([self swapToFillPlayer:p]){
+                [outfieldArray removeObjectAtIndex:idx];
+                p.hasPlayed = YES;
+                result = YES;
+            }
+        }
+        if([self validateTactic])
+            *stop =YES;
+    }];
+    
+    if (![self validateTactic]) {
+        [outfieldArray enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+            if ([self fillPlayer:p CoeffThreshold:0.9]) {
+                [outfieldArray removeObjectAtIndex:idx];
+                p.hasPlayed = YES;
+                result = YES;
+            }
+            if([self validateTactic])
+                *stop =YES;
+        }];
+    }
+    if (![self validateTactic]) {
+        [outfieldArray enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+            if ([self fillPlayer:p CoeffThreshold:0.7]) {
+                [outfieldArray removeObjectAtIndex:idx];
+                p.hasPlayed = YES;
+                result = YES;
+            }
+            if([self validateTactic])
+                *stop =YES;
+        }];
+    }
+    return result;
+}
+
 
 - (void) fillGoalkeeper
 {
@@ -305,6 +387,34 @@
     NSMutableArray* result = [NSMutableArray array];
     [sortedArray enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
         if (!p.isGoalKeeper)
+            [result addObject:p];
+    }];
+    
+    return result;
+}
+
+- (NSMutableArray*) getOutfieldSubArray
+{
+    NSMutableArray* sortedArray = [[NSMutableArray alloc]initWithArray:[currentTactic.SubList sortedArrayUsingComparator:^NSComparisonResult(Player* a, Player* b) {
+        return [@(b.Valuation) compare:@(a.Valuation)];
+    }]];
+    NSMutableArray* result = [NSMutableArray array];
+    [sortedArray enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+        if (!p.isGoalKeeper && !p.hasPlayed)
+            [result addObject:p];
+    }];
+    
+    return result;
+}
+
+- (NSMutableArray*) getGKSubArray
+{
+    NSMutableArray* sortedArray = [[NSMutableArray alloc]initWithArray:[currentTactic.SubList sortedArrayUsingComparator:^NSComparisonResult(Player* a, Player* b) {
+        return [@(b.Valuation) compare:@(a.Valuation)];
+    }]];
+    NSMutableArray* result = [NSMutableArray array];
+    [sortedArray enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+        if (p.isGoalKeeper && !p.hasPlayed)
             [result addObject:p];
     }];
     

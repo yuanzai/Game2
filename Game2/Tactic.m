@@ -7,6 +7,7 @@
 //
 
 #import "Tactic.h"
+#import "GameModel.h"
 #import "DatabaseModel.h"
 #import "Player.h"
 
@@ -21,7 +22,7 @@
     if (self) {
 
         TacticID = InputID;
-        NSArray* formationData = [[DatabaseModel myDB]getArrayFrom:@"tactics" whereKeyField:@"TACTICID" hasKey:[NSNumber numberWithInteger:InputID] sortFieldAsc:@""];
+        NSArray* formationData = [[GameModel myDB]getArrayFrom:@"tactics" whereKeyField:@"TACTICID" hasKey:[NSNumber numberWithInteger:InputID] sortFieldAsc:@""];
         [formationData enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             formationArray[[[obj objectForKey:@"POSITIONVAL"]integerValue]][[[obj objectForKey:@"SIDEVAL"]integerValue]] = YES;
         }];

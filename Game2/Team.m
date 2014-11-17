@@ -10,10 +10,12 @@
 #import "GlobalVariableModel.h"
 #import "DatabaseModel.h"
 #import "Player.h"
+#import "GameModel.h"
 
 @implementation Team
 @synthesize TeamID;
 @synthesize Name;
+@synthesize TournamentID;
 @synthesize PlayerList;
 @synthesize PlayerIDList;
 @synthesize PlayerDictionary;
@@ -32,9 +34,10 @@
 
 - (void) updateFromDatabase
 {
-    PlayerIDList = [[NSMutableArray alloc]initWithArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PlayerID" whereKeyField:@"TeamID" hasKey:[NSNumber numberWithInteger:TeamID]]];
-    tableData = [[NSMutableDictionary alloc]initWithDictionary:[[DatabaseModel myDB]getResultDictionaryForTable:@"teams" withKeyField:@"TeamID" withKey:TeamID]];
+    PlayerIDList = [[NSMutableArray alloc]initWithArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PlayerID" whereKeyField:@"TeamID" hasKey:[NSNumber numberWithInteger:TeamID]]];
+    tableData = [[NSMutableDictionary alloc]initWithDictionary:[[GameModel myDB]getResultDictionaryForTable:@"teams" withKeyField:@"TeamID" withKey:TeamID]];
     Name = [tableData objectForKey:@"NAME"];
+    TournamentID = [[tableData objectForKey:@"TOURNAMENTID"]integerValue];
     PlayerList = [[NSMutableArray alloc]init];
     PlayerDictionary = [NSMutableDictionary dictionary];
 
@@ -48,7 +51,7 @@
 
 - (BOOL) updateToDatabase
 {
-    return [[DatabaseModel myDB]updateDatabaseTable:@"teams" withKeyField:@"TeamID" withKey:TeamID withDictionary:tableData];
+    return [[GameModel myDB]updateDatabaseTable:@"teams" withKeyField:@"TeamID" withKey:TeamID withDictionary:tableData];
 }
 
 - (Player*) getPlayerWithID:(NSInteger) PlayerID

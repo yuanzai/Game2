@@ -34,6 +34,8 @@ typedef enum {
 @property NSInteger redCard;
 @property NSInteger foul;
 @property NSInteger offside;
+@property NSInteger subLeft;
+
 
 @property NSMutableArray* matchLog;
 - (id) initWithTeam:(Team*) thisTeam;
@@ -56,6 +58,9 @@ typedef enum {
 
 //Event
 - (void) populateTeamAttDefStats;
+
+//Sub
+- (BOOL) subInjured;
 
 //Debug
 - (void) printFormation;

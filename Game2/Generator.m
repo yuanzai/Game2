@@ -29,11 +29,11 @@ const NSInteger maxTurn = 16;
 - (id) init {
 	if (!(self = [super init]))
 		return nil;
-    FirstNames = [[DatabaseModel myDB]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@1];
-    LastNames = [[DatabaseModel myDB]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@2];
-    TeamNames = [[DatabaseModel myDB]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@3];
-    TeamNamesSuffix = [[DatabaseModel myDB]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@4];
-    AgeDistribution = [[DatabaseModel myDB]getArrayFrom:@"retire" withSelectField:@"AGEDISTRIBUTION" whereKeyField:@"" hasKey:nil];
+    FirstNames = [[GameModel myDB]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@1];
+    LastNames = [[GameModel myDB]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@2];
+    TeamNames = [[GameModel myDB]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@3];
+    TeamNamesSuffix = [[GameModel myDB]getArrayFrom:@"names" withSelectField:@"NAME" whereKeyField:@"TYPE" hasKey:@4];
+    AgeDistribution = [[GameModel myDB]getArrayFrom:@"retire" withSelectField:@"AGEDISTRIBUTION" whereKeyField:@"" hasKey:nil];
     return self;
 }
 
@@ -50,7 +50,7 @@ const NSInteger maxTurn = 16;
     NSLog(@"Assigning Players");
     [self assignPlayersToTeams];
     
-    [[DatabaseModel myDB]deleteFromTable:@"fixtures" withData:nil];
+    [[GameModel myDB]deleteFromTable:@"fixtures" withData:nil];
  
 }
 
@@ -58,8 +58,8 @@ const NSInteger maxTurn = 16;
 {
     NSInteger myLeague = 81 + arc4random() % 4;
     __block NSMutableSet* teamNamesSet =[NSMutableSet set];
-    [[DatabaseModel myDB]deleteFromTable:@"teams" withData:nil];
-	NSArray* tournaments = [[DatabaseModel myDB]getArrayFrom:@"tournaments" whereData:nil sortFieldAsc:@""];
+    [[GameModel myDB]deleteFromTable:@"teams" withData:nil];
+	NSArray* tournaments = [[GameModel myDB]getArrayFrom:@"tournaments" whereData:nil sortFieldAsc:@""];
 	[tournaments enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         NSDictionary* result = (NSDictionary*) obj;
         NSInteger teamCount = [[result objectForKey:@"TEAMCOUNT"]integerValue];
@@ -84,14 +84,14 @@ const NSInteger maxTurn = 16;
                 [newTeam setObject:teamName forKey:@"NAME"];
                 [newTeam setObject:[obj objectForKey:@"TOURNAMENTID"] forKey:@"TOURNAMENTID"];
             }
-            [[DatabaseModel myDB]insertDatabaseTable:@"teams" withData:newTeam];
+            [[GameModel myDB]insertDatabaseTable:@"teams" withData:newTeam];
         }
     }];
 }
 
 - (void) generatePlayersForNewGame
 {
-    [[DatabaseModel myDB]deleteFromTable:@"players" withData:nil];
+    [[GameModel myDB]deleteFromTable:@"players" withData:nil];
 
     [AgeDistribution enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         [self generatePlayersWithSeason:-idx+1 NumberOfPlayers:(NSInteger)(playerBatch * [obj doubleValue])];
@@ -131,7 +131,7 @@ const NSInteger maxTurn = 16;
                         NSInteger teamID = [[teamList objectAtIndex:teamListIndex]integerValue];
                         [updateDict setObject:[NSNumber numberWithInteger:teamID]  forKey:@"TEAMID"];
                         
-                        [[DatabaseModel myDB]updateDatabaseTable:@"players" withKeyField:@"PLAYERID" withKey:[obj integerValue] withDictionary:updateDict];
+                        [[GameModel myDB]updateDatabaseTable:@"players" withKeyField:@"PLAYERID" withKey:[obj integerValue] withDictionary:updateDict];
                         
                     }];
                 }
@@ -160,52 +160,52 @@ const NSInteger maxTurn = 16;
     
     {
         case 0:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND GK = 0" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND GK = 0" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
             break;
             
         case 1:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
             break;
         case 2:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND DEF=1 AND LEFT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND DEF=1 AND LEFT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
             break;
         case 3:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND DEF=1 AND CENTRE=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND DEF=1 AND CENTRE=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
             break;
         case 4:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND DEF=1 AND RIGHT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND DEF=1 AND RIGHT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
             break;
         case 5:
         case 8:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND (DM=1 OR MID=1 OR AM=1) AND LEFT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND (DM=1 OR MID=1 OR AM=1) AND LEFT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
             break;
             
         case 6:
         case 9:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND (DM=1 OR MID=1 OR AM=1) AND RIGHT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND (DM=1 OR MID=1 OR AM=1) AND RIGHT=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
             break;
             
         case 7:
         case 10:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND (DM=1 OR MID=1 OR AM=1) AND CENTRE=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND (DM=1 OR MID=1 OR AM=1) AND CENTRE=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams]]];
             break;
         case 11:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND SC=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND SC=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
             break;
         case 12:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND GK=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND GK=1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
             break;
         case 13:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
             break;
         case 14:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"RANDOM()" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"RANDOM()" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
             break;
         case 15:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1" OrderBy:@"VALUATION DESC" Limit:[NSString stringWithFormat:@"%i",teams*2]]];
             break;
         case 16:
-            [result addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND GK = 0" OrderBy:@"RANDOM()" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
+            [result addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" WhereString:@"TEAMID = -1 AND GK = 0" OrderBy:@"RANDOM()" Limit:[NSString stringWithFormat:@"%i",teams*4]]];
             break;
             
         default:
@@ -236,7 +236,7 @@ const NSInteger maxTurn = 16;
     for (NSInteger i = 1; i <9; i++) {
         NSMutableArray* teamsArray = [NSMutableArray array];
         for (NSInteger j = 1; j < 10 ; j++){
-            [teamsArray addObjectsFromArray:[[DatabaseModel myDB]getArrayFrom:@"teams" withSelectField:@"TEAMID" whereKeyField:@"TOURNAMENTID" hasKey:[NSNumber numberWithInteger:i*10+j]]];
+            [teamsArray addObjectsFromArray:[[GameModel myDB]getArrayFrom:@"teams" withSelectField:@"TEAMID" whereKeyField:@"TOURNAMENTID" hasKey:[NSNumber numberWithInteger:i*10+j]]];
         }
         [fullArray addObjectsFromArray:[self shuffleArray:teamsArray]];
     }
@@ -550,6 +550,6 @@ const NSInteger statBiasMax = 63;
 
     [newPlayer setObject:[NSNumber numberWithDouble:Valuation] forKey:@"Valuation"];
     
-    return [[DatabaseModel myDB]insertDatabaseTable:@"players" withData:newPlayer];
+    return [[GameModel myDB]insertDatabaseTable:@"players" withData:newPlayer];
 }
 @end

@@ -15,6 +15,7 @@
 @implementation Match
 @synthesize team1;
 @synthesize team2;
+@synthesize hasSP;
 
 @synthesize thisFixture;
 @synthesize matchMinute;
@@ -23,17 +24,23 @@
 @synthesize isOver;
 @synthesize retainTeam;
 @synthesize lastAction;
+@synthesize preCommentary;
+@synthesize postCommentary;
+
 
 - (id) initWithFixture:(Fixture*) fixture WithSinglePlayerTeam:(LineUp*) sp
 {
+    if (!fixture)
+        [NSException raise:@"No fixture" format:@"no fixture"];
     self = [super init];
     if (self ) {
         thisFixture = fixture;
         if (fixture.HOMETEAM == 0) {
             team1 = sp;
             team1.Location = home;
+            hasSP = YES;
         } else {
-            team1 = [[LineUp alloc]initWithTeamID:fixture.HOMETEAM];
+            team1 = [[LineUp alloc]initWithTeam:[[[GameModel myGlobalVariableModel] teamList]objectForKey:[NSString stringWithFormat:@"%i",fixture.HOMETEAM]]];
             team1.Location = home;
             team1.currentTactic = [[Tactic alloc]initWithTacticID:2];
             [team1 populateMatchDayForm];
@@ -45,8 +52,9 @@
         if (fixture.AWAYTEAM == 0) {
             team2 = sp;
             team2.Location = away;
+            hasSP = YES;
         } else {
-            team2 = [[LineUp alloc]initWithTeamID:fixture.AWAYTEAM];
+            team2 = [[LineUp alloc]initWithTeam:[[[GameModel myGlobalVariableModel] teamList]objectForKey:[NSString stringWithFormat:@"%i",fixture.AWAYTEAM]]];
             team2.Location = away;
             team2.currentTactic = [[Tactic alloc]initWithTacticID:2];
             [team2 populateMatchDayForm];
@@ -84,7 +92,17 @@
 - (NSArray*) nextMinute
 {
     matchMinute++;
-    NSMutableArray* minuteEvent = [[NSMutableArray alloc]initWithArray:[self getMinuteEvent]];
+    
+    
+    NSMutableArray* minuteEvent = [NSMutableArray array];
+
+    if ([preCommentary count] > 0) {
+        minuteEvent = [[NSMutableArray alloc]initWithArray:preCommentary copyItems:YES];
+    }
+    preCommentary = nil;
+    [minuteEvent addObjectsFromArray:[self getMinuteEvent]];
+    
+    
     
     if (matchMinute == 45 || matchMinute == 90 || matchMinute == 105 || matchMinute == 120) {
         while (retainTeam) {
@@ -93,8 +111,10 @@
     }
     
     [self updateFatigue];
-    if ([self getCommentaryForMinute])
-        [minuteEvent addObject:[self getCommentaryForMinute]];
+    [self setPostCommentary];
+
+    if ([postCommentary count] > 0)
+        [minuteEvent addObject:postCommentary];
     return minuteEvent;
 }
 
@@ -113,6 +133,37 @@
         retainTeam = YES;
         lastAction = thisEvent.thisAction;
     }
+    
+    if ([thisEvent.injuryList count] > 0) {
+        __block BOOL hasSPInjury = NO;
+        __block BOOL hasComInjury = NO;
+
+        [thisEvent.injuryList enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+            if (p.TeamID==0) {
+                hasSPInjury = YES;
+            }
+            if (p.TeamID !=0)
+                hasComInjury = YES;
+        }];
+        
+        if (hasComInjury) {
+            if (!preCommentary)
+                preCommentary = [NSMutableArray array];
+            if (team1.team.TeamID !=0){
+                [team1 subInjured];
+                [preCommentary addObject:[NSString stringWithFormat:@"Substitution made by %@",team1.team.Name] ];
+            }
+            if (team2.team.TeamID !=0)
+                [team2 subInjured];
+                [preCommentary addObject:[NSString stringWithFormat:@"Substitution made by %@",team1.team.Name]];
+        }
+        
+        if (thisEvent.ownTeam.team.TeamID ==0) {
+            isPaused = YES;
+        }
+        NSLog(@"Injury");
+    }
+    
     return thisEvent.eventCommentary;
 }
 
@@ -143,41 +194,38 @@
     }];
 }
 
-- (NSString* ) getCommentaryForMinute{
+- (void) setPreCommentary
+{
+    // This is for the next minute, not current minute
+    
+}
+
+- (void) setPostCommentary{
+    postCommentary = [NSMutableArray array];
     if (matchMinute == 45) {
         isPaused = YES;
-        return @"Half Time";
+        [postCommentary addObject:@"Half Time"];
+        
     } else if (matchMinute == 90) {
         if (thisFixture.HASET == 1 && team1.score == team2.score) {
             isPaused = YES;
-            return @"End of 90 Min Time";
+            [postCommentary addObject:@"End of 90 Min Time"];
         } else {
             isOver = YES;
-            return @"Full Time";
+            [postCommentary addObject:@"Full Time"];
         }
     } else if (matchMinute == 105) {
         isPaused = YES;
-        return @"Extra Time Half Time";
+        [postCommentary addObject:@"Extra Time Half Time"];
     } else if (matchMinute == 120) {
         isOver = YES;
-        return @"Extra Time Full Time";
+        [postCommentary addObject:@"Extra Time Full Time"];
     }
-    return nil;
-}
-
-
-- (void) printScore
-{
-    
 }
 
 - (void) endMatch
 {
-    [self printScore];
-}
-
-- (void) upPlayerStats {
-    
+    [self printMatch];
 }
 
 - (BOOL) subIn:(Player*) sub ForPlayer:(Player*) player
@@ -211,7 +259,7 @@
     }
 }
 
-- (void) UpdateMatchFixture
+- (void) updateMatchFixture
 {
     thisFixture.HOMESCORE = team1.score;
     thisFixture.AWAYSCORE = team2.score;
@@ -221,5 +269,10 @@
     thisFixture.AWAYRED = team2.redCard;
     thisFixture.PLAYED = 1;
     [thisFixture updateFixtureInDatabase];
+}
+
+- (void) printMatch
+{
+    NSLog(@"%i t1:%i t2:%i %i - %i", thisFixture.MATCHID, thisFixture.HOMETEAM, thisFixture.AWAYTEAM, team1.score, team2.score);
 }
 @end

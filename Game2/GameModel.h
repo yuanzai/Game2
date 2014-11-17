@@ -11,8 +11,13 @@
 
 @class SinglePlayerData;
 @class Match;
+@class DatabaseModel;
+@class GlobalVariableModel;
+
 @interface GameModel : NSObject
 @property SinglePlayerData* myData;
+@property DatabaseModel* myDB;
+@property GlobalVariableModel* myGlobalVariableModel;
 @property NSInteger GameID;
 
 /* -- Playables --
@@ -134,6 +139,8 @@
 //Static Method
 
 + (id)myGame;
++ (DatabaseModel*) myDB;
++ (GlobalVariableModel*) myGlobalVariableModel;
 
 
 //Save Load

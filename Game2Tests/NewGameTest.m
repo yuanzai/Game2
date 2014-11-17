@@ -25,7 +25,7 @@
 {
     [super setUp];
     // Put setup code here. This method is called before the invocation of each test method in the class.
-    NSLog(@"%@",[[DatabaseModel myDB]databasePath]);
+    NSLog(@"%@",[[GameModel myDB]databasePath]);
 
 }
 
@@ -33,18 +33,17 @@
 {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
     [super tearDown];
-    NSLog(@"%@",[[DatabaseModel myDB]databasePath]);
+    NSLog(@"%@",[[GameModel myDB]databasePath]);
 
 }
 
 - (void)testNewGame
 {
-    [[DatabaseModel myDB]deleteFromTable:@"fixtures" withData:nil];
+    [[GameModel myDB]deleteFromTable:@"fixtures" withData:nil];
     [[GameModel myGame]newWithGameID:1];
 
     [[GameModel myGame]startSeason];
 
-    [[GameModel myGame]enterPreWeek];
     [[GameModel myGame]saveThisGame];
     
     NSLog(@"Season %i | Week %i",[[GameModel myGame]myData].season, [[GameModel myGame]myData].weekdate);
@@ -62,57 +61,89 @@
     NSLog(@"Next Match ID %i",[[GameModel myGame]myData].nextFixture.MATCHID);
 }
 
-- (void)testNextFixture
+- (void)testPrintTable
 {
     [[GameModel myGame]loadWithGameID:1];
-    //[[GameModel myGame]enterPreWeek];
-
-    [[GameModel myGame]enterPreGame];
-
-    [[[GameModel myGame]myData].currentLineup removeAllPlayers];
-    [[[GameModel myGame]myData].currentLineup fillOutfieldPlayers];
-    [[[GameModel myGame]myData].currentLineup fillGoalkeeper];
-    [[[GameModel myGame]myData].currentLineup printFormation];
+    NSLog(@"%i",[[[GameModel myGame] myData]currentLeagueTournament].tournamentID );
+    NSLog(@"%@",[[[GameModel myGame] myData]currentLeagueTournament] );
     
-    XCTAssertTrue([[GameModel myGame]myData].currentLineup);
+    
+    Tournament* temp = [[[GameModel myGlobalVariableModel] tournamentList] objectForKey:@"84"];
+    
+    NSLog(@"%i",temp.tournamentID);
+    NSLog(@"%@",temp);
+    
+    [[[[GameModel myGame] myData]currentLeagueTournament]printTable];
+}
 
-    for (int i =0;i<2;i++) {
-        [[GameModel myGame]enterGame];
-        NSLog(@"Next Match ID %i",[[GameModel myGame]myData].nextFixture.MATCHID);
-
-        Match* playGame = [[GameModel myGame]myData].nextMatch;
-        NSLog(@"Team %@-%@",playGame.team1.team.Name,playGame.team2.team.Name);
-
-        XCTAssertTrue(playGame.team2);
-        XCTAssertTrue([playGame.team1 validateTactic]);
-        XCTAssertTrue([playGame.team2 validateTactic]);
-        XCTAssertTrue([playGame startMatch]);
-        
-        
-        while (!playGame.isOver && !playGame.isPaused) {
-            //NSLog(@"%i",playGame.matchMinute);
-            [playGame nextMinute];
+- (void)testNextFixture
+{
+    GameModel* game = [GameModel myGame];
+    [game loadWithGameID:1];
+    [game enterPreWeek];
+    [game enterPreGame];
+    [game.myData.currentLineup removeAllPlayers];
+    [game.myData.currentLineup fillOutfieldPlayers];
+    [game.myData.currentLineup fillGoalkeeper];
+    [game.myData.currentLineup printFormation];
+    
+    [game enterGame];
+    
+    Match* playGame = game.myData.nextMatch;
+    NSLog(@"Team %@-%@",playGame.team1.team.Name,playGame.team2.team.Name);
+    
+    while (!playGame.isOver) {
+        if (playGame.isPaused) {
+            if (playGame.hasSP) {
+                [game.myData.currentLineup subInjured];
+                [playGame resumeMatch];
+            }
         }
-        
-        playGame.isPaused = NO;
-        
-        while (!playGame.isOver && !playGame.isPaused) {
-            //NSLog(@"%i",playGame.matchMinute);
-            [playGame nextMinute];
-        }
-        
-        NSLog(@"Score %i-%i",playGame.team1.score,playGame.team2.score);
-        NSLog(@"Yellow %i-%i",playGame.team1.yellowCard,playGame.team2.yellowCard);
-        NSLog(@"Red %i-%i",playGame.team1.redCard,playGame.team2.redCard);
-        [[GameModel myGame]enterPostGame];
-        [[GameModel myGame]enterPreWeek];
-        [[GameModel myGame]enterPreGame];
-        //[[GameModel myGame]enterGame];
+        [playGame nextMinute];
     }
+    
+    NSLog(@"Score %i-%i",playGame.team1.score,playGame.team2.score);
+    NSLog(@"Yellow %i-%i",playGame.team1.yellowCard,playGame.team2.yellowCard);
+    NSLog(@"Red %i-%i",playGame.team1.redCard,playGame.team2.redCard);
+    [game enterPostGame];
+    [game enterPreWeek];
+    [game enterPreGame];
+    [game enterGame];
+    
+    playGame = game.myData.nextMatch;
+    NSLog(@"Team %@-%@",playGame.team1.team.Name,playGame.team2.team.Name);
+    
+    while (!playGame.isOver) {
+        if (playGame.isPaused) {
+            if (playGame.hasSP) {
+                [game.myData.currentLineup subInjured];
+                [playGame resumeMatch];
+            }
+        }
+        [playGame nextMinute];
+    }
+
+    NSLog(@"Score %i-%i",playGame.team1.score,playGame.team2.score);
+    NSLog(@"Yellow %i-%i",playGame.team1.yellowCard,playGame.team2.yellowCard);
+    NSLog(@"Red %i-%i",playGame.team1.redCard,playGame.team2.redCard);
+    [game enterPostGame];
+    [game enterPreWeek];
+    [game enterPreGame];
+    
+    
+    
     NSLog(@"%f",[Action addToRuntime:1 amt:0]);
     NSLog(@"%f",[Action addToRuntime:2 amt:0]);
     NSLog(@"%f",[Action addToRuntime:3 amt:0]);
-    [[[[GameModel myGame] myData]currentLeagueTournament]printTable];
+    NSLog(@"%i",game.myData.currentLeagueTournament.tournamentID );
+    NSLog(@"%@",game.myData.currentLeagueTournament);
+    
+    Tournament* temp = [[game.myGlobalVariableModel tournamentList] objectForKey:@"84"];
+    
+    NSLog(@"%i",temp.tournamentID);
+    NSLog(@"%@",temp);
+
+    [game.myData.currentLeagueTournament printTable];
 }
 
 
@@ -144,7 +175,7 @@
     
     date = [NSDate date];
     for (int i =0; i<10000; i++){
-        NSDictionary* ageP = [GlobalVariableModel ageProfile];
+        NSDictionary* ageP = [[GameModel myGlobalVariableModel] ageProfile];
         NSDictionary* pid = [ageP objectForKey:@(0)];
         NSInteger r = arc4random_uniform(20);
         NSDictionary* profile = [pid objectForKey:[NSString stringWithFormat:@"%i",r]];
@@ -163,7 +194,7 @@
 
 - (void)ttestDatabase
 {
-    NSArray* players = [[DatabaseModel myDB]getArrayFrom:@"players" withSelectField:@"DISPLAYNAME" whereKeyField:@"PLAYERID" hasKey:@2];
+    NSArray* players = [[GameModel myDB]getArrayFrom:@"players" withSelectField:@"DISPLAYNAME" whereKeyField:@"PLAYERID" hasKey:@2];
     XCTAssertTrue([players count] == 1,@"get 1 player in players table");
     
 }
