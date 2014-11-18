@@ -82,10 +82,7 @@
     [game loadWithGameID:1];
     [game enterPreWeek];
     [game enterPreGame];
-    [game.myData.currentLineup removeAllPlayers];
-    [game.myData.currentLineup fillOutfieldPlayers];
-    [game.myData.currentLineup fillGoalkeeper];
-    [game.myData.currentLineup printFormation];
+    [game.myData.currentLineup fillLineup];
     
     [game enterGame];
     
@@ -220,9 +217,7 @@
     LineUp* lineup = [[LineUp alloc]initWithTeam:newTeam];
     lineup.currentTactic = [[Tactic alloc]initWithTacticID:0];
     
-    [lineup removeAllPlayers];
-    [lineup fillGoalkeeper];
-    [lineup fillOutfieldPlayers];
+    [lineup fillLineup];
     [lineup printFormation];
     
     XCTAssertTrue([lineup validateTactic]);
@@ -231,11 +226,8 @@
     [opp updateFromDatabase];
     LineUp* oppLineup = [[LineUp alloc]initWithTeam:opp];
     oppLineup.currentTactic = [[Tactic alloc]initWithTacticID:2];
-    [oppLineup removeAllPlayers];
-    [oppLineup fillGoalkeeper];
-    [oppLineup fillOutfieldPlayers];
+    [oppLineup fillLineup];
     [oppLineup printFormation];
-    XCTAssertTrue([oppLineup validateTactic]);
     
     
 }

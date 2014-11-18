@@ -17,15 +17,16 @@
 @property NSInteger TournamentID;
 
 @property NSMutableArray* PlayerList;
-@property NSMutableArray* PlayerIDList;
+@property NSMutableSet* PlayerIDList;
 @property NSMutableDictionary* PlayerDictionary;
-@property NSMutableDictionary* tableData;
 @property BOOL isSinglePlayer;
-@property Tournament* tournament;
+@property Tournament* leagueTournament;
 
 - (id) initWithTeamID:(NSInteger) InputID;
 - (void) updateFromDatabase;
 - (BOOL) updateToDatabase;
 - (Player*) getPlayerWithID:(NSInteger) PlayerID;
 - (void) updateConditionPreGame;
+
+- (void) transferActivity;
 @end

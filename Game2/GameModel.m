@@ -40,20 +40,22 @@
 
 + (DatabaseModel*) myDB
 {
+/* 
     if (![[self myGame]myDB]){
         GameModel* myGame = [self myGame];
         myGame.myDB = [DatabaseModel new];
-    }
+    }*/
     return [[self myGame]myDB];
 }
 
 
 + (GlobalVariableModel*) myGlobalVariableModel
 {
+    /*
     if (![[self myGame]myGlobalVariableModel]){
         GameModel* myGame = [self myGame];
         myGame.myGlobalVariableModel = [GlobalVariableModel new];
-    }
+    }*/
     return [[self myGame]myGlobalVariableModel];
 }
 

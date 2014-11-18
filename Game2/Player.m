@@ -12,6 +12,8 @@
 #import "DatabaseModel.h"
 #import "GameModel.h"
 #import "Tactic.h"
+#import "Team.h"
+#import "LineUp.h"
 
 @implementation Player
 @synthesize PlayerID;
@@ -362,6 +364,28 @@
         sum += [[eventStatsRecord objectForKey:key]doubleValue]*[obj doubleValue];
     }];
     return sum;
+}
+
+- (BOOL) transferPlayerFromTeam:(Team*) fromTeam ToTeam:(Team*) toTeam Price:(NSInteger) price
+{
+    if ([GameModel gameData].money < price)
+        return NO;
+
+    [fromTeam.PlayerIDList removeObject:@(PlayerID)];
+    [fromTeam.PlayerDictionary removeObjectForKey:[@(PlayerID) stringValue]];
+    [fromTeam.PlayerList removeObject:self];
+    
+    [toTeam.PlayerIDList addObject:@(PlayerID)];
+    [toTeam.PlayerDictionary setObject:self forKey:@(PlayerID)];
+    [toTeam.PlayerList addObject:self];
+    
+    if (fromTeam.isSinglePlayer){
+        [[GameModel gameData].currentLineup removeInvalidPlayers];
+        [GameModel gameData].money += price;
+    } else if (toTeam.isSinglePlayer) {
+        [GameModel gameData].money -= price;
+    }
+    return YES;
 }
 
 - (void) clearMatchVariable

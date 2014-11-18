@@ -279,6 +279,8 @@
     [updateData setObject:@(HOMESCORE) forKey:@"HOMESCORE"];
     [updateData setObject:@(AWAYSCORE) forKey:@"AWAYSCORE"];
     [updateData setObject:@(1) forKey:@"PLAYED"];
-    [[GameModel myDB]updateDatabaseTable:@"fixtures" withKeyField:@"MATCHID" withKey:MATCHID withDictionary:updateData];
+    GameModel* myGame = [GameModel myGame];
+    
+    [myGame.myDB  updateDatabaseTable:@"fixtures" withKeyField:@"MATCHID" withKey:MATCHID withDictionary:updateData];
 }
 @end

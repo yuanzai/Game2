@@ -102,7 +102,7 @@
         [playerList addObject:p];
 
             }];
-    if ([[currentTactic getAllPlayers]count]!=11) {
+    if ([[currentTactic getAllPlayers]count]!=11-redCard) {
         isValid = NO;
         //NSLog(@"Player Count");
     }
@@ -123,7 +123,6 @@
             }
         }
     };
-
 }
 
 
@@ -160,6 +159,9 @@
 
 - (void) removeInvalidPlayers
 {
+    if (currentTactic.GoalKeeper.TeamID != team.TeamID)
+        currentTactic.GoalKeeper = nil;
+    
     for (int i = 0; i < 5;i++) {
         for (int j = 0; j < 5;j++) {
             PositionSide ps;
@@ -177,6 +179,7 @@
 
 - (void) removeAllPlayers
 {
+    currentTactic.SubList = [NSMutableArray array];
     currentTactic.GoalKeeper = nil;
     for (int i = 0; i < 5;i++) {
         for (int j = 0; j < 5;j++) {
@@ -236,8 +239,6 @@
         }
     }
     
-    
-
     [[currentTactic getOutFieldPlayers]enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
         if (p.Condition ==0) {
             [currentTactic removePlayerAtPositionSide:p.currentPositionSide];
@@ -292,16 +293,36 @@
     return result;
 }
 
+- (void) fillLineup
+{
+    [self removeAllPlayers];
+    [self fillGoalkeeper];
+    [self fillOutfieldPlayers];
+}
 
 - (void) fillGoalkeeper
 {
+    if (!currentTactic.SubList)
+        currentTactic.SubList = [NSMutableArray array];
+    
     NSMutableArray* sortedArray = [[NSMutableArray alloc]initWithArray:[team.PlayerList sortedArrayUsingComparator:^NSComparisonResult(Player* a, Player* b) {
         return [@(b.Valuation) compare:@(a.Valuation)];
     }]];
     
+    //Starting GK
     [sortedArray enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
         if (p.isGoalKeeper) {
             currentTactic.GoalKeeper = p;
+            [sortedArray removeObjectAtIndex:idx];
+            *stop = YES;
+        }
+    }];
+
+    //Sub GK
+    [sortedArray enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+        if (p.isGoalKeeper) {
+            [currentTactic.SubList addObject:p];
+            [sortedArray removeObjectAtIndex:idx];
             *stop = YES;
         }
     }];
@@ -309,14 +330,47 @@
 
 - (void) fillOutfieldPlayers
 {
+    __block NSInteger sc = 2;
+    __block NSInteger mid = 2;
+    __block NSInteger def = 2;
+    
     NSMutableArray* players = [self getOutfieldPlayerArray];
-    [players enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {        
-        if (![self fillPlayer:p CoeffThreshold:1.0]) {
-            if (![self swapToFillPlayer:p])
-                if(![self fillPlayer:p CoeffThreshold:0.9])
-                    [self fillPlayer:p CoeffThreshold:0.7];
+    [players enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+        if ([self fillPlayer:p CoeffThreshold:1.0]) {
+            [players removeObjectAtIndex:idx];
+        } else {
+            if ([self swapToFillPlayer:p]) {
+                [players removeObjectAtIndex:idx];
+            }else {
+                if([self fillPlayer:p CoeffThreshold:0.9]) {
+                    [players removeObjectAtIndex:idx];
+                    
+                } else {
+                    if ([self fillPlayer:p CoeffThreshold:0.7])
+                        [players removeObjectAtIndex:idx];
+                }
+            }
         }
     }];
+    
+    
+    [players enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+        if ([currentTactic.SubList count]>=7)
+            *stop = YES;
+        if ([[p.PreferredPosition objectForKey:@"SC"]integerValue]==1 && sc > 0){
+            sc--;
+            [currentTactic.SubList addObject:p];
+        } else if (([[p.PreferredPosition objectForKey:@"AM"]integerValue]==1 ||
+                    [[p.PreferredPosition objectForKey:@"MID"]integerValue]==1 ||
+                    [[p.PreferredPosition objectForKey:@"DM"]integerValue]==1) && mid > 0){
+            mid--;
+            [currentTactic.SubList addObject:p];
+        } else if (def>0) {
+            def--;
+            [currentTactic.SubList addObject:p];
+        }
+    }];
+    
     
 }
 

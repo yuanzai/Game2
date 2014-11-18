@@ -32,10 +32,11 @@
 - (NSInteger) getAttackOutcomesForZoneFlank:(ZoneFlank) zf AttackType:(NSString*) type;
 
 //TournamentList
-
-- (NSDictionary*) tournamentList;
+- (NSMutableDictionary*) tournamentList;
 
 //TeamList
-- (NSDictionary*) teamList;
+- (NSMutableDictionary*) teamList;
 
+//PlayerList
+- (NSMutableDictionary*) playerList;
 @end

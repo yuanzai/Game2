@@ -14,11 +14,11 @@
 {    
     __block BOOL formationArray[5][5];
     Player* playerArray[5][5];
-    NSArray* SubList;
+    NSMutableArray* SubList;
 }
 @property NSInteger TacticID;
 @property Player* GoalKeeper;
-@property NSArray* SubList;
+@property NSMutableArray* SubList;
 
 - (NSArray*) getOutFieldPlayers;
 - (NSArray*) getAllPlayers;

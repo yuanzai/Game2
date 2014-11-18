@@ -112,10 +112,8 @@
     return standardDeviationTable;
 }
 
-- (NSDictionary*) tournamentList
+- (NSMutableDictionary*) tournamentList
 {
-    NSLog(@"%@",self);
-
     if (!tournamentList){
         NSMutableDictionary* result = [NSMutableDictionary dictionary];
         [[[GameModel myDB]getArrayFrom:@"tournaments" withSelectField:@"TOURNAMENTID" whereKeyField:@"" hasKey:@""] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -126,7 +124,7 @@
     return tournamentList;
 }
 
-- (NSDictionary*) teamList
+- (NSMutableDictionary*) teamList
 {
     if (!teamList){
         NSMutableDictionary* result = [NSMutableDictionary dictionary];
@@ -136,6 +134,19 @@
         teamList = result;
     }
     return teamList;
+}
+
+- (NSMutableDictionary*) playerList
+{
+    if (!playerList){
+        NSMutableDictionary* result = [NSMutableDictionary dictionary];
+        [[[GameModel myDB]getArrayFrom:@"players" withSelectField:@"PLAYERID" whereKeyField:@"" hasKey:@""] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [result setObject:[[Player alloc]initWithPlayerID:[obj integerValue]] forKey:[NSString stringWithFormat:@"%@",obj]];
+        }];
+        playerList = result;
+    }
+    return playerList;
+
 }
 
 # pragma mark Training Methods

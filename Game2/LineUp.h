@@ -44,8 +44,8 @@ typedef enum {
 
 //Squad
 - (void) removeAllPlayers;
-- (void) fillGoalkeeper;
-- (void) fillOutfieldPlayers;
+- (void) removeInvalidPlayers;
+- (void) fillLineup;
 
 //Pre Match
 - (void) populateMatchDayForm;

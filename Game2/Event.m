@@ -129,6 +129,7 @@ const NSInteger max_action = 10;
         if (thisAction.result == DefenseRed) {
             [eventCommentary addObject:thisAction.Commentary];
             oppTeam.redCard++;
+            [oppTeam.currentTactic removePlayerAtPositionSide:thisAction.OppPlayer.currentPositionSide];
             retainTeam = YES;
             break;
         }

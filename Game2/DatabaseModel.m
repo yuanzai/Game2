@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Junyuan Lau. All rights reserved.
 //
 
+
 #import "DatabaseModel.h"
 #import "AppDelegate.h" 
 
@@ -19,15 +20,6 @@
 
 const NSInteger insertQueueMax = 10;
 
-+ (id)myDB {
-    static DatabaseModel *myDB = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        myDB = [[self alloc] init];
-    });
-    
-    return myDB;
-}
 
 -(id)init
 {
@@ -129,7 +121,6 @@ const NSInteger insertQueueMax = 10;
 }
 
 -(NSArray*) getLeagueTableForTournamentID:(NSInteger) tournamentID Season:(NSInteger)season {
-    NSMutableArray* resultArray = [NSMutableArray array];
     NSString* query = [NSString stringWithFormat:@
                        " SELECT AWAYTEAM as TEAM, AWAYSCORE as GOALSFOR, HOMESCORE as GOALSAGAINST,"
                        " CASE WHEN HOMESCORE < AWAYSCORE THEN '3' WHEN HOMESCORE = AWAYSCORE THEN '1' else '0' END as POINT,"
@@ -150,40 +141,22 @@ const NSInteger insertQueueMax = 10;
     query = [NSString stringWithFormat:@"SELECT TEAM, SUM(WIN) + SUM(DRAW) + SUM(LOSS) as GP, SUM(WIN) as WIN, SUM(DRAW) as DRAW, SUM(LOSS) as LOSS, SUM(POINT) as POINTS, SUM(GOALSFOR) as GF, SUM(GOALSAGAINST) as GA, (SUM(GOALSFOR) - SUM(GOALSAGAINST)) as GD FROM (%@) GROUP BY TEAM ORDER BY POINTS DESC",query];
     
     
-    FMResultSet* result=[db executeQuery:query];
-    while([result next]) {
-        [resultArray addObject:[result resultDictionary]];
-    }
-    return resultArray;
+    NSArray *result = [self getResultSetArray:[db executeQuery:query] SelectField:@""];
+    [db closeOpenResultSets];
+    return result;
 }
 
 - (NSDictionary*) getResultDictionaryForTable:(NSString*)table withKeyField:(NSString*)keyField withKey:(NSInteger)key
 {
-    NSString* query = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = %i", table, keyField,key];
-    FMResultSet* result = [db executeQuery:query];
-    if ([result next]) {
-        NSDictionary* ret = [result resultDictionary];
-        return ret;
-        
-    } else {
-        return nil; //has 0 entry in this key field
-    }
+    return [self getResultDictionaryForTable:table withDictionary:[[NSDictionary alloc]initWithObjectsAndKeys:@(key),keyField, nil]];
 }
 
 - (NSDictionary*) getResultDictionaryForTable:(NSString*)table withDictionary:(NSDictionary*) data
 {
     NSString* query = [NSString stringWithFormat:@"SELECT * FROM %@ %@", table, [self getWhereSQL:data]];
-    FMResultSet* result = [db executeQuery:query];
-    if ([result next]) {
-    	NSDictionary* ret = [result resultDictionary];
-        if ([result next]) {
-            [db close];
-            return nil; // has more than 1 entry
-        }
-        return ret;
-    } else {
-        return nil; //has 0 entry in this key field
-    }
+    NSDictionary* result = [self getResultSetArray:[db executeQuery:query]];
+    [db closeOpenResultSets];
+    return result;
 }
 
 - (NSArray*) getArrayFrom:(NSString*)table withSelectField:(NSString*)selectField whereKeyField:(NSString*)keyField hasKey:(id)key
@@ -198,14 +171,8 @@ const NSInteger insertQueueMax = 10;
     }
     
     FMResultSet* result = [db executeQuery:query];
-
-    NSMutableArray *resultArray = [[NSMutableArray alloc]init];
-    while ([result next]){
-        [resultArray addObject:[result objectForColumnName:selectField]];
-    }
-    
-    if ([resultArray count] == 0)
-        return nil;
+    NSArray *resultArray = [self getResultSetArray:result SelectField:selectField];
+    [db closeOpenResultSets];
     return resultArray;
 }
 
@@ -225,19 +192,10 @@ const NSInteger insertQueueMax = 10;
     if (![limit isEqualToString:@""])
         query = [NSString stringWithFormat:@"%@ LIMIT %@", query, limit];
     
-    FMResultSet* result = [db executeQuery:query];
-    
-    NSMutableArray *resultArray = [[NSMutableArray alloc]init];
-    while ([result next]){
-        [resultArray addObject:[result objectForColumnName:selectField]];
-    }
-    if ([resultArray count] == 0)
-        return nil;
+    NSArray *resultArray = [self getResultSetArray:[db executeQuery:query] SelectField:selectField];
+    [db closeOpenResultSets];
     return resultArray;
 }
-
-
-
 
 - (NSArray*) getArrayFrom:(NSString*)table whereData:(NSDictionary*)data sortFieldAsc:(NSString*) sortAsc
 {
@@ -256,13 +214,8 @@ const NSInteger insertQueueMax = 10;
         query = [NSString stringWithFormat:@"SELECT * FROM %@ %@", table ,sortSQL];
     }
     
-    FMResultSet* result = [db executeQuery:query];
-    NSMutableArray *resultArray = [[NSMutableArray alloc]init];
-    while ([result next]){
-        [resultArray addObject:[result resultDictionary]];
-    }
-    if ([resultArray count] == 0)
-    	resultArray = nil;
+    NSArray *resultArray = [self getResultSetArray:[db executeQuery:query] SelectField:@""];
+    [db closeOpenResultSets];
     return resultArray;
 }
 
@@ -277,17 +230,7 @@ const NSInteger insertQueueMax = 10;
 {
     [db closeOpenResultSets];
     NSString* query;
-    /*
-    NSString* query = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = %i", table, keyField,key];
-    FMResultSet* result = [db executeQuery:query];
-    if ([result next]) {
-        if ([result next]) { //has more than 1 entry in this key field
-            return NO;
-        }
-    } else {
-        return NO; //has 0 entry in this key field
-    }
-     */
+
     NSMutableArray* UpdateValues = [[NSMutableArray alloc]init];
     [data enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         //[obj class];
@@ -301,10 +244,37 @@ const NSInteger insertQueueMax = 10;
     
     query = [NSString stringWithFormat:@"UPDATE %@ SET %@ WHERE %@ = %i",table,setString, keyField,key];
 
-    if ([db executeUpdate:query]) {
-        return YES;
+    return [db executeUpdate:query];
+}
+
+- (NSArray*) getResultSetArray:(FMResultSet*) resultSet SelectField:(NSString*) select
+{
+    NSMutableArray *resultArray = [[NSMutableArray alloc]init];
+    while ([resultSet next]){
+        NSDictionary* dict = [[NSDictionary alloc]initWithDictionary:[resultSet resultDictionary] copyItems:YES];
+
+        if (![select isEqualToString:@""]) {
+            [resultArray addObject:[resultSet objectForColumnName:select]];
+        } else {
+            [resultArray addObject:dict];
+        }
+        
+    }
+    if ([resultArray count] == 0)
+    	resultArray = nil;
+    return resultArray;
+}
+
+- (NSDictionary*) getResultSetArray:(FMResultSet*) resultSet
+{
+    if ([resultSet next]) {
+    	NSDictionary* ret = [resultSet resultDictionary];
+        if ([resultSet next]) {
+            return nil; // has more than 1 entry
+        }
+        return [[NSDictionary alloc]initWithDictionary:ret copyItems:YES];;
     } else {
-        return NO;
+        return nil; //has 0 entry in this key field
     }
 }
 
@@ -410,7 +380,6 @@ const NSInteger insertQueueMax = 10;
     query = [NSString stringWithFormat:@"DELETE FROM %@ %@",table,[self getWhereSQL:data]];
     BOOL ret = [db executeUpdate:query];
     return ret;
-    
 }
 
 - (NSString*) getWhereSQL:(NSDictionary*) data
@@ -434,3 +403,4 @@ const NSInteger insertQueueMax = 10;
     return whereString;
 }
 @end
+

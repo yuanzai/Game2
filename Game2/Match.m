@@ -44,9 +44,7 @@
             team1.Location = home;
             team1.currentTactic = [[Tactic alloc]initWithTacticID:2];
             [team1 populateMatchDayForm];
-            [team1 removeAllPlayers];
-            [team1 fillGoalkeeper];
-            [team1 fillOutfieldPlayers];
+            [team1 fillLineup];
         }
         
         if (fixture.AWAYTEAM == 0) {
@@ -58,9 +56,7 @@
             team2.Location = away;
             team2.currentTactic = [[Tactic alloc]initWithTacticID:2];
             [team2 populateMatchDayForm];
-            [team2 removeAllPlayers];
-            [team2 fillGoalkeeper];
-            [team2 fillOutfieldPlayers];
+            [team2 fillLineup];
         }
         [team1 clearTeamProperty];
         [team1 populateAllPlayersStats];

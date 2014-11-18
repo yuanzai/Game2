@@ -23,7 +23,6 @@
     NSString* databasePath;
 }
 -(id)initWithPath:(NSString*) path;
-+ (id)myDB;
 
 @property NSString* databasePath;
 
