@@ -30,6 +30,9 @@
 @synthesize week;
 @synthesize season;
 @synthesize money;
+@synthesize weekStage;
+@synthesize weekTask;
+
 
 @synthesize myGame;
 
@@ -42,6 +45,9 @@
     self.week = [decoder decodeIntegerForKey:@"week"];
     self.season = [decoder decodeIntegerForKey:@"season"];
     self.money = [decoder decodeIntegerForKey:@"money"];
+    self.weekStage = [decoder decodeObjectForKey:@"weekStage"];
+    self.weekTask = [decoder decodeObjectForKey:@"weekTask"];
+
     return self;
 }
 
@@ -50,6 +56,8 @@
     [encoder encodeInteger:self.week forKey:@"week"];
     [encoder encodeInteger:self.season forKey:@"season"];
     [encoder encodeInteger:self.money forKey:@"money"];
+    [encoder encodeObject:self.weekStage forKey:@"weekStage"];
+    [encoder encodeObject:self.weekTask forKey:@"weekTask"];
 }
 
 - (void) setUpData

@@ -13,8 +13,6 @@
 		6B1339AD19EECC5400BC749E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6B1339AB19EECC5400BC749E /* InfoPlist.strings */; };
 		6B1339AF19EECC5400BC749E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1339AE19EECC5400BC749E /* main.m */; };
 		6B1339B319EECC5400BC749E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1339B219EECC5400BC749E /* AppDelegate.m */; };
-		6B1339B619EECC5400BC749E /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1339B419EECC5400BC749E /* Main_iPhone.storyboard */; };
-		6B1339B919EECC5400BC749E /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1339B719EECC5400BC749E /* Main_iPad.storyboard */; };
 		6B1339BC19EECC5400BC749E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1339BB19EECC5400BC749E /* ViewController.m */; };
 		6B1339BE19EECC5400BC749E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6B1339BD19EECC5400BC749E /* Images.xcassets */; };
 		6B1339C519EECC5400BC749E /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B1339C419EECC5400BC749E /* XCTest.framework */; };
@@ -62,6 +60,13 @@
 		6B133A2D19EECF7B00BC749E /* Training.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A1F19EECF7B00BC749E /* Training.m */; };
 		6B133A3A19FA180C00BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3919FA180C00BC749E /* Tactic.m */; };
 		6B133A3B19FA180C00BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3919FA180C00BC749E /* Tactic.m */; };
+		6B1D458B1A1C567B006633A9 /* TeamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D458A1A1C567B006633A9 /* TeamViewController.m */; };
+		6B1D45911A1C5D29006633A9 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D458D1A1C5D29006633A9 /* Main_iPhone.storyboard */; };
+		6B1D45921A1C5D29006633A9 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D458F1A1C5D29006633A9 /* Main_iPad.storyboard */; };
+		6B1D45951A1CE5B0006633A9 /* TaskViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45941A1CE5B0006633A9 /* TaskViewController.m */; };
+		6B1D45981A1CE5CE006633A9 /* PreweekViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45971A1CE5CE006633A9 /* PreweekViewController.m */; };
+		6B1D459B1A1CE5DC006633A9 /* MatchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D459A1A1CE5DC006633A9 /* MatchViewController.m */; };
+		6B1D459E1A1CE5F5006633A9 /* TacticViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D459D1A1CE5F5006633A9 /* TacticViewController.m */; };
 		6BB21C5D1A0FAB9C00ED2310 /* Structs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BB21C5C1A0FAB9C00ED2310 /* Structs.m */; };
 		6BB21C5E1A0FAB9C00ED2310 /* Structs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BB21C5C1A0FAB9C00ED2310 /* Structs.m */; };
 		6BB21C631A123A9E00ED2310 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6BB21C621A123A9E00ED2310 /* database.db */; };
@@ -90,8 +95,6 @@
 		6B1339B019EECC5400BC749E /* Game2-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Game2-Prefix.pch"; sourceTree = "<group>"; };
 		6B1339B119EECC5400BC749E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		6B1339B219EECC5400BC749E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		6B1339B519EECC5400BC749E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
-		6B1339B819EECC5400BC749E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
 		6B1339BA19EECC5400BC749E /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		6B1339BB19EECC5400BC749E /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		6B1339BD19EECC5400BC749E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -139,6 +142,18 @@
 		6B133A1F19EECF7B00BC749E /* Training.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Training.m; sourceTree = "<group>"; };
 		6B133A3819FA180C00BC749E /* Tactic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tactic.h; sourceTree = "<group>"; };
 		6B133A3919FA180C00BC749E /* Tactic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tactic.m; sourceTree = "<group>"; };
+		6B1D45891A1C567B006633A9 /* TeamViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TeamViewController.h; sourceTree = "<group>"; };
+		6B1D458A1A1C567B006633A9 /* TeamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TeamViewController.m; sourceTree = "<group>"; };
+		6B1D458E1A1C5D29006633A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
+		6B1D45901A1C5D29006633A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
+		6B1D45931A1CE5B0006633A9 /* TaskViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TaskViewController.h; sourceTree = "<group>"; };
+		6B1D45941A1CE5B0006633A9 /* TaskViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TaskViewController.m; sourceTree = "<group>"; };
+		6B1D45961A1CE5CD006633A9 /* PreweekViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreweekViewController.h; sourceTree = "<group>"; };
+		6B1D45971A1CE5CE006633A9 /* PreweekViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreweekViewController.m; sourceTree = "<group>"; };
+		6B1D45991A1CE5DC006633A9 /* MatchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatchViewController.h; sourceTree = "<group>"; };
+		6B1D459A1A1CE5DC006633A9 /* MatchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MatchViewController.m; sourceTree = "<group>"; };
+		6B1D459C1A1CE5F5006633A9 /* TacticViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TacticViewController.h; sourceTree = "<group>"; };
+		6B1D459D1A1CE5F5006633A9 /* TacticViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TacticViewController.m; sourceTree = "<group>"; };
 		6BB21C5B1A0FAB9C00ED2310 /* Structs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structs.h; sourceTree = "<group>"; };
 		6BB21C5C1A0FAB9C00ED2310 /* Structs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Structs.m; sourceTree = "<group>"; };
 		6BB21C621A123A9E00ED2310 /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
@@ -210,10 +225,7 @@
 				6B1339DD19EECE5A00BC749E /* Match Components */,
 				6B1339B119EECC5400BC749E /* AppDelegate.h */,
 				6B1339B219EECC5400BC749E /* AppDelegate.m */,
-				6B1339B419EECC5400BC749E /* Main_iPhone.storyboard */,
-				6B1339B719EECC5400BC749E /* Main_iPad.storyboard */,
-				6B1339BA19EECC5400BC749E /* ViewController.h */,
-				6B1339BB19EECC5400BC749E /* ViewController.m */,
+				6B1D45881A1C563C006633A9 /* View */,
 				6B1339BD19EECC5400BC749E /* Images.xcassets */,
 				6B1339F419EECEEB00BC749E /* FMDB */,
 				6B1339A919EECC5400BC749E /* Supporting Files */,
@@ -320,6 +332,27 @@
 			name = "Game Components";
 			sourceTree = "<group>";
 		};
+		6B1D45881A1C563C006633A9 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				6B1339BA19EECC5400BC749E /* ViewController.h */,
+				6B1339BB19EECC5400BC749E /* ViewController.m */,
+				6B1D45961A1CE5CD006633A9 /* PreweekViewController.h */,
+				6B1D45971A1CE5CE006633A9 /* PreweekViewController.m */,
+				6B1D45931A1CE5B0006633A9 /* TaskViewController.h */,
+				6B1D45941A1CE5B0006633A9 /* TaskViewController.m */,
+				6B1D459C1A1CE5F5006633A9 /* TacticViewController.h */,
+				6B1D459D1A1CE5F5006633A9 /* TacticViewController.m */,
+				6B1D45991A1CE5DC006633A9 /* MatchViewController.h */,
+				6B1D459A1A1CE5DC006633A9 /* MatchViewController.m */,
+				6B1D45891A1C567B006633A9 /* TeamViewController.h */,
+				6B1D458A1A1C567B006633A9 /* TeamViewController.m */,
+				6B1D458D1A1C5D29006633A9 /* Main_iPhone.storyboard */,
+				6B1D458F1A1C5D29006633A9 /* Main_iPad.storyboard */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -396,10 +429,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B1D45921A1C5D29006633A9 /* Main_iPad.storyboard in Resources */,
+				6B1D45911A1C5D29006633A9 /* Main_iPhone.storyboard in Resources */,
 				6BB21C631A123A9E00ED2310 /* database.db in Resources */,
-				6B1339B919EECC5400BC749E /* Main_iPad.storyboard in Resources */,
 				6B1339BE19EECC5400BC749E /* Images.xcassets in Resources */,
-				6B1339B619EECC5400BC749E /* Main_iPhone.storyboard in Resources */,
 				6B1339AD19EECC5400BC749E /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -420,6 +453,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B1D45981A1CE5CE006633A9 /* PreweekViewController.m in Sources */,
 				6B1339BC19EECC5400BC749E /* ViewController.m in Sources */,
 				6B133A2C19EECF7B00BC749E /* Training.m in Sources */,
 				6B133A0919EECF2600BC749E /* GlobalVariableModel.m in Sources */,
@@ -427,12 +461,16 @@
 				6B1339E019EECE7B00BC749E /* Action.m in Sources */,
 				6B1339EF19EECEB500BC749E /* Match.m in Sources */,
 				6B133A2619EECF7B00BC749E /* Scouting.m in Sources */,
+				6B1D459B1A1CE5DC006633A9 /* MatchViewController.m in Sources */,
+				6B1D45951A1CE5B0006633A9 /* TaskViewController.m in Sources */,
 				6B1339FB19EECEFC00BC749E /* FMDatabase.m in Sources */,
 				6B133A3A19FA180C00BC749E /* Tactic.m in Sources */,
 				6B133A0B19EECF2600BC749E /* SinglePlayerData.m in Sources */,
 				6B1339ED19EECEB500BC749E /* LineUp.m in Sources */,
 				6BB21C5D1A0FAB9C00ED2310 /* Structs.m in Sources */,
 				6B1339EB19EECEB500BC749E /* Event.m in Sources */,
+				6B1D459E1A1CE5F5006633A9 /* TacticViewController.m in Sources */,
+				6B1D458B1A1C567B006633A9 /* TeamViewController.m in Sources */,
 				6B1339FD19EECEFC00BC749E /* FMDatabasePool.m in Sources */,
 				6B133A2019EECF7B00BC749E /* Fixture.m in Sources */,
 				6B133A0F19EECF3700BC749E /* DatabaseModel.m in Sources */,
@@ -494,28 +532,28 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		6B1339B419EECC5400BC749E /* Main_iPhone.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				6B1339B519EECC5400BC749E /* Base */,
-			);
-			name = Main_iPhone.storyboard;
-			sourceTree = "<group>";
-		};
-		6B1339B719EECC5400BC749E /* Main_iPad.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				6B1339B819EECC5400BC749E /* Base */,
-			);
-			name = Main_iPad.storyboard;
-			sourceTree = "<group>";
-		};
 		6B1339CD19EECC5400BC749E /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
 				6B1339CE19EECC5400BC749E /* en */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		6B1D458D1A1C5D29006633A9 /* Main_iPhone.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6B1D458E1A1C5D29006633A9 /* Base */,
+			);
+			name = Main_iPhone.storyboard;
+			sourceTree = "<group>";
+		};
+		6B1D458F1A1C5D29006633A9 /* Main_iPad.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6B1D45901A1C5D29006633A9 /* Base */,
+			);
+			name = Main_iPad.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

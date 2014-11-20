@@ -18,6 +18,8 @@
 @property SinglePlayerData* myData;
 @property DatabaseModel* myDB;
 @property GlobalVariableModel* myGlobalVariableModel;
+@property UIStoryboard* myStoryboard;
+@property UIViewController* currentViewController;
 @property NSInteger GameID;
 
 /* -- Playables --
@@ -155,12 +157,13 @@
 
 //Turns
 + (SinglePlayerData*) gameData;
-- (void) enterPreWeek;
-- (void) enterPreTask;
-- (void) enterTask;
-- (void) enterPostTask;
-- (void) enterPreGame;
-- (void) enterGame;
+- (void) enterPreWeek; // do admin, player transfers, news
+- (void) enterPreTask; // select the task this week
+- (void) setTask:(NSString*) task;
+- (void) enterTask; // do other stuff etc, see tactics buy players etc
+- (void) enterPostTask; // show task results
+- (void) enterPreGame; // show match day form
+- (void) enterGame; // goto game
 
 
 - (void) enterPostGame;

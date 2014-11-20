@@ -151,13 +151,12 @@
             }
             if (team2.team.TeamID !=0)
                 [team2 subInjured];
-                [preCommentary addObject:[NSString stringWithFormat:@"Substitution made by %@",team1.team.Name]];
+                [preCommentary addObject:[NSString stringWithFormat:@"Substitution made by %@",team2.team.Name]];
         }
         
         if (thisEvent.ownTeam.team.TeamID ==0) {
             isPaused = YES;
         }
-        NSLog(@"Injury");
     }
     
     return thisEvent.eventCommentary;
@@ -249,8 +248,10 @@
 {
     [self startMatch];
     while (!isOver) {
-        if(isPaused)
+        if(isPaused) {
             [self resumeMatch];
+            
+        }
         [self nextMinute];
     }
 }

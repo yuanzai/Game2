@@ -35,6 +35,8 @@
 @property NSInteger week;
 @property NSInteger season;
 @property NSInteger money;
+@property NSString* weekStage;
+@property NSString* weekTask;
 
 - (void) setUpData;
 

@@ -12,11 +12,21 @@
 #import "LineUp.h"
 #import "Match.h"
 
+#import "ViewController.h"
+#import "TaskViewController.h"
+#import "PreweekViewController.h"
+#import "TacticViewController.h"
+#import "MatchViewController.h"
+
 @implementation GameModel
 @synthesize myData;
 @synthesize GameID;
 @synthesize myDB;
 @synthesize myGlobalVariableModel;
+@synthesize myStoryboard;
+@synthesize currentViewController;
+
+
 #pragma mark Initialization Methods
 
 + (id)myGame
@@ -27,6 +37,7 @@
         myGame = [[self alloc] init];
         myGame.myDB = [DatabaseModel new];
         myGame.myGlobalVariableModel = [GlobalVariableModel new];
+        myGame.myStoryboard = [UIStoryboard storyboardWithName:@"Main_iPhone" bundle:nil];
     });
     return myGame;
 }
@@ -88,8 +99,12 @@
             self.myData.SaveGameID = thisGameID;
             self.myData.myGame = self;
             [myData setUpData];
+            if ([myData.weekStage isEqualToString:@""] || myData.weekStage == nil)
+                myData.weekStage = @"enterPreWeek";
+            [self goToView];
         }
     }
+    
 }
 
 - (void) saveThisGame
@@ -109,6 +124,13 @@
     return  filePath;
 }
 
+#pragma mark View Controller Methods
+- (void) goToView
+{
+    ViewController *vc = (ViewController *)[myStoryboard instantiateViewControllerWithIdentifier:myData.weekStage];
+    [currentViewController presentViewController:vc animated:YES completion:nil];
+}
+
 #pragma mark Game Play Methods
 
 - (void) enterPreWeek
@@ -116,7 +138,9 @@
     //TODO: - process date
     //TODO: - process cash
     //TODO: - process next match
-
+    myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
+    [self saveThisGame];
+    
     myData.weekdate++;
     if (myData.week>50) {
         myData.week = 0;
@@ -125,18 +149,27 @@
     myData.week++;
     [myData setNextFixture];
     [myData setNextMatchOpponents];
+    
+    [self goToView];
 }
 
 - (void) enterPreTask
 {
-    
+    myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
+    myData.weekTask = nil;
+    [self goToView];
 }
 
-
+- (void) setTask:(NSString*) task
+{
+    myData.weekTask = task;
+}
 
 - (void) enterTask
 {
-    
+    myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
+    myData.weekTask = nil;
+    [self goToView];
 }
 
 - (void) enterPostTask
@@ -145,7 +178,9 @@
     //TODO: - process scouting
     //TODO: - process admin
     //TODO: - process task
+    myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
 
+    [self goToView];
 }
 
 - (void) enterPreGame
