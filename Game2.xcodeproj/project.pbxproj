@@ -60,13 +60,18 @@
 		6B133A2D19EECF7B00BC749E /* Training.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A1F19EECF7B00BC749E /* Training.m */; };
 		6B133A3A19FA180C00BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3919FA180C00BC749E /* Tactic.m */; };
 		6B133A3B19FA180C00BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3919FA180C00BC749E /* Tactic.m */; };
-		6B1D458B1A1C567B006633A9 /* TeamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D458A1A1C567B006633A9 /* TeamViewController.m */; };
 		6B1D45911A1C5D29006633A9 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D458D1A1C5D29006633A9 /* Main_iPhone.storyboard */; };
 		6B1D45921A1C5D29006633A9 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D458F1A1C5D29006633A9 /* Main_iPad.storyboard */; };
-		6B1D45951A1CE5B0006633A9 /* TaskViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45941A1CE5B0006633A9 /* TaskViewController.m */; };
-		6B1D45981A1CE5CE006633A9 /* PreweekViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45971A1CE5CE006633A9 /* PreweekViewController.m */; };
-		6B1D459B1A1CE5DC006633A9 /* MatchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D459A1A1CE5DC006633A9 /* MatchViewController.m */; };
-		6B1D459E1A1CE5F5006633A9 /* TacticViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D459D1A1CE5F5006633A9 /* TacticViewController.m */; };
+		6B1D45A11A1E38FE006633A9 /* TacticViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45A01A1E38FE006633A9 /* TacticViewController.m */; };
+		6B1D45AA1A208929006633A9 /* PlayersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45A91A208929006633A9 /* PlayersViewController.m */; };
+		6B1D45AD1A209639006633A9 /* TableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45AC1A209639006633A9 /* TableViewCell.m */; };
+		6B1D45B31A20A6B5006633A9 /* PlayerInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45B21A20A6B5006633A9 /* PlayerInfoViewController.m */; };
+		6B1D45B51A20F7FF006633A9 /* 8-BIT WONDER.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D45B41A20F7FF006633A9 /* 8-BIT WONDER.TTF */; };
+		6B1D45B61A20F7FF006633A9 /* 8-BIT WONDER.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D45B41A20F7FF006633A9 /* 8-BIT WONDER.TTF */; };
+		6B1D45B81A2122D3006633A9 /* visitor1.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D45B71A2122D3006633A9 /* visitor1.ttf */; };
+		6B1D45B91A2122D3006633A9 /* visitor1.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D45B71A2122D3006633A9 /* visitor1.ttf */; };
+		6B1D45BC1A24464D006633A9 /* PlanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45BB1A24464D006633A9 /* PlanViewController.m */; };
+		6B1D45BD1A24464D006633A9 /* PlanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45BB1A24464D006633A9 /* PlanViewController.m */; };
 		6BB21C5D1A0FAB9C00ED2310 /* Structs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BB21C5C1A0FAB9C00ED2310 /* Structs.m */; };
 		6BB21C5E1A0FAB9C00ED2310 /* Structs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BB21C5C1A0FAB9C00ED2310 /* Structs.m */; };
 		6BB21C631A123A9E00ED2310 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6BB21C621A123A9E00ED2310 /* database.db */; };
@@ -142,18 +147,20 @@
 		6B133A1F19EECF7B00BC749E /* Training.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Training.m; sourceTree = "<group>"; };
 		6B133A3819FA180C00BC749E /* Tactic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tactic.h; sourceTree = "<group>"; };
 		6B133A3919FA180C00BC749E /* Tactic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tactic.m; sourceTree = "<group>"; };
-		6B1D45891A1C567B006633A9 /* TeamViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TeamViewController.h; sourceTree = "<group>"; };
-		6B1D458A1A1C567B006633A9 /* TeamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TeamViewController.m; sourceTree = "<group>"; };
 		6B1D458E1A1C5D29006633A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
 		6B1D45901A1C5D29006633A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
-		6B1D45931A1CE5B0006633A9 /* TaskViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TaskViewController.h; sourceTree = "<group>"; };
-		6B1D45941A1CE5B0006633A9 /* TaskViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TaskViewController.m; sourceTree = "<group>"; };
-		6B1D45961A1CE5CD006633A9 /* PreweekViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreweekViewController.h; sourceTree = "<group>"; };
-		6B1D45971A1CE5CE006633A9 /* PreweekViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreweekViewController.m; sourceTree = "<group>"; };
-		6B1D45991A1CE5DC006633A9 /* MatchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatchViewController.h; sourceTree = "<group>"; };
-		6B1D459A1A1CE5DC006633A9 /* MatchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MatchViewController.m; sourceTree = "<group>"; };
-		6B1D459C1A1CE5F5006633A9 /* TacticViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TacticViewController.h; sourceTree = "<group>"; };
-		6B1D459D1A1CE5F5006633A9 /* TacticViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TacticViewController.m; sourceTree = "<group>"; };
+		6B1D459F1A1E38FE006633A9 /* TacticViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TacticViewController.h; sourceTree = "<group>"; };
+		6B1D45A01A1E38FE006633A9 /* TacticViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TacticViewController.m; sourceTree = "<group>"; };
+		6B1D45A81A208929006633A9 /* PlayersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlayersViewController.h; path = ../PlayersViewController.h; sourceTree = "<group>"; };
+		6B1D45A91A208929006633A9 /* PlayersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlayersViewController.m; path = ../PlayersViewController.m; sourceTree = "<group>"; };
+		6B1D45AB1A209639006633A9 /* TableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewCell.h; sourceTree = "<group>"; };
+		6B1D45AC1A209639006633A9 /* TableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewCell.m; sourceTree = "<group>"; };
+		6B1D45B11A20A6B5006633A9 /* PlayerInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerInfoViewController.h; sourceTree = "<group>"; };
+		6B1D45B21A20A6B5006633A9 /* PlayerInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerInfoViewController.m; sourceTree = "<group>"; };
+		6B1D45B41A20F7FF006633A9 /* 8-BIT WONDER.TTF */ = {isa = PBXFileReference; lastKnownFileType = file; path = "8-BIT WONDER.TTF"; sourceTree = "<group>"; };
+		6B1D45B71A2122D3006633A9 /* visitor1.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = visitor1.ttf; sourceTree = "<group>"; };
+		6B1D45BA1A24464D006633A9 /* PlanViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlanViewController.h; sourceTree = "<group>"; };
+		6B1D45BB1A24464D006633A9 /* PlanViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlanViewController.m; sourceTree = "<group>"; };
 		6BB21C5B1A0FAB9C00ED2310 /* Structs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structs.h; sourceTree = "<group>"; };
 		6BB21C5C1A0FAB9C00ED2310 /* Structs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Structs.m; sourceTree = "<group>"; };
 		6BB21C621A123A9E00ED2310 /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
@@ -236,6 +243,8 @@
 		6B1339A919EECC5400BC749E /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				6B1D45B41A20F7FF006633A9 /* 8-BIT WONDER.TTF */,
+				6B1D45B71A2122D3006633A9 /* visitor1.ttf */,
 				6B1339AA19EECC5400BC749E /* Game2-Info.plist */,
 				6BB21C621A123A9E00ED2310 /* database.db */,
 				6B1339AB19EECC5400BC749E /* InfoPlist.strings */,
@@ -337,16 +346,16 @@
 			children = (
 				6B1339BA19EECC5400BC749E /* ViewController.h */,
 				6B1339BB19EECC5400BC749E /* ViewController.m */,
-				6B1D45961A1CE5CD006633A9 /* PreweekViewController.h */,
-				6B1D45971A1CE5CE006633A9 /* PreweekViewController.m */,
-				6B1D45931A1CE5B0006633A9 /* TaskViewController.h */,
-				6B1D45941A1CE5B0006633A9 /* TaskViewController.m */,
-				6B1D459C1A1CE5F5006633A9 /* TacticViewController.h */,
-				6B1D459D1A1CE5F5006633A9 /* TacticViewController.m */,
-				6B1D45991A1CE5DC006633A9 /* MatchViewController.h */,
-				6B1D459A1A1CE5DC006633A9 /* MatchViewController.m */,
-				6B1D45891A1C567B006633A9 /* TeamViewController.h */,
-				6B1D458A1A1C567B006633A9 /* TeamViewController.m */,
+				6B1D45BA1A24464D006633A9 /* PlanViewController.h */,
+				6B1D45BB1A24464D006633A9 /* PlanViewController.m */,
+				6B1D459F1A1E38FE006633A9 /* TacticViewController.h */,
+				6B1D45A01A1E38FE006633A9 /* TacticViewController.m */,
+				6B1D45A81A208929006633A9 /* PlayersViewController.h */,
+				6B1D45A91A208929006633A9 /* PlayersViewController.m */,
+				6B1D45B11A20A6B5006633A9 /* PlayerInfoViewController.h */,
+				6B1D45B21A20A6B5006633A9 /* PlayerInfoViewController.m */,
+				6B1D45AB1A209639006633A9 /* TableViewCell.h */,
+				6B1D45AC1A209639006633A9 /* TableViewCell.m */,
 				6B1D458D1A1C5D29006633A9 /* Main_iPhone.storyboard */,
 				6B1D458F1A1C5D29006633A9 /* Main_iPad.storyboard */,
 			);
@@ -432,6 +441,8 @@
 				6B1D45921A1C5D29006633A9 /* Main_iPad.storyboard in Resources */,
 				6B1D45911A1C5D29006633A9 /* Main_iPhone.storyboard in Resources */,
 				6BB21C631A123A9E00ED2310 /* database.db in Resources */,
+				6B1D45B81A2122D3006633A9 /* visitor1.ttf in Resources */,
+				6B1D45B51A20F7FF006633A9 /* 8-BIT WONDER.TTF in Resources */,
 				6B1339BE19EECC5400BC749E /* Images.xcassets in Resources */,
 				6B1339AD19EECC5400BC749E /* InfoPlist.strings in Resources */,
 			);
@@ -441,6 +452,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B1D45B61A20F7FF006633A9 /* 8-BIT WONDER.TTF in Resources */,
+				6B1D45B91A2122D3006633A9 /* visitor1.ttf in Resources */,
 				6BB21C641A123A9E00ED2310 /* database.db in Resources */,
 				6B1339CF19EECC5400BC749E /* InfoPlist.strings in Resources */,
 			);
@@ -453,28 +466,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6B1D45981A1CE5CE006633A9 /* PreweekViewController.m in Sources */,
+				6B1D45A11A1E38FE006633A9 /* TacticViewController.m in Sources */,
+				6B1D45BC1A24464D006633A9 /* PlanViewController.m in Sources */,
+				6B1D45AA1A208929006633A9 /* PlayersViewController.m in Sources */,
 				6B1339BC19EECC5400BC749E /* ViewController.m in Sources */,
 				6B133A2C19EECF7B00BC749E /* Training.m in Sources */,
+				6B1D45B31A20A6B5006633A9 /* PlayerInfoViewController.m in Sources */,
 				6B133A0919EECF2600BC749E /* GlobalVariableModel.m in Sources */,
 				6B133A0719EECF2600BC749E /* GameModel.m in Sources */,
 				6B1339E019EECE7B00BC749E /* Action.m in Sources */,
 				6B1339EF19EECEB500BC749E /* Match.m in Sources */,
 				6B133A2619EECF7B00BC749E /* Scouting.m in Sources */,
-				6B1D459B1A1CE5DC006633A9 /* MatchViewController.m in Sources */,
-				6B1D45951A1CE5B0006633A9 /* TaskViewController.m in Sources */,
 				6B1339FB19EECEFC00BC749E /* FMDatabase.m in Sources */,
 				6B133A3A19FA180C00BC749E /* Tactic.m in Sources */,
 				6B133A0B19EECF2600BC749E /* SinglePlayerData.m in Sources */,
 				6B1339ED19EECEB500BC749E /* LineUp.m in Sources */,
 				6BB21C5D1A0FAB9C00ED2310 /* Structs.m in Sources */,
 				6B1339EB19EECEB500BC749E /* Event.m in Sources */,
-				6B1D459E1A1CE5F5006633A9 /* TacticViewController.m in Sources */,
-				6B1D458B1A1C567B006633A9 /* TeamViewController.m in Sources */,
 				6B1339FD19EECEFC00BC749E /* FMDatabasePool.m in Sources */,
 				6B133A2019EECF7B00BC749E /* Fixture.m in Sources */,
 				6B133A0F19EECF3700BC749E /* DatabaseModel.m in Sources */,
 				6B133A2819EECF7B00BC749E /* Staff.m in Sources */,
+				6B1D45AD1A209639006633A9 /* TableViewCell.m in Sources */,
 				6B1339FF19EECEFC00BC749E /* FMResultSet.m in Sources */,
 				6B1339B319EECC5400BC749E /* AppDelegate.m in Sources */,
 				6B1339AF19EECC5400BC749E /* main.m in Sources */,
@@ -492,6 +505,7 @@
 				6B1339EE19EECEB500BC749E /* LineUp.m in Sources */,
 				6B1339EC19EECEB500BC749E /* Event.m in Sources */,
 				6B1339D119EECC5400BC749E /* Game2Tests.m in Sources */,
+				6B1D45BD1A24464D006633A9 /* PlanViewController.m in Sources */,
 				6B1339FC19EECEFC00BC749E /* FMDatabase.m in Sources */,
 				6B133A2D19EECF7B00BC749E /* Training.m in Sources */,
 				6BC2C08C1A09EAFF005973C2 /* NewGameTest.m in Sources */,

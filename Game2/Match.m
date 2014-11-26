@@ -268,6 +268,11 @@
     [thisFixture updateFixtureInDatabase];
 }
 
+- (void) updatePlayerData
+{
+    
+}
+
 - (void) printMatch
 {
     NSLog(@"%i t1:%i t2:%i %i - %i", thisFixture.MATCHID, thisFixture.HOMETEAM, thisFixture.AWAYTEAM, team1.score, team2.score);

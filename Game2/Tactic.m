@@ -99,6 +99,19 @@
     return YES;
 }
 
+- (void) removePlayerFromTactic : (Player*) player
+{
+    for (int i = 0; i < 5;i++) {
+        for (int j = 0; j < 5;j++) {
+            if (playerArray[i][j]) {
+                if (playerArray[i][j].PlayerID == player.PlayerID)
+                    playerArray[i][j] = nil;
+            }
+        }
+    }
+}
+
+
 - (BOOL) movePlayerAtPositionSide:(PositionSide) fromPS ToPositionSide:(PositionSide) toPS
 {
     if (!formationArray[fromPS.position][fromPS.side] && !formationArray[toPS.position][toPS.side])

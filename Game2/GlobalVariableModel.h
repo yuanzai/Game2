@@ -11,6 +11,14 @@
 @class LineUp;
 @interface GlobalVariableModel : NSObject
 
+//Fonts
++ (UIFont*) newFont1Small;
++ (UIFont*) newFont1Medium;
++ (UIFont*) newFont1Large;
++ (UIFont*) newFont2Small;
++ (UIFont*) newFont2Medium;
++ (UIFont*) newFont2Large;
+
 //Static Stats List
 + (NSMutableArray*) playerStatList;
 + (NSMutableArray*) gkStatList;

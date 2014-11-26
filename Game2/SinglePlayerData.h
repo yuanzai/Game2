@@ -14,6 +14,7 @@
 @class Tactic;
 @class Match;
 @class GameModel;
+@class Training;
 
 @interface SinglePlayerData : NSObject <NSCoding>
 @property NSInteger SaveGameID;
@@ -30,6 +31,8 @@
 @property Tournament* currentLeagueTournament;
 
 @property GameModel* myGame;
+
+@property Training* myTraining;
 
 @property NSInteger weekdate;
 @property NSInteger week;

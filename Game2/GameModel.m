@@ -13,10 +13,10 @@
 #import "Match.h"
 
 #import "ViewController.h"
-#import "TaskViewController.h"
-#import "PreweekViewController.h"
 #import "TacticViewController.h"
-#import "MatchViewController.h"
+#import "PlayersViewController.h"
+#import "PlayerInfoViewController.h"
+#import "PlanViewController.h"
 
 @implementation GameModel
 @synthesize myData;
@@ -126,10 +126,20 @@
 
 #pragma mark View Controller Methods
 - (void) goToView
-{
-    ViewController *vc = (ViewController *)[myStoryboard instantiateViewControllerWithIdentifier:myData.weekStage];
+{    
+    ViewController *vc = (ViewController*)[currentViewController.storyboard instantiateViewControllerWithIdentifier:myData.weekStage];
     [currentViewController presentViewController:vc animated:YES completion:nil];
+    /*
+    [vc getButtons];
+    
+    for (id subview in vc.view.subviews) {
+        if ([subview isKindOfClass:[UIButton class]])
+            [(UIButton*) subview addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    */
+    currentViewController = vc;
 }
+
 
 #pragma mark Game Play Methods
 
@@ -185,21 +195,30 @@
 
 - (void) enterPreGame
 {
+    myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
+
     myData.currentLineup = [[LineUp alloc]initWithTeam: myData.myTeam];
     myData.currentLineup.currentTactic = myData.currentTactic;
     [myData.myTeam updateConditionPreGame];
     [myData.currentLineup populateMatchDayForm];
-    
+    [self goToView];
+
 }
 
 - (void) enterGame
 {
+    myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
+
     //TODO: - process opponent selection
     [myData setNextMatch];
+    [self goToView];
+
 }
 
 - (void) enterPostGame
 {
+    myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
+
     //TODO: - process single player fixture
     [myData.nextMatch updateMatchFixture];
 
@@ -219,7 +238,42 @@
         }
         [t setCurrentLeagueTable];
     }];
+    [self goToView];
 }
+
+- (void) enterTraining
+{
+    myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
+    [self goToView];
+}
+
+- (void) enterPlan:(NSInteger) PlanID{
+    PlanViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:@"enterPlan"];
+    vc.PlanID = PlanID;
+    [currentViewController presentViewController:vc animated:YES completion:nil];
+    currentViewController = vc;
+
+}
+
+- (void) enterTactic
+{
+    myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
+    TacticViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:myData.weekStage];
+    
+    [currentViewController presentViewController:vc animated:YES completion:nil];
+    currentViewController = vc;
+}
+
+- (void) enterPlayersFrom:(NSString*) source PositionSide:(PositionSide) ps
+{
+    
+    PlayersViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:@"enterPlayers"];
+    vc.ps = ps;
+    vc.source = source;
+    [currentViewController presentViewController:vc animated:YES completion:nil];
+    currentViewController = vc;
+}
+
 
 - (void) startSeason
 {
@@ -235,7 +289,7 @@
 
 - (void) endSeason
 {
-    
+
 }
 
 @end

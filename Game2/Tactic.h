@@ -27,6 +27,7 @@
 - (id) initWithTacticID:(NSInteger) InputID;
 - (BOOL) populatePlayer:(Player*) player PositionSide:(PositionSide) ps ForceSwap:(BOOL) swap;
 - (BOOL) removePlayerAtPositionSide:(PositionSide) ps;
+- (void) removePlayerFromTactic : (Player*) player;
 
 - (Player*) getPlayerAtPositionSide:(PositionSide) ps;
 - (BOOL) hasPlayerAtPositionSide:(PositionSide) ps;

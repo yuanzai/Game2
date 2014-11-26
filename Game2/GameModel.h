@@ -8,11 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import "SinglePlayerData.h"
+#import "Structs.h"
 
 @class SinglePlayerData;
 @class Match;
 @class DatabaseModel;
 @class GlobalVariableModel;
+@class Player;
 
 @interface GameModel : NSObject
 @property SinglePlayerData* myData;
@@ -164,8 +166,13 @@
 - (void) enterPostTask; // show task results
 - (void) enterPreGame; // show match day form
 - (void) enterGame; // goto game
-
-
 - (void) enterPostGame;
 
+//Parellel views
+- (void) enterTactic;
+
+- (void) enterPlayersFrom:(NSString*) source PositionSide:(PositionSide) ps;
+
+- (void) enterTraining;
+- (void) enterPlan:(NSInteger) PlanID;
 @end

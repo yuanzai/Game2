@@ -34,6 +34,31 @@
     
 }
 
+//Fonts
++ (UIFont*) newFont1Small {
+    return [UIFont fontWithName:@"8BIT WONDER" size:8.0];
+}
+
++ (UIFont*) newFont1Medium {
+    return [UIFont fontWithName:@"8BIT WONDER" size:10.0];
+}
++ (UIFont*) newFont1Large {
+    return [UIFont fontWithName:@"8BIT WONDER" size:13.0];
+}
+
++ (UIFont*) newFont2Small {
+    return [UIFont fontWithName:@"Visitor TT1 BRK" size:14.0];
+}
+
++ (UIFont*) newFont2Medium {
+    return [UIFont fontWithName:@"Visitor TT1 BRK" size:18.0];
+}
+
++ (UIFont*) newFont2Large {
+    return [UIFont fontWithName:@"Visitor TT1 BRK" size:24.0];
+}
+
+
 # pragma mark STATIC STATS LIST
 
 + (NSMutableArray*) playerStatList{

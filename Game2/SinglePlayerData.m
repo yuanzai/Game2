@@ -14,6 +14,7 @@
 #import "Tactic.h"
 #import "Match.h"
 #import "LineUp.h"
+#import "Training.h"
 
 @implementation SinglePlayerData
 @synthesize SaveGameID;
@@ -33,6 +34,7 @@
 @synthesize weekStage;
 @synthesize weekTask;
 
+@synthesize myTraining;
 
 @synthesize myGame;
 
@@ -109,6 +111,11 @@
 {
     currentLineup = [[LineUp alloc]initWithTeamID:0];
     currentLineup.currentTactic = [[Tactic alloc]initWithTacticID:0];
+}
+
+- (void) setMyTraining
+{
+    myTraining = [[Training alloc]init];
 }
 /*
 - (void) setLastMatch;
