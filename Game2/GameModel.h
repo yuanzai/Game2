@@ -169,10 +169,13 @@
 - (void) enterPostGame;
 
 //Parellel views
-- (void) enterTactic;
+- (void) enterTacticFrom:(NSDictionary*) source;
+- (void) exitTacticTo:(NSDictionary*) source;
 
-- (void) enterPlayersFrom:(NSString*) source PositionSide:(PositionSide) ps;
+
+- (void) enterPlayersFrom:(NSDictionary*) source;
+- (void) exitPlayersTo:(NSDictionary*) source;
 
 - (void) enterTraining;
-- (void) enterPlan:(NSInteger) PlanID;
+- (void) enterPlanWith:(NSDictionary*) source;
 @end

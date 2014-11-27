@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface PlanViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@class PlayerList;
+@interface PlanViewController : UIViewController
 @property NSInteger PlanID;
+@property NSDictionary* source;
+@property (strong,nonatomic) PlayerList *tableSource;
+
 @end

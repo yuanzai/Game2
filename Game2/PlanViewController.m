@@ -11,6 +11,7 @@
 #import "GlobalVariableModel.h"
 #import "Training.h"
 #import "Player.h"
+#import "PlayerList.h"
 @interface PlanViewController ()
 
 @end
@@ -20,7 +21,10 @@
     GameModel* myGame;
     Plan* thisPlan;
     NSMutableArray* planStatButtons;
+    NSArray* statArray;
 }
+@synthesize tableSource;
+@synthesize source;
 @synthesize PlanID;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -43,29 +47,39 @@
      @"0",@"SKILLS",
      @"1",@"INTENSITY", nil];
 */
-    [super viewDidLoad];
     // Do any additional setup after loading the view.
+    [super viewDidLoad];
+    PlanID = [[source objectForKey:@"PlanID"]integerValue];
     myGame = [GameModel myGame];
     thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:PlanID];
+    statArray = [GlobalVariableModel planStats];
     
+    UITableView* playersView = (UITableView*) [self.view viewWithTag:1];
+    tableSource = [[PlayerList alloc]initWithTarget:self Source:source];
+    playersView.delegate = tableSource;
+    playersView.dataSource = tableSource;
+
     
-    UIButton* coach = (UIButton*)[self.view viewWithTag:1];
+    UIButton* coach = (UIButton*)[self.view viewWithTag:100];
     [coach setTitle:[thisPlan.Coach objectForKey:@"NAME"] forState:UIControlStateNormal];
-    [coach.titleLabel setFont:[GlobalVariableModel newFont2Large]];
+    //[coach.titleLabel setFont:[GlobalVariableModel newFont2Large]];
     
     planStatButtons = [NSMutableArray array];
-    
     for (NSInteger i = 0;i<5;i++) {
         UIButton* button = (UIButton*) [self.view viewWithTag:10 + i];
-        button.titleLabel.text = [thisPlan.PlanStats objectForKey:[[thisPlan.PlanStats allKeys]objectAtIndex:i]];
+        NSString* stat = [statArray objectAtIndex:i];
+        
+        [button setTitle:[NSString stringWithFormat:@"%i",[[thisPlan.PlanStats objectForKey:stat] integerValue]] forState:UIControlStateNormal];
+        [button invalidateIntrinsicContentSize];
         [button.titleLabel setFont:[GlobalVariableModel newFont2Medium]];
         [button addTarget:self action:@selector(pressPlanStat:) forControlEvents:UIControlEventTouchUpInside];
         [planStatButtons addObject:button];
+        
 
     }
     UIButton* back = (UIButton*)[self.view viewWithTag:999];
     [back addTarget:self action:@selector(backTo:) forControlEvents:UIControlEventTouchUpInside];
-   
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -75,11 +89,17 @@
 }
 
 - (void) pressPlanStat:(UIButton*) sender {
-    NSInteger currentStat = [[thisPlan.PlanStats objectForKey:[[thisPlan.PlanStats allKeys]objectAtIndex:sender.tag - 10]]integerValue];
+    NSString* stat = [statArray objectAtIndex:sender.tag - 10];
+    NSInteger currentStat = [[thisPlan.PlanStats objectForKey:stat]integerValue];
     
-    currentStat = currentStat == 2 ? -2 : currentStat ++;
-    [thisPlan.PlanStats setObject:@(currentStat) forKey:[[thisPlan.PlanStats allKeys]objectAtIndex:sender.tag - 10]];
-    sender.titleLabel.text = [thisPlan.PlanStats objectForKey:[[thisPlan.PlanStats allKeys]objectAtIndex:sender.tag-10]];
+    if (currentStat == 2) {
+        currentStat = -2;
+    } else{
+        currentStat++;
+    }
+
+    [thisPlan.PlanStats setObject:@(currentStat) forKey:stat];
+    [sender setTitle:[@(currentStat) stringValue] forState:UIControlStateNormal];
 }
 
 - (void) backTo:(UIButton*) sender
@@ -87,35 +107,6 @@
     [thisPlan updateTrainingPlanToDatabase];
     [myGame enterTraining];
 }
-
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    
-    return [thisPlan.Players count];
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    if (tableView.tag == 100) {
-        static NSString *MyIdentifier = @"trainingCell";
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:MyIdentifier];
-        if (cell == nil) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle  reuseIdentifier:MyIdentifier];
-        }
-        Player* p = (Player*) [thisPlan.Players objectAtIndex:indexPath.row];
-        cell.textLabel.font = [GlobalVariableModel newFont2Medium];
-        cell.textLabel.text = p.LastName;
-        return cell;
-    }
-    
-    return nil;
-}
-
 
 /*
 #pragma mark - Navigation

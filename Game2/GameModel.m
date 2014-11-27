@@ -247,31 +247,46 @@
     [self goToView];
 }
 
-- (void) enterPlan:(NSInteger) PlanID{
+- (void) enterPlanWith:(NSDictionary*) source
+{
     PlanViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:@"enterPlan"];
-    vc.PlanID = PlanID;
-    [currentViewController presentViewController:vc animated:YES completion:nil];
-    currentViewController = vc;
 
-}
-
-- (void) enterTactic
-{
-    myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
-    TacticViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:myData.weekStage];
-    
-    [currentViewController presentViewController:vc animated:YES completion:nil];
-    currentViewController = vc;
-}
-
-- (void) enterPlayersFrom:(NSString*) source PositionSide:(PositionSide) ps
-{
-    
-    PlayersViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:@"enterPlayers"];
-    vc.ps = ps;
     vc.source = source;
     [currentViewController presentViewController:vc animated:YES completion:nil];
     currentViewController = vc;
+
+}
+
+
+- (void) enterTacticFrom:(NSDictionary*) source
+{
+    myData.weekStage = @"enterTactic";
+    TacticViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:myData.weekStage];
+    vc.source = source;
+    [currentViewController presentViewController:vc animated:YES completion:nil];
+    currentViewController = vc;
+}
+
+- (void) exitTacticTo:(NSDictionary*) source
+{
+    SEL s = NSSelectorFromString([NSString stringWithFormat:@"%@", [source objectForKey:@"source"]]);
+    [self performSelector:s];
+}
+
+
+- (void) enterPlayersFrom:(NSDictionary*) source
+{
+    PlayersViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:@"enterPlayers"];
+    vc.source = source;
+    [currentViewController presentViewController:vc animated:YES completion:nil];
+    currentViewController = vc;
+}
+
+- (void) exitPlayersTo:(NSDictionary*) source
+{
+    if ([[source objectForKey:@"source"] isEqualToString:@"enterTactic"]) {
+        [self enterTacticFrom:[source objectForKey:@"supersource"]];
+    }
 }
 
 

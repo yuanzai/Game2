@@ -103,7 +103,7 @@
             [myGame enterPreWeek];
             break;
         case 1100:
-            [myGame enterTactic];
+            [myGame enterTacticFrom:[NSDictionary dictionaryWithObjectsAndKeys:@"enterTask",@"source", nil]];
             break;
         case 1200:
             [myGame enterTraining];
@@ -112,7 +112,7 @@
         case 1202:
         case 1203:
         case 1204:
-            [myGame enterPlan:sender.tag-1200];
+            [myGame enterPlanWith:[NSDictionary dictionaryWithObjectsAndKeys:@(sender.tag-1200),@"PlanID",@"enterPlan",@"source" nil]];
             break;
         default:
             break;

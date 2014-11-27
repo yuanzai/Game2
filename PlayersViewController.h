@@ -9,7 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "Structs.h"
 
-@interface PlayersViewController : UITableViewController
-@property PositionSide ps;
-@property NSString* source;
+@class  PlayerList;
+
+@interface PlayersViewController : UIViewController <UITableViewDataSource,UITableViewDelegate>
+@property NSDictionary* source;
+@property (strong,nonatomic) PlayerList *tableSource;
+
 @end

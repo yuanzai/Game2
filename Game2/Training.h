@@ -12,10 +12,10 @@
 @interface Plan: NSObject
 
 @property NSInteger TrainingID;
-@property NSArray* PlayersID;
-@property NSArray* PlayersExp;
+@property NSMutableSet* PlayerIDList;
+@property NSMutableDictionary* PlayersExp;
 @property NSDictionary* Coach;
-@property NSArray* Players;
+@property NSMutableSet* PlayerList;
 
 @property NSMutableDictionary* PlanStats;
 

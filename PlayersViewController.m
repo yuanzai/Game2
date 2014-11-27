@@ -13,35 +13,7 @@
 #import "LineUp.h"
 #import "Tactic.h"
 #import "PlayerInfoViewController.h"
-
-@interface PlayersCell : UITableViewCell
-
-@end
-
-@implementation PlayersCell
-
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        // Initialization code
-    }
-    return self;
-}
-
-- (void)awakeFromNib
-{
-    // Initialization code
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-    [super setSelected:selected animated:animated];
-    
-    // Configure the view for the selected state
-}
-
-@end
+#import "PlayerList.h"
 
 @interface PlayersViewController ()
 
@@ -51,34 +23,30 @@
 {
     GameModel* myGame;
 }
-@synthesize ps;
 @synthesize source;
-
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
+@synthesize tableSource;
 - (void)viewDidLoad
 {
+    UITableView* playersView = (UITableView*) [self.view viewWithTag:1];
+    tableSource = [[PlayerList alloc]initWithTarget:self Source:source];
+    playersView.delegate = tableSource;
+    playersView.dataSource = tableSource;
+
     [super viewDidLoad];
     myGame = [GameModel myGame];
-
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+       UIButton* doneButton = (UIButton*) [self.view viewWithTag:999];
+    [doneButton addTarget:self action:@selector(backTo:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void) backTo:(UIButton*) sender
+{
+    [myGame exitPlayersTo:source];
 }
 
 #pragma mark - Table view data source
@@ -106,33 +74,34 @@
     UITableViewCell *cell;
     cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[PlayersCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     Player* p = [myGame.myData.myTeam.PlayerList objectAtIndex:indexPath.row];
     cell.textLabel.font = [UIFont fontWithName:@"8BIT WONDER" size:13.0];
     cell.textLabel.text = p.DisplayName;
     cell.accessoryType = UITableViewCellAccessoryDetailButton;
+    
     return cell;
 }
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([source isEqualToString:@"enterTactic"]) {
-        Player* p = [myGame.myData.myTeam.PlayerList objectAtIndex:indexPath.row];
-        [myGame.myData.currentLineup.currentTactic removePlayerFromTactic:p];
-        [myGame.myData.currentLineup.currentTactic populatePlayer:p PositionSide:ps ForceSwap:NO];
-        [myGame enterTactic];
-    }
+    PlayerInfoViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"playerInfo"];
+    vc.thisPlayer = [myGame.myData.myTeam.PlayerList objectAtIndex:indexPath.row];
+    vc.source = self.source;
+    [self presentViewController:vc animated:YES completion:nil];
 }
 
 - (void) tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
-    PlayerInfoViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"playerInfo"];
-    vc.thisPlayer = [myGame.myData.myTeam.PlayerList objectAtIndex:indexPath.row];
-    vc.source = self.source;
-    NSLog(@"%@",self.source);
-    [self presentViewController:vc animated:YES completion:nil];
-
+    if ([[source objectForKey:@"source"] isEqualToString:@"enterTactic"]) {
+        Player* p = [myGame.myData.myTeam.PlayerList objectAtIndex:indexPath.row];
+        [myGame.myData.currentLineup.currentTactic removePlayerFromTactic:p];
+        PositionSide ps;
+        [[source objectForKey:@"ps"] getValue:&ps];
+        [myGame.myData.currentLineup.currentTactic populatePlayer:p PositionSide:ps ForceSwap:NO];
+        [myGame enterTacticFrom:source];
+    }
 }
 /*
 // Override to support conditional editing of the table view.

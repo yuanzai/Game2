@@ -31,6 +31,7 @@
 
 - (NSDictionary*) statBiasTable;
 - (NSDictionary*) ageProfile;
++ (NSArray*) planStats;
 
 //Match Variables
 - (NSMutableDictionary*) eventOccurenceFactorTable;

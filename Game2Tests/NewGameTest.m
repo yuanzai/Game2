@@ -15,6 +15,7 @@
 #import "Fixture.h"
 #import "Match.h"
 #import "Action.h"
+#import "Training.h"
 @interface NewGameTest : XCTestCase
 
 @end
@@ -54,11 +55,6 @@
 - (void)testLoadGame
 {
     [[GameModel myGame]loadWithGameID:1];
-    
-    NSLog(@"Season %i | Week %i",[[GameModel myGame]myData].season, [[GameModel myGame]myData].weekdate);
-    
-    NSLog(@"Tournament Name %@",[[GameModel myGame]myData].currentLeagueTournament.tournamentName);
-    NSLog(@"Next Match ID %i",[[GameModel myGame]myData].nextFixture.MATCHID);
 }
 
 - (void)testPrintTable
@@ -74,6 +70,16 @@
     NSLog(@"%@",temp);
     
     [[[[GameModel myGame] myData]currentLeagueTournament]printTable];
+}
+
+- (void)testTraining
+{
+    GameModel* game = [GameModel myGame];
+    [game loadWithGameID:1];
+    Plan* myPlan = [game.myData.myTraining.Plans objectAtIndex:0];
+    NSLog(@"%@", myPlan.Coach);
+    NSLog(@"%@", myPlan.PlanStats);
+    
 }
 
 - (void)testNextFixture
@@ -155,9 +161,9 @@
 -(void) testDictionaryAccess
 {
     NSDate *date = [NSDate date];
-    
+    NSInteger r;
     for (int i =0; i<10000; i++){
-        NSInteger r = arc4random()%1000;
+        r = arc4random()%1000;
         
     }
     
@@ -165,7 +171,7 @@
     
     date = [NSDate date];
     for (int i =0; i<10000; i++){
-        NSInteger r = arc4random_uniform(1000);
+        r = arc4random_uniform(1000);
     }
     NSLog(@"%f",[date timeIntervalSinceNow] * -1);
 

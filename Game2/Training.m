@@ -22,15 +22,14 @@
     NSDictionary* ageProfiles;
     NSInteger statExpMax;
     NSInteger expReps;
-
 }
 
 @synthesize TrainingID;
 @synthesize Coach;
-@synthesize Players;
+@synthesize PlayerList;
 @synthesize PlanStats;
 @synthesize PlayersExp;
-@synthesize PlayersID;
+@synthesize PlayerIDList;
 
 - (id) initWithDefault
 {
@@ -85,29 +84,41 @@
 {
     self = [self initWithDefault];
     if (self) {
-        PlanStats = [[NSMutableDictionary alloc]initWithDictionary:[[GameModel myDB]getResultDictionaryForTable:@"training" withKeyField:@"TrainingID" withKey:thisTrainingID]];
-        NSInteger CoachID = [[PlanStats objectForKey:@"CoachID"]integerValue];
-        Coach = [[GameModel myDB]getResultDictionaryForTable:@"coaches" withKeyField:@"CoachID" withKey:CoachID];
-        PlayersID = [[GameModel myDB]getArrayFrom:@"trainingExp" withSelectField:@"PlayerID" whereKeyField:@"TrainingID" hasKey:[NSNumber numberWithInteger:thisTrainingID]];
+        PlanStats = [[NSMutableDictionary alloc]initWithDictionary:[[GameModel myDB]getResultDictionaryForTable:@"training" withKeyField:@"TRAININGID" withKey:thisTrainingID]];
 
+        NSInteger CoachID = [[PlanStats objectForKey:@"COACHID"]integerValue];
+        Coach = [[GameModel myDB]getResultDictionaryForTable:@"coaches" withKeyField:@"COACHID" withKey:CoachID];
+        //Populate Player ID List
+        PlayerIDList = [NSMutableSet setWithArray:[[GameModel myDB]getArrayFrom:@"trainingExp" withSelectField:@"PLAYERID" whereKeyField:@"TRAININGID" hasKey:[NSNumber numberWithInteger:thisTrainingID]]];
+
+        //Populate Player List
+        [PlayerIDList enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+            Player* thisPlayer = [[[GameModel myGlobalVariableModel]playerList]objectForKey:[NSString stringWithFormat:@"%@",obj]];
+            [PlayerList addObject:thisPlayer];
+            [PlayersExp setObject:thisPlayer forKey:[obj stringValue]];
+        }];
+        
+        //Populate Player Exp Dictionary
+        NSArray* expList = [[GameModel myDB] getArrayFrom:@"trainingExp" whereKeyField:@"TRAININGID" hasKey:[NSNumber numberWithInteger:thisTrainingID] sortFieldAsc:@""];
+        [expList enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
+            [PlayersExp setObject:[NSMutableDictionary dictionaryWithDictionary:obj] forKey:[@([[obj objectForKey:@"PLAYERID"]integerValue]) stringValue]];
+        }];
     }
     return self;
 }
 
 - (void) runTrainingPlan
 {
-    [PlayersID enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        Player* thisPlayer = [[[GameModel gameData]myTeam]getPlayerWithID:[obj integerValue]];
-        NSMutableDictionary* trainingEXP =[[NSMutableDictionary alloc] initWithDictionary:[[GameModel myDB]getResultDictionaryForTable:@"trainingExp" withKeyField:@"PlayerID" withKey:thisPlayer.PlayerID]];
-        
-        [self runTrainingPlanForPlayer:thisPlayer TrainingExp:trainingEXP];
-        [thisPlayer updatePlayerInDatabaseStats:YES GameStat:NO Team:NO Position:NO Valuation:NO];
-        [self updateTrainingExpForPlayer:thisPlayer WithExp:trainingEXP];
+    [PlayerList enumerateObjectsUsingBlock:^(Player* p, BOOL *stop) {
+        NSMutableDictionary* trainingEXP = [PlayersExp objectForKey:[@(p.PlayerID) stringValue]];
+        [p updatePlayerInDatabaseStats:YES GameStat:NO Team:NO Position:NO Valuation:NO];
+        [self updateTrainingExpForPlayer:p WithExp:trainingEXP];
     }];
 }
 
 - (void) runTrainingPlanForPlayer:(Player *)thisPlayer Times:(NSInteger) times ExpReps : (NSInteger) reps Season:(NSInteger) setSeason
 {
+    // AI Simulation
     season = setSeason;
     expReps = reps;
     NSMutableDictionary* trainingEXP = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
@@ -171,7 +182,7 @@
 
 - (void) updateTrainingExpForPlayer:(Player*) player WithExp:(NSDictionary*) data
 {
-    [[GameModel myDB]updateDatabaseTable:@"trainingExp" withKeyField:@"PlayerID" withKey:player.PlayerID withDictionary:data];
+    [[GameModel myDB]updateDatabaseTable:@"trainingExp" withKeyField:@"PLAYERID" withKey:player.PlayerID withDictionary:data];
 }
 
 - (int) updateOneGroup:(NSString*) group
@@ -320,7 +331,7 @@
 
 - (BOOL) updateTrainingPlanToDatabase
 {
-    return [[GameModel myDB]updateDatabaseTable:@"training" withKeyField:@"TrainingID" withKey:TrainingID withDictionary:PlanStats];
+    return [[GameModel myDB]updateDatabaseTable:@"training" withKeyField:@"TRAININDID" withKey:TrainingID withDictionary:PlanStats];
 }
 
 - (BOOL) updatePlanStats:(NSString*)stat Value:(NSInteger) value

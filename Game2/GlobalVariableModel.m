@@ -211,6 +211,16 @@
     return ageProfile;
 }
 
++ (NSArray*) planStats
+{
+    return [NSArray arrayWithObjects:@"DRILLS",
+            @"SHOOTING",
+            @"PHYSICAL",
+            @"TACTICS",
+            @"SKILLS",nil];
+    
+}
+
 - (NSDictionary*) eventOccurenceFactorTable
 {
     if (!eventOccurenceFactorTable)

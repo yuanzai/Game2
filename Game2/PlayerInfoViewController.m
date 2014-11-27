@@ -111,11 +111,8 @@
 
 - (void) backTo:(UIButton*) button
 {
-    NSLog(@"%@",self.source);
-    if ([source isEqualToString:@"enterTactic"]) {
-        myGame.currentViewController = self;
-        [myGame enterPlayersFrom:@"enterTactic" PositionSide:tacticPS ];
-    }
+    myGame.currentViewController = self;
+    [myGame enterPlayersFrom:source];
 }
 
 

@@ -69,6 +69,7 @@
     [self setNextFixture];
     [self setCurrentTactic];
     [self setCurrentLineup];
+    [self setMyTraining];
 }
 
 - (void) setCurrentLeagueTournament

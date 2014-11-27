@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 @class ViewController;
 @interface TacticViewController : UIViewController
-@property NSString* source;
+@property NSDictionary* source;
 @end

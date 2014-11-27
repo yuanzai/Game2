@@ -44,7 +44,6 @@ const NSInteger playerSpacing = 10;
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    NSLog(@"TACTICS");
     isDragged = NO;
     myGame = [GameModel myGame];
     if (!myGame.myData.currentLineup.currentTactic)
@@ -70,14 +69,13 @@ const NSInteger playerSpacing = 10;
 
 - (void) backTo:(UIButton*) button
 {
-    [myGame performSelector:@selector(source)];
+    [myGame exitTacticTo:source];
 }
 
 - (void) wasTouched:(UIButton*) button
 {
     isDragged = NO;
     lastTouch = button.center;
-    NSLog(@"Tactic Touched");
 }
 
 - (void) populateGridWithTactic:(Tactic*) tactic
@@ -147,7 +145,6 @@ const NSInteger playerSpacing = 10;
 	CGPoint location = [touch locationInView:button];
 	CGFloat delta_x = location.x - previousLocation.x;
 	CGFloat delta_y = location.y - previousLocation.y;
-    CGPoint newPoint = CGPointMake(button.center.x + delta_x, button.center.y + delta_y);
 
 	button.center = CGPointMake(button.center.x + delta_x,
                               button.center.y + delta_y);
@@ -156,10 +153,7 @@ const NSInteger playerSpacing = 10;
 
 - (void) wasTouchedUp: (UIButton*) button
 {
-    NSLog(@"Tactic Position Tapped");
     if (isDragged) {
-        NSLog(@"Tactic Position Dragged");
-
         BOOL toRevert = YES;
         for (int i = 0; i < 5; i ++) {
             for (int j = 0; j < 5; j ++) {
@@ -176,10 +170,12 @@ const NSInteger playerSpacing = 10;
     } else {
 
         PositionSide ps = {button.tag/10,button.tag%10};
-        NSLog(@"Choose Player %i, %i",ps.position, ps.side);
-        [myGame enterPlayersFrom:@"enterTactic" PositionSide:ps ];
+        NSMutableDictionary* toSource = [NSMutableDictionary dictionary];
+        [toSource setObject:[NSValue value:&ps withObjCType:@encode(PositionSide) ] forKey:@"ps"];
+        [toSource setObject:@"enterTactic" forKey:@"source"];
+        [toSource setObject:source forKey:@"supersource"];
 
-        
+        [myGame enterPlayersFrom:toSource];
     }
 }
 
