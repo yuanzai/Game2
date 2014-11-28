@@ -112,7 +112,7 @@
         case 1202:
         case 1203:
         case 1204:
-            [myGame enterPlanWith:[NSDictionary dictionaryWithObjectsAndKeys:@(sender.tag-1200),@"PlanID",@"enterPlan",@"source" nil]];
+            [myGame enterPlanWith:[NSDictionary dictionaryWithObjectsAndKeys:@(sender.tag-1200),@"PlanID",@"enterPlan",@"source", nil]];
             break;
         default:
             break;

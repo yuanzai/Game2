@@ -59,9 +59,20 @@
     playersView.delegate = tableSource;
     playersView.dataSource = tableSource;
 
+    UILabel* playerCount = (UILabel*)[self.view viewWithTag:20];
+    [playerCount setFont:[GlobalVariableModel newFont2Medium]];
+    [playerCount setText:[NSString stringWithFormat:@" %i Players",[thisPlan.PlayerList count]]];
+    
+    UIButton* add = (UIButton*)[self.view viewWithTag:30];
+    NSInteger unassignedCount = [[myGame.myData.myTraining getUnassignedPlayers]count];
+    [add setTitle:[NSString stringWithFormat:@"Add players (%i)",unassignedCount] forState:UIControlStateNormal];
+    [add.titleLabel setFont:[GlobalVariableModel newFont2Medium]];
+    [add invalidateIntrinsicContentSize];
+    [add addTarget:self action:@selector(addPlayers:) forControlEvents:UIControlEventTouchUpInside];
     
     UIButton* coach = (UIButton*)[self.view viewWithTag:100];
     [coach setTitle:[thisPlan.Coach objectForKey:@"NAME"] forState:UIControlStateNormal];
+    [coach.titleLabel setFont:[GlobalVariableModel newFont2Medium]];
     //[coach.titleLabel setFont:[GlobalVariableModel newFont2Large]];
     
     planStatButtons = [NSMutableArray array];
@@ -74,8 +85,6 @@
         [button.titleLabel setFont:[GlobalVariableModel newFont2Medium]];
         [button addTarget:self action:@selector(pressPlanStat:) forControlEvents:UIControlEventTouchUpInside];
         [planStatButtons addObject:button];
-        
-
     }
     UIButton* back = (UIButton*)[self.view viewWithTag:999];
     [back addTarget:self action:@selector(backTo:) forControlEvents:UIControlEventTouchUpInside];
@@ -100,6 +109,10 @@
 
     [thisPlan.PlanStats setObject:@(currentStat) forKey:stat];
     [sender setTitle:[@(currentStat) stringValue] forState:UIControlStateNormal];
+}
+- (void) addPlayers:(UIButton*) sender
+{
+    [myGame enterPlayersFrom:source];
 }
 
 - (void) backTo:(UIButton*) sender

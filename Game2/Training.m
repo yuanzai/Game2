@@ -404,5 +404,15 @@
     }];
 }
 
-
+- (NSArray*) getUnassignedPlayers
+{
+    NSMutableArray* playerList = [NSMutableArray arrayWithArray:[[[[GameModel myGame]myData] myTeam]PlayerList]];
+    for (NSInteger i = 0; i<4; i++) {
+        Plan* thisPlan = [Plans objectAtIndex:i];
+        [thisPlan.PlayerList enumerateObjectsUsingBlock:^(Player* p, BOOL *stop) {
+            [playerList removeObject:p];
+        }];
+    };
+    return playerList;
+}
 @end

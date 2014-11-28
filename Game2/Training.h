@@ -44,5 +44,5 @@
 @property NSMutableArray* Plans;
 
 - (void) runAllPlans;
-
+- (NSArray*) getUnassignedPlayers;
 @end

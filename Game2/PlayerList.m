@@ -18,6 +18,7 @@
 {
     GameModel* myGame;
     NSDictionary* source;
+    NSInteger sectionCount;
 }
 @synthesize target;
 @synthesize players;
@@ -30,6 +31,7 @@
         target = thisTarget;
         myGame = [GameModel myGame];
         viewSource = [thisSource objectForKey:@"source"];
+        sectionCount = 0;
         [self loadData];
     }
     return self;
@@ -39,25 +41,26 @@
 - (void) loadData
 {
     if ([viewSource isEqualToString:@"enterTactic"]) {
-        players = [[[myGame myData]myTeam]PlayerList];
+        [players addObject: [[[myGame myData]myTeam]PlayerList]];
+        sectionCount = 1;
     } else if ([viewSource isEqualToString:@"enterPlan"]){
         Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[source objectForKey:@"PlanID"]integerValue]];
-        players = thisPlan.Players;
+        [players addObject: [NSMutableArray arrayWithArray:[thisPlan.PlayerList allObjects]]];
+        sectionCount = 1;
     }
 }
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 1;
+    return sectionCount;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return [players count];
+    return [[players objectAtIndex:section ] count];
 }
 
 
@@ -87,15 +90,19 @@
 
 - (void) tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
+    Player* p = [[players objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
     if ([[source objectForKey:@"source"] isEqualToString:@"enterTactic"]) {
-        Player* p = [myGame.myData.myTeam.PlayerList objectAtIndex:indexPath.row];
+        
         [myGame.myData.currentLineup.currentTactic removePlayerFromTactic:p];
         PositionSide ps;
         [[source objectForKey:@"ps"] getValue:&ps];
         [myGame.myData.currentLineup.currentTactic populatePlayer:p PositionSide:ps ForceSwap:NO];
         [myGame enterTacticFrom:source];
     } else if ([[source objectForKey:@"source"] isEqualToString:@"enterPlan"]){
+        Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[source objectForKey:@"PlanID"]integerValue]];
+        [thisPlan.PlayerList removeObject:p];
         
+        [[players objectAtIndex:indexPath.section] removeObjectAtIndex:indexPath.row];
     }
 }
 @end

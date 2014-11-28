@@ -286,7 +286,10 @@
 {
     if ([[source objectForKey:@"source"] isEqualToString:@"enterTactic"]) {
         [self enterTacticFrom:[source objectForKey:@"supersource"]];
+    } else if ([[source objectForKey:@"source"] isEqualToString:@"enterPlan"]) {
+        [self enterPlanWith:source];
     }
+    
 }
 
 
