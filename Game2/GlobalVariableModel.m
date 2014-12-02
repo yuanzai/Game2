@@ -13,7 +13,7 @@
 #import "LineUp.h"
 @implementation GlobalVariableModel
 {
-    NSDictionary* ageProfile;
+    NSArray* ageProfile;
     
     NSDictionary* valuationStatListCentre;
     NSDictionary* valuationStatListFlank;
@@ -189,23 +189,26 @@
     return statBiasTable ;
 }
 
-- (NSDictionary*) ageProfile
+- (NSArray*) ageProfile
 {
     if (!ageProfile){
-        NSMutableDictionary* result = [NSMutableDictionary dictionary];
+        NSMutableArray* result = [NSMutableArray array];
+        for (NSInteger i =0; i<24; i++) {
+            [result addObject:[NSMutableDictionary dictionary]];
+        }
         
         NSArray* allProfiles = [[GameModel myDB]getArrayFrom:@"trainingProfile" whereData:nil sortFieldAsc:@""];
         [allProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            if ([result objectForKey:[[obj objectForKey:@"AGE"]stringValue]]) {
-                NSMutableDictionary* profile = [result objectForKey:[obj objectForKey:@"AGE"]];
+            if ([result objectAtIndex:[[obj objectForKey:@"AGE"]integerValue]]) {
+                NSMutableDictionary* profile = [result objectAtIndex:[[obj objectForKey:@"AGE"]integerValue]];
                 [profile setObject:obj forKey:[[obj objectForKey:@"PROFILEID"]stringValue]];
             } else {
                 NSMutableDictionary* profile = [NSMutableDictionary dictionary];
                 [profile setObject:obj forKey:[[obj objectForKey:@"PROFILEID"]stringValue]];
-                [result setObject:profile forKey:[[obj objectForKey:@"AGE"]stringValue]];
+                [result setObject:profile atIndexedSubscript:[[obj objectForKey:@"AGE"]integerValue]];
+//                [result setObject:profile forKey:[[obj objectForKey:@"AGE"]stringValue]];
             }
         }];
-        
         ageProfile = result;
     }
     return ageProfile;

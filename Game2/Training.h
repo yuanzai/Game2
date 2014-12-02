@@ -12,11 +12,9 @@
 @interface Plan: NSObject
 
 @property NSInteger TrainingID;
-@property NSMutableSet* PlayerIDList;
 @property NSMutableDictionary* PlayersExp;
 @property NSDictionary* Coach;
 @property NSMutableSet* PlayerList;
-
 @property NSMutableDictionary* PlanStats;
 
 - (id) initWithTrainingID:(NSInteger) thisTrainingID;
@@ -31,13 +29,13 @@
 
 - (void) trainGK:(Player*) gk Season:(NSInteger) setSeason;
 
+- (void) addPlayerToTrainingPlan:(Player*) thisPlayer;
 
-- (void) addPlayerToTrainingPlan:(NSInteger) PlayerID;
-- (void) removePlayerFromTrainingPlan:(NSInteger) PlayerID;
+- (void) removePlayerFromTrainingPlans:(Player*) thisPlayer;
 
 - (BOOL) updateTrainingPlanToDatabase;
 - (BOOL) updatePlanStats:(NSString*)stat Value:(NSInteger) value;
-
++ (double) addToRuntime:(int)no amt:(double) amt;
 @end
 
 @interface Training : NSObject

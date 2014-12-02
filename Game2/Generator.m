@@ -22,7 +22,6 @@
 @synthesize AgeDistribution;
 
 
-
 const NSInteger playerBatch = 360;
 const NSInteger maxTurn = 16;
 
@@ -47,9 +46,14 @@ const NSInteger maxTurn = 16;
     NSLog(@"Generating New Players");
     [self generatePlayersForNewGame];
 
+    
+    NSLog(@"1 - %f",[Plan addToRuntime:1 amt:0]);
+    NSLog(@"2 - %f",[Plan addToRuntime:2 amt:0]);
+    NSLog(@"3 - %f",[Plan addToRuntime:3 amt:0]);
+
     NSLog(@"Assigning Players");
     [self assignPlayersToTeams];
-    
+    [[GameModel myDB]deleteFromTable:@"trainingExp" withData:nil];
     [[GameModel myDB]deleteFromTable:@"fixtures" withData:nil];
  
 }
@@ -357,8 +361,14 @@ const NSInteger decayMax = 1;
 const NSInteger decayKMax = 1;
 const NSInteger statBiasMax = 63;
 
+static double runtime1 =0.0;
+static double runtime2 =0.0;
+static double runtime3 =0.0;
+
 - (BOOL) createPlayerWithAbility:(NSInteger)ability Potential:(NSInteger) potential Season:(NSInteger) season
 {
+
+
     NSMutableDictionary* newPlayer = [NSMutableDictionary dictionary];
     [newPlayer setObject:[NSNumber numberWithInteger:potential] forKey:@"potential"];
     self.potential = potential;
@@ -492,10 +502,11 @@ const NSInteger statBiasMax = 63;
     [newPlayer setObject:FirstName forKey:@"FirstName"];
     [newPlayer setObject:LastName forKey:@"LastName"];
     [newPlayer setObject:DisplayName forKey:@"DisplayName"];
+
     //WkOfBirth
     BirthYear =  season;
     [newPlayer setObject:[NSNumber numberWithInteger:BirthYear] forKey:@"BirthYear"];
-
+    
     //Stats
     NSArray* statList = [GlobalVariableModel playerStatList];
     if (isGoalKeeper) {
@@ -517,7 +528,7 @@ const NSInteger statBiasMax = 63;
             [Stats setObject:[NSNumber numberWithInteger:stat+1] forKey:[statList objectAtIndex:r]];
         }
     }
-
+    NSDate* date = [NSDate date];
     
     if (!isGoalKeeper) {
         Plan* newPlayerTraining = [[Plan alloc]initWithPotential:potential Age:1-BirthYear];
@@ -526,6 +537,13 @@ const NSInteger statBiasMax = 63;
             [newPlayerTraining runTrainingPlanForPlayer:self Times:5 ExpReps:17 Season:i];
         }
     }
+
+    [GeneratePlayer addToRuntime:1 amt:-[date timeIntervalSinceNow]];
+    date = [NSDate date];
+    
+    [GeneratePlayer addToRuntime:2 amt:-[date timeIntervalSinceNow]];
+    date = [NSDate date];
+
     
     [newPlayer addEntriesFromDictionary:Stats];
 
@@ -549,7 +567,23 @@ const NSInteger statBiasMax = 63;
 
 
     [newPlayer setObject:[NSNumber numberWithDouble:Valuation] forKey:@"Valuation"];
-    
+    [GeneratePlayer addToRuntime:3 amt:-[date timeIntervalSinceNow]];
     return [[GameModel myDB]insertDatabaseTable:@"players" withData:newPlayer];
 }
+
++ (double) addToRuntime:(int)no amt:(double) amt{
+    if (no==1) {
+        runtime1 +=amt;
+        return runtime1;
+    }else if (no==2) {
+        runtime2 +=amt;
+        return runtime2;
+        
+    }else if (no==3){
+        runtime3 +=amt;
+        return runtime3;
+    }
+    return 0.0;
+}
+
 @end

@@ -27,4 +27,5 @@
 @property NSArray* FirstNames;
 @property NSArray* LastNames;
 - (BOOL) createPlayerWithAbility:(NSInteger)ability Potential:(NSInteger) potential Season:(NSInteger) season;
++ (double) addToRuntime:(int)no amt:(double) amt;
 @end

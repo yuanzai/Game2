@@ -14,11 +14,15 @@
 #import "PlayerInfoViewController.h"
 #import "LineUp.h"
 #import "Training.h"
+
+#import "PlanViewController.h"
+
 @implementation PlayerList
 {
     GameModel* myGame;
     NSDictionary* source;
     NSInteger sectionCount;
+    NSMutableArray* sectionNames;
 }
 @synthesize target;
 @synthesize players;
@@ -31,6 +35,8 @@
         target = thisTarget;
         myGame = [GameModel myGame];
         viewSource = [thisSource objectForKey:@"source"];
+        players = [NSMutableArray array];
+        sectionNames = [NSMutableArray array];
         sectionCount = 0;
         [self loadData];
     }
@@ -44,12 +50,41 @@
         [players addObject: [[[myGame myData]myTeam]PlayerList]];
         sectionCount = 1;
     } else if ([viewSource isEqualToString:@"enterPlan"]){
+
         Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[source objectForKey:@"PlanID"]integerValue]];
-        [players addObject: [NSMutableArray arrayWithArray:[thisPlan.PlayerList allObjects]]];
+        if ([thisPlan.PlayerList count] > 0)
+            [players addObject: [thisPlan.PlayerList allObjects]];
         sectionCount = 1;
+        
+    } else if ([viewSource isEqualToString:@"enterPlanPlayers"]){
+        sectionCount = 0;
+        NSLog(@"Unassigned %i",[[[[myGame myData]myTraining] getUnassignedPlayers]count]);
+        if ([[[[myGame myData]myTraining] getUnassignedPlayers]count] > 0) {
+            [players addObject:[[[myGame myData]myTraining] getUnassignedPlayers]];
+            [sectionNames addObject:@"Unassigned Players"];
+            sectionCount++;
+        }
+        for (NSInteger i = 0; i<4; i++) {
+            if ([[source objectForKey:@"PlanID"]integerValue] == i)
+                continue;
+            Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:i];
+            if ([thisPlan.PlayerList count] > 0) {
+                sectionCount++;
+                [players addObject: [thisPlan.PlayerList allObjects]];
+                [sectionNames addObject:[NSString stringWithFormat:@"Plan %i",i+1]];
+            }
+        }
     }
 }
 #pragma mark - Table view data source
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if ([sectionNames count]> 0) {
+        return [sectionNames objectAtIndex:section];
+    }
+    return nil;
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -60,6 +95,14 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
+    if ([players count] == 0)
+        return 0;
+    
+    
+    if (![players objectAtIndex:section])
+        return 0;
+//    if ([[players objectAtIndex:section ] count] == 0)
+//       return 0;
     return [[players objectAtIndex:section ] count];
 }
 
@@ -72,7 +115,8 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    Player* p = [myGame.myData.myTeam.PlayerList objectAtIndex:indexPath.row];
+    //Player* p = [myGame.myData.myTeam.PlayerList objectAtIndex:indexPath.row];
+    Player* p = [[players objectAtIndex:indexPath.section]objectAtIndex:indexPath.row];
     cell.textLabel.font = [GlobalVariableModel newFont2Medium];
     cell.textLabel.text = p.DisplayName;
     cell.accessoryType = UITableViewCellAccessoryDetailButton;
@@ -101,8 +145,25 @@
     } else if ([[source objectForKey:@"source"] isEqualToString:@"enterPlan"]){
         Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[source objectForKey:@"PlanID"]integerValue]];
         [thisPlan.PlayerList removeObject:p];
+        NSLog(@"%@",p.DisplayName);
+        [tableView reloadData];
+
+        [(PlanViewController*)target refreshTable];
+    }  else if ([viewSource isEqualToString:@"enterPlanPlayers"]){
+        for (NSInteger i = 0; i<4; i++) {
+            Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:i];
+
+            if ([[source objectForKey:@"PlanID"]integerValue] == i) {
+                [thisPlan addPlayerToTrainingPlan:p];
+            } else if ([thisPlan.PlayerList containsObject:p]) {
+                [thisPlan.PlayerList removeObject:p];
+            }
+        }
         
-        [[players objectAtIndex:indexPath.section] removeObjectAtIndex:indexPath.row];
+        NSMutableDictionary* newSource = [NSMutableDictionary dictionaryWithDictionary:source];
+        [newSource setObject:@"enterPlan" forKey:@"source"];
+        [myGame enterPlanWith:newSource];
     }
+
 }
 @end

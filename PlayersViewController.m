@@ -36,6 +36,7 @@
     myGame = [GameModel myGame];
        UIButton* doneButton = (UIButton*) [self.view viewWithTag:999];
     [doneButton addTarget:self action:@selector(backTo:) forControlEvents:UIControlEventTouchUpInside];
+    [doneButton.titleLabel setFont:[GlobalVariableModel newFont2Large]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -49,6 +50,7 @@
     [myGame exitPlayersTo:source];
 }
 
+/*
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

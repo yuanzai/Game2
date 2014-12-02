@@ -30,7 +30,7 @@
 //Training
 
 - (NSDictionary*) statBiasTable;
-- (NSDictionary*) ageProfile;
+- (NSArray*) ageProfile;
 + (NSArray*) planStats;
 
 //Match Variables

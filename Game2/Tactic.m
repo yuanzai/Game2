@@ -10,6 +10,12 @@
 #import "GameModel.h"
 #import "DatabaseModel.h"
 #import "Player.h"
+@implementation TacticPosition
+@synthesize ps;
+@synthesize player;
+@synthesize PositionID;
+
+@end
 
 @implementation Tactic
 @synthesize TacticID;

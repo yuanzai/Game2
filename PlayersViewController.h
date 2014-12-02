@@ -11,7 +11,7 @@
 
 @class  PlayerList;
 
-@interface PlayersViewController : UIViewController <UITableViewDataSource,UITableViewDelegate>
+@interface PlayersViewController : UIViewController //<UITableViewDataSource,UITableViewDelegate>
 @property NSDictionary* source;
 @property (strong,nonatomic) PlayerList *tableSource;
 

@@ -12,5 +12,7 @@
 @property NSInteger PlanID;
 @property NSDictionary* source;
 @property (strong,nonatomic) PlayerList *tableSource;
+@property (strong,nonatomic) IBOutlet UITableView* playersView;
+- (void) refreshTable;
 
 @end

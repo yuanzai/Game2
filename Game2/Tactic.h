@@ -10,12 +10,21 @@
 #import "Structs.h"
 
 @class Player;
+@class Tactic;
+@interface TacticPosition : NSObject
+@property PositionSide ps;
+@property Player* player;
+@property NSInteger PositionID;
+
+@end
+
 @interface Tactic : NSObject
 {    
     __block BOOL formationArray[5][5];
+    __block BOOL tacticPositionArray[5][5];
     Player* playerArray[5][5];
-    NSMutableArray* SubList;
 }
+
 @property NSInteger TacticID;
 @property Player* GoalKeeper;
 @property NSMutableArray* SubList;
@@ -35,6 +44,7 @@
 - (BOOL) movePlayerAtPositionSide:(PositionSide) fromPS ToPositionSide:(PositionSide) toPS;
 
 - (BOOL) isFormationFilled;
+
 - (BOOL) hasPositionAtPositionSide: (PositionSide) ps;
 
 

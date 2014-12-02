@@ -40,6 +40,8 @@
 @property NSInteger money;
 @property NSString* weekStage;
 @property NSString* weekTask;
+@property NSMutableDictionary* lineUpPlayers;
+
 
 - (void) setUpData;
 

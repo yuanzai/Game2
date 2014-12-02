@@ -23,9 +23,11 @@
     NSMutableArray* planStatButtons;
     NSArray* statArray;
 }
+
 @synthesize tableSource;
 @synthesize source;
 @synthesize PlanID;
+@synthesize playersView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -54,7 +56,7 @@
     thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:PlanID];
     statArray = [GlobalVariableModel planStats];
     
-    UITableView* playersView = (UITableView*) [self.view viewWithTag:1];
+//    playersView = (UITableView*) [self.view viewWithTag:1];
     tableSource = [[PlayerList alloc]initWithTarget:self Source:source];
     playersView.delegate = tableSource;
     playersView.dataSource = tableSource;
@@ -112,7 +114,10 @@
 }
 - (void) addPlayers:(UIButton*) sender
 {
-    [myGame enterPlayersFrom:source];
+    NSMutableDictionary* newSource = [NSMutableDictionary dictionaryWithDictionary:source];
+    [newSource setObject:@"enterPlan" forKey:@"supersource"];
+    [newSource setObject:@"enterPlanPlayers" forKey:@"source"];
+    [myGame enterPlayersFrom:newSource];
 }
 
 - (void) backTo:(UIButton*) sender
@@ -120,6 +125,12 @@
     [thisPlan updateTrainingPlanToDatabase];
     [myGame enterTraining];
 }
+
+- (void) refreshTable
+{
+    [self viewDidLoad];
+}
+
 
 /*
 #pragma mark - Navigation

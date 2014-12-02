@@ -33,10 +33,23 @@
 @synthesize money;
 @synthesize weekStage;
 @synthesize weekTask;
+@synthesize lineUpPlayers;
 
 @synthesize myTraining;
 
 @synthesize myGame;
+
+- (id) init
+{
+    self = [super init];
+    if (self) {
+        self.season = 0;
+        self.weekdate = 0;
+        self.week = 0;
+        self.weekStage = @"enterPreWeek";
+        self.lineUpPlayers = [NSMutableDictionary dictionarywi]
+    }; return self;
+}
 
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super init];
@@ -49,7 +62,7 @@
     self.money = [decoder decodeIntegerForKey:@"money"];
     self.weekStage = [decoder decodeObjectForKey:@"weekStage"];
     self.weekTask = [decoder decodeObjectForKey:@"weekTask"];
-
+    self.lineUpPlayers = [decoder decodeObjectForKey:@"lineUpPlayers"];
     return self;
 }
 
@@ -60,6 +73,7 @@
     [encoder encodeInteger:self.money forKey:@"money"];
     [encoder encodeObject:self.weekStage forKey:@"weekStage"];
     [encoder encodeObject:self.weekTask forKey:@"weekTask"];
+    [encoder encodeObject:self.lineUpPlayers forKey:@"lineUpPlayers"];
 }
 
 - (void) setUpData
@@ -84,7 +98,6 @@
 - (void) setNextFixture
 {
     self.nextFixture = [self.currentLeagueTournament getMatchForTeamID:0 Date:weekdate];
-
 }
 
 - (void) setNextMatchOpponents

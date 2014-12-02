@@ -71,10 +71,10 @@
 		6B1D45B91A2122D3006633A9 /* visitor1.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D45B71A2122D3006633A9 /* visitor1.ttf */; };
 		6B1D45BC1A24464D006633A9 /* PlanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45BB1A24464D006633A9 /* PlanViewController.m */; };
 		6B1D45BD1A24464D006633A9 /* PlanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45BB1A24464D006633A9 /* PlanViewController.m */; };
-		6B1D45BF1A25E786006633A9 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D45BE1A25E786006633A9 /* database.db */; };
-		6B1D45C01A25E786006633A9 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D45BE1A25E786006633A9 /* database.db */; };
 		6B1D45C31A262C21006633A9 /* PlayerList.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45C21A262C21006633A9 /* PlayerList.m */; };
 		6B1D45C41A262C21006633A9 /* PlayerList.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45C21A262C21006633A9 /* PlayerList.m */; };
+		6B1D45CC1A2DA0F6006633A9 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D45CB1A2DA0F6006633A9 /* database.db */; };
+		6B1D45CD1A2DA0F6006633A9 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D45CB1A2DA0F6006633A9 /* database.db */; };
 		6BB21C5D1A0FAB9C00ED2310 /* Structs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BB21C5C1A0FAB9C00ED2310 /* Structs.m */; };
 		6BB21C5E1A0FAB9C00ED2310 /* Structs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BB21C5C1A0FAB9C00ED2310 /* Structs.m */; };
 		6BC2C08C1A09EAFF005973C2 /* NewGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2C08B1A09EAFF005973C2 /* NewGameTest.m */; };
@@ -160,9 +160,9 @@
 		6B1D45B71A2122D3006633A9 /* visitor1.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = visitor1.ttf; sourceTree = "<group>"; };
 		6B1D45BA1A24464D006633A9 /* PlanViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlanViewController.h; sourceTree = "<group>"; };
 		6B1D45BB1A24464D006633A9 /* PlanViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlanViewController.m; sourceTree = "<group>"; };
-		6B1D45BE1A25E786006633A9 /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
 		6B1D45C11A262C21006633A9 /* PlayerList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerList.h; sourceTree = "<group>"; };
 		6B1D45C21A262C21006633A9 /* PlayerList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerList.m; sourceTree = "<group>"; };
+		6B1D45CB1A2DA0F6006633A9 /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
 		6BB21C5B1A0FAB9C00ED2310 /* Structs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structs.h; sourceTree = "<group>"; };
 		6BB21C5C1A0FAB9C00ED2310 /* Structs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Structs.m; sourceTree = "<group>"; };
 		6BC2C08B1A09EAFF005973C2 /* NewGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameTest.m; sourceTree = "<group>"; };
@@ -247,8 +247,8 @@
 				6B1D45B41A20F7FF006633A9 /* 8-BIT WONDER.TTF */,
 				6B1D45B71A2122D3006633A9 /* visitor1.ttf */,
 				6B1339AA19EECC5400BC749E /* Game2-Info.plist */,
-				6B1D45BE1A25E786006633A9 /* database.db */,
 				6B1339AB19EECC5400BC749E /* InfoPlist.strings */,
+				6B1D45CB1A2DA0F6006633A9 /* database.db */,
 				6B1339AE19EECC5400BC749E /* main.m */,
 				6B1339B019EECC5400BC749E /* Game2-Prefix.pch */,
 			);
@@ -441,7 +441,7 @@
 			files = (
 				6B1D45921A1C5D29006633A9 /* Main_iPad.storyboard in Resources */,
 				6B1D45911A1C5D29006633A9 /* Main_iPhone.storyboard in Resources */,
-				6B1D45BF1A25E786006633A9 /* database.db in Resources */,
+				6B1D45CC1A2DA0F6006633A9 /* database.db in Resources */,
 				6B1D45B81A2122D3006633A9 /* visitor1.ttf in Resources */,
 				6B1D45B51A20F7FF006633A9 /* 8-BIT WONDER.TTF in Resources */,
 				6B1339BE19EECC5400BC749E /* Images.xcassets in Resources */,
@@ -453,7 +453,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6B1D45C01A25E786006633A9 /* database.db in Resources */,
+				6B1D45CD1A2DA0F6006633A9 /* database.db in Resources */,
 				6B1D45B61A20F7FF006633A9 /* 8-BIT WONDER.TTF in Resources */,
 				6B1D45B91A2122D3006633A9 /* visitor1.ttf in Resources */,
 				6B1339CF19EECC5400BC749E /* InfoPlist.strings in Resources */,

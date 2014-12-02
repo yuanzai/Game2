@@ -10,6 +10,7 @@
 #import "TacticViewController.h"
 #import "GameModel.h"
 #import "GlobalVariableModel.h"
+#import "Match.h"
 
 @interface ViewController ()
 
@@ -99,6 +100,18 @@
         case 600:
             [myGame enterPostGame];
             break;
+        case 601:
+            [self startMatch];
+            break;
+            
+        case 602:
+            [myGame enterPostGame];
+            break;
+            
+        case 603:
+            [myGame enterPostGame];
+            break;
+            
         case 700:
             [myGame enterPreWeek];
             break;
@@ -108,17 +121,29 @@
         case 1200:
             [myGame enterTraining];
             break;
-        case 1201:
-        case 1202:
-        case 1203:
-        case 1204:
-            [myGame enterPlanWith:[NSDictionary dictionaryWithObjectsAndKeys:@(sender.tag-1200),@"PlanID",@"enterPlan",@"source", nil]];
+        case 1210:
+        case 1211:
+        case 1212:
+        case 1213:
+
+            [myGame enterPlanWith:[NSDictionary dictionaryWithObjectsAndKeys:@(sender.tag-1210),@"PlanID",@"enterPlan",@"source", nil]];
             break;
         default:
             break;
     }
     
 }
+             
+- (void) startMatch
+{
+    UILabel* commentary = (UILabel*)[self.view viewWithTag:610];
+
+    Match* playGame = myGame.myData.nextMatch;
+    while (!playGame.isOver && !playGame.isPaused) {
+        commentary.text = [[playGame nextMinute] componentsJoinedByString:@"\n"];
+    }
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

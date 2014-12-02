@@ -231,6 +231,10 @@ const NSInteger insertQueueMax = 10;
     [db closeOpenResultSets];
     NSString* query;
 
+    FMResultSet * test = [db executeQuery:[NSString stringWithFormat:@"SELECT * FROM %@ LIMIT 1",table]];
+    if (![test next])
+        [NSException raise:@"NO SUCH TABLE, TABLE IS EMPTY" format:@"NO SUCH TABLE, TABLE IS EMPTY - %@",table];
+    
     NSMutableArray* UpdateValues = [[NSMutableArray alloc]init];
     [data enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         //[obj class];

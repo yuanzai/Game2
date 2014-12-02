@@ -11,6 +11,7 @@
 #import "DatabaseModel.h"
 #import "LineUp.h"
 #import "Match.h"
+#import "Generator.h"
 
 #import "ViewController.h"
 #import "TacticViewController.h"
@@ -75,15 +76,25 @@
 
 - (void) newWithGameID:(NSInteger) thisGameID
 {
+    Generator* newGenerator = [[Generator alloc]init];
+    [newGenerator generateNewGameWithTeamName:@"TESTING UNITED"];
+    
+    [[GameModel myDB]deleteFromTable:@"fixtures" withData:nil];
+    [[GameModel myDB]deleteFromTable:@"trainingExp" withData:nil];
+
+    
+
     myData = [[SinglePlayerData alloc]init];
     GameID = thisGameID;
-    myData.season = 0;
-    myData.weekdate = 0;
-    myData.week = 0;
+
     myData.SaveGameID = thisGameID;
-    [myData setMyGame:self];
-    [myData setMyTeam];
-    [myData setCurrentLeagueTournament];
+    self.myData.myGame = self;
+    [myData setUpData];
+    [[GameModel myGame]startSeason];
+    [[GameModel myGame]saveThisGame];
+    [self goToView];
+
+
 }
 
 - (void) loadWithGameID:(NSInteger) thisGameID
@@ -104,7 +115,6 @@
             [self goToView];
         }
     }
-    
 }
 
 - (void) saveThisGame
@@ -286,8 +296,10 @@
 {
     if ([[source objectForKey:@"source"] isEqualToString:@"enterTactic"]) {
         [self enterTacticFrom:[source objectForKey:@"supersource"]];
-    } else if ([[source objectForKey:@"source"] isEqualToString:@"enterPlan"]) {
-        [self enterPlanWith:source];
+    } else if ([[source objectForKey:@"source"] isEqualToString:@"enterPlanPlayers"]) {
+        NSMutableDictionary* newSource = [NSMutableDictionary dictionaryWithDictionary:source];
+        [newSource setObject:[source objectForKey:@"supersource"] forKey:@"source"];
+        [self enterPlanWith:newSource];
     }
     
 }
