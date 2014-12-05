@@ -8,7 +8,6 @@
 
 #import "Match.h"
 #import "Event.h"
-#import "LineUp.h"
 #import "Fixture.h"
 #import "GameModel.h"
 
@@ -42,7 +41,7 @@
         } else {
             team1 = [[LineUp alloc]initWithTeam:[[[GameModel myGlobalVariableModel] teamList]objectForKey:[NSString stringWithFormat:@"%i",fixture.HOMETEAM]]];
             team1.Location = home;
-            team1.currentTactic = [[Tactic alloc]initWithTacticID:2];
+            team1.currentTactic = [[Tactic alloc]initWithTacticID:2 WithPlayerDict:nil];
             [team1 populateMatchDayForm];
             [team1 fillLineup];
         }
@@ -54,7 +53,7 @@
         } else {
             team2 = [[LineUp alloc]initWithTeam:[[[GameModel myGlobalVariableModel] teamList]objectForKey:[NSString stringWithFormat:@"%i",fixture.AWAYTEAM]]];
             team2.Location = away;
-            team2.currentTactic = [[Tactic alloc]initWithTacticID:2];
+            team2.currentTactic = [[Tactic alloc]initWithTacticID:2 WithPlayerDict:nil];
             [team2 populateMatchDayForm];
             [team2 fillLineup];
         }
@@ -111,6 +110,7 @@
 
     if ([postCommentary count] > 0)
         [minuteEvent addObject:postCommentary];
+    NSLog(@"%@",minuteEvent);
     return minuteEvent;
 }
 

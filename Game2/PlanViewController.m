@@ -90,7 +90,6 @@
     }
     UIButton* back = (UIButton*)[self.view viewWithTag:999];
     [back addTarget:self action:@selector(backTo:) forControlEvents:UIControlEventTouchUpInside];
-
 }
 
 - (void)didReceiveMemoryWarning
@@ -117,7 +116,7 @@
     NSMutableDictionary* newSource = [NSMutableDictionary dictionaryWithDictionary:source];
     [newSource setObject:@"enterPlan" forKey:@"supersource"];
     [newSource setObject:@"enterPlanPlayers" forKey:@"source"];
-    [myGame enterPlayersFrom:newSource];
+    [myGame enterPlayers];
 }
 
 - (void) backTo:(UIButton*) sender

@@ -7,10 +7,7 @@
 //
 
 #import "PlayerList.h"
-#import "Player.h"
-#import "GlobalVariableModel.h"
 #import "GameModel.h"
-#import "Team.h"
 #import "PlayerInfoViewController.h"
 #import "LineUp.h"
 #import "Training.h"
@@ -20,21 +17,19 @@
 @implementation PlayerList
 {
     GameModel* myGame;
-    NSDictionary* source;
     NSInteger sectionCount;
     NSMutableArray* sectionNames;
+    NSString* sourceString;
 }
 @synthesize target;
 @synthesize players;
-@synthesize viewSource;
 - (id) initWithTarget:(id) thisTarget Source:(NSDictionary*) thisSource;
 {
     self = [super init];
     if (self) {
-        source = thisSource;
         target = thisTarget;
         myGame = [GameModel myGame];
-        viewSource = [thisSource objectForKey:@"source"];
+        sourceString = [myGame.source objectForKey:@"source"];
         players = [NSMutableArray array];
         sectionNames = [NSMutableArray array];
         sectionCount = 0;
@@ -46,17 +41,24 @@
 
 - (void) loadData
 {
-    if ([viewSource isEqualToString:@"enterTactic"]) {
-        [players addObject: [[[myGame myData]myTeam]PlayerList]];
-        sectionCount = 1;
-    } else if ([viewSource isEqualToString:@"enterPlan"]){
+    if ([sourceString isEqualToString:@"enterTactic"] || [sourceString isEqualToString:@"enterPreGame"]) {
+        PositionSide ps;
+        [[myGame.source objectForKey:@"ps"] getValue:&ps];
 
-        Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[source objectForKey:@"PlanID"]integerValue]];
+        if (ps.position == GKPosition && ps.side == GKSide) {
+            [players addObject: [myGame.myData.myTeam getAllGKWithInjured:NO]];
+        } else {
+            [players addObject: [myGame.myData.myTeam getAllOutfieldWithInjured:NO]];
+        }
+        sectionCount = 1;
+    } else if ([sourceString isEqualToString:@"enterPlan"]){
+
+        Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[myGame.source objectForKey:@"PlanID"]integerValue]];
         if ([thisPlan.PlayerList count] > 0)
             [players addObject: [thisPlan.PlayerList allObjects]];
         sectionCount = 1;
         
-    } else if ([viewSource isEqualToString:@"enterPlanPlayers"]){
+    } else if ([sourceString isEqualToString:@"enterPlanPlayers"]){
         sectionCount = 0;
         NSLog(@"Unassigned %i",[[[[myGame myData]myTraining] getUnassignedPlayers]count]);
         if ([[[[myGame myData]myTraining] getUnassignedPlayers]count] > 0) {
@@ -65,7 +67,7 @@
             sectionCount++;
         }
         for (NSInteger i = 0; i<4; i++) {
-            if ([[source objectForKey:@"PlanID"]integerValue] == i)
+            if ([[myGame.source objectForKey:@"PlanID"]integerValue] == i)
                 continue;
             Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:i];
             if ([thisPlan.PlayerList count] > 0) {
@@ -115,7 +117,6 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    //Player* p = [myGame.myData.myTeam.PlayerList objectAtIndex:indexPath.row];
     Player* p = [[players objectAtIndex:indexPath.section]objectAtIndex:indexPath.row];
     cell.textLabel.font = [GlobalVariableModel newFont2Medium];
     cell.textLabel.text = p.DisplayName;
@@ -126,43 +127,38 @@
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    PlayerInfoViewController *vc = [((UIViewController*)target).storyboard instantiateViewControllerWithIdentifier:@"playerInfo"];
-    vc.thisPlayer = [myGame.myData.myTeam.PlayerList objectAtIndex:indexPath.row];
-    vc.source = source;
-    [(UIViewController*)target presentViewController:vc animated:YES completion:nil];
+    [myGame.source setObject:[[players objectAtIndex:indexPath.section] objectAtIndex:indexPath.row] forKey:@"player"];
+    [myGame enterPlayerInfo];
 }
 
 - (void) tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
     Player* p = [[players objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
-    if ([[source objectForKey:@"source"] isEqualToString:@"enterTactic"]) {
-        
+    if ([sourceString isEqualToString:@"enterTactic"] || [sourceString isEqualToString:@"enterPreGame"]) {
         [myGame.myData.currentLineup.currentTactic removePlayerFromTactic:p];
         PositionSide ps;
-        [[source objectForKey:@"ps"] getValue:&ps];
+        [[myGame.source objectForKey:@"ps"] getValue:&ps];
         [myGame.myData.currentLineup.currentTactic populatePlayer:p PositionSide:ps ForceSwap:NO];
-        [myGame enterTacticFrom:source];
-    } else if ([[source objectForKey:@"source"] isEqualToString:@"enterPlan"]){
-        Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[source objectForKey:@"PlanID"]integerValue]];
+        [myGame.myData.currentLineup.currentTactic updatePlayerLineup];
+        [myGame enterTactic];
+    } else if ([sourceString  isEqualToString:@"enterPlan"]){
+        Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[myGame.source objectForKey:@"PlanID"]integerValue]];
         [thisPlan.PlayerList removeObject:p];
         NSLog(@"%@",p.DisplayName);
         [tableView reloadData];
 
         [(PlanViewController*)target refreshTable];
-    }  else if ([viewSource isEqualToString:@"enterPlanPlayers"]){
+    }  else if ([sourceString isEqualToString:@"enterPlanPlayers"]){
         for (NSInteger i = 0; i<4; i++) {
             Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:i];
 
-            if ([[source objectForKey:@"PlanID"]integerValue] == i) {
+            if ([[myGame.source objectForKey:@"PlanID"]integerValue] == i) {
                 [thisPlan addPlayerToTrainingPlan:p];
             } else if ([thisPlan.PlayerList containsObject:p]) {
                 [thisPlan.PlayerList removeObject:p];
             }
         }
-        
-        NSMutableDictionary* newSource = [NSMutableDictionary dictionaryWithDictionary:source];
-        [newSource setObject:@"enterPlan" forKey:@"source"];
-        [myGame enterPlanWith:newSource];
+        [myGame enterPlan];
     }
 
 }

@@ -65,6 +65,9 @@
 @property NSInteger AWAYLOGJSON;
 @property NSInteger PLAYED;
 
+@property Team* homeTeam;
+@property Team* awayTeam;
+
 -(void) updateFixtureInDatabase;
 - (id) initWithMatchID:(NSInteger) thisMatchID;
 @end

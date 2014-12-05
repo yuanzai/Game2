@@ -9,8 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "Structs.h"
 #import "Team.h"
-#import "Player.h"
-#import "DatabaseModel.h"
+#import "GameModel.h"
+#import "Tactic.h"
 
 typedef enum {
     home,

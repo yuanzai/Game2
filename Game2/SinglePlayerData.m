@@ -47,7 +47,7 @@
         self.weekdate = 0;
         self.week = 0;
         self.weekStage = @"enterPreWeek";
-        self.lineUpPlayers = [NSMutableDictionary dictionarywi]
+        self.lineUpPlayers = [NSMutableDictionary dictionary];
     }; return self;
 }
 
@@ -81,7 +81,6 @@
     [self setMyTeam];
     [self setCurrentLeagueTournament];
     [self setNextFixture];
-    [self setCurrentTactic];
     [self setCurrentLineup];
     [self setMyTraining];
 }
@@ -89,15 +88,17 @@
 - (void) setCurrentLeagueTournament
 {
     NSInteger tournamentID = myTeam.TournamentID;
-    NSLog(@"%@",myGame);
-    self.currentLeagueTournament = [[myGame.myGlobalVariableModel tournamentList] objectForKey:
+    self.currentLeagueTournament = [[[GameModel myGlobalVariableModel] tournamentList] objectForKey:
     [NSString stringWithFormat:@"%i",tournamentID]];
+    NSLog(@"Current Tournament - %@",currentLeagueTournament);
 
 }
 
 - (void) setNextFixture
 {
     self.nextFixture = [self.currentLeagueTournament getMatchForTeamID:0 Date:weekdate];
+    NSLog(@"Next Fixture- %@",nextFixture);
+
 }
 
 - (void) setNextMatchOpponents
@@ -106,11 +107,6 @@
     self.nextMatchOpponents = [[Team alloc]initWithTeamID:OppID];
 }
         
-- (void) setCurrentTactic
-{
-    self.currentTactic = [[Tactic alloc]initWithTacticID:0];
-}
-
 - (void) setMyTeam
 {
     myTeam = [[[GameModel myGlobalVariableModel] teamList]objectForKey:@"0"];
@@ -124,7 +120,7 @@
 - (void) setCurrentLineup
 {
     currentLineup = [[LineUp alloc]initWithTeamID:0];
-    currentLineup.currentTactic = [[Tactic alloc]initWithTacticID:0];
+    currentLineup.currentTactic = [[Tactic alloc]initWithTacticID:0 WithPlayerDict:lineUpPlayers];
 }
 
 - (void) setMyTraining

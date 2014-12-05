@@ -11,9 +11,7 @@
 
 @interface PlayerList : NSObject <UITableViewDelegate,UITableViewDataSource>
 @property(nonatomic,retain) id target;
-@property NSMutableArray* players;
-@property NSString* viewSource;
-
+@property __block NSMutableArray* players;
 
 - (id) initWithTarget:(id) thisTarget Source:(NSDictionary*) thisSource;
 //- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;

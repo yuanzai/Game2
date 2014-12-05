@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "SinglePlayerData.h"
 #import "Structs.h"
+#import "GlobalVariableModel.h"
+#import "DatabaseModel.h"
+
 
 @class SinglePlayerData;
 @class Match;
@@ -23,6 +26,7 @@
 @property UIStoryboard* myStoryboard;
 @property UIViewController* currentViewController;
 @property NSInteger GameID;
+@property NSMutableDictionary* source;
 
 /* -- Playables --
 
@@ -169,13 +173,17 @@
 - (void) enterPostGame;
 
 //Parellel views
-- (void) enterTacticFrom:(NSDictionary*) source;
-- (void) exitTacticTo:(NSDictionary*) source;
+- (void) enterTactic;
+- (void) exitTactic;
 
 
-- (void) enterPlayersFrom:(NSDictionary*) source;
-- (void) exitPlayersTo:(NSDictionary*) source;
+- (void) enterPlayers;
+- (void) exitPlayers;
+- (void) enterPlayerInfo;
+
 
 - (void) enterTraining;
-- (void) enterPlanWith:(NSDictionary*) source;
+- (void) enterPlan;
+
+- (void) goToView;
 @end

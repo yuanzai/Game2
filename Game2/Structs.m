@@ -59,6 +59,8 @@
         retPositionSide.position  = SC;
     } else if ([[position uppercaseString] isEqualToString:@"GK"]) {
         retPositionSide.position  = GKPosition;
+    } else {
+        [NSException raise:@"PositionSide - Position Error" format:@"position - %@",position];
     }
     
     if ([[side uppercaseString] isEqualToString:@"LEFT"]) {
@@ -73,6 +75,8 @@
         retPositionSide.side = Right;
     } else if ([[side uppercaseString] isEqualToString:@"GK"]) {
         retPositionSide.side = GKSide;
+    } else {
+        [NSException raise:@"PositionSide - Side Error" format:@"side - %@",side];
     }
     return retPositionSide;
 }

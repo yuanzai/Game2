@@ -62,7 +62,6 @@
 		6B133A3B19FA180C00BC749E /* Tactic.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B133A3919FA180C00BC749E /* Tactic.m */; };
 		6B1D45911A1C5D29006633A9 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D458D1A1C5D29006633A9 /* Main_iPhone.storyboard */; };
 		6B1D45921A1C5D29006633A9 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D458F1A1C5D29006633A9 /* Main_iPad.storyboard */; };
-		6B1D45A11A1E38FE006633A9 /* TacticViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45A01A1E38FE006633A9 /* TacticViewController.m */; };
 		6B1D45AA1A208929006633A9 /* PlayersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45A91A208929006633A9 /* PlayersViewController.m */; };
 		6B1D45B31A20A6B5006633A9 /* PlayerInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45B21A20A6B5006633A9 /* PlayerInfoViewController.m */; };
 		6B1D45B51A20F7FF006633A9 /* 8-BIT WONDER.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D45B41A20F7FF006633A9 /* 8-BIT WONDER.TTF */; };
@@ -73,8 +72,12 @@
 		6B1D45BD1A24464D006633A9 /* PlanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45BB1A24464D006633A9 /* PlanViewController.m */; };
 		6B1D45C31A262C21006633A9 /* PlayerList.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45C21A262C21006633A9 /* PlayerList.m */; };
 		6B1D45C41A262C21006633A9 /* PlayerList.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1D45C21A262C21006633A9 /* PlayerList.m */; };
-		6B1D45CC1A2DA0F6006633A9 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D45CB1A2DA0F6006633A9 /* database.db */; };
-		6B1D45CD1A2DA0F6006633A9 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D45CB1A2DA0F6006633A9 /* database.db */; };
+		6B675B4E1A2F657E007E5696 /* TacticView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B4D1A2F657E007E5696 /* TacticView.m */; };
+		6B675B4F1A2F657E007E5696 /* TacticView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B4D1A2F657E007E5696 /* TacticView.m */; };
+		6B675B511A30EC46007E5696 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B675B501A30EC46007E5696 /* database.db */; };
+		6B675B521A30EC46007E5696 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B675B501A30EC46007E5696 /* database.db */; };
+		6B675B561A31A78F007E5696 /* FixturesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B551A31A78F007E5696 /* FixturesViewController.m */; };
+		6B675B571A31A78F007E5696 /* FixturesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B551A31A78F007E5696 /* FixturesViewController.m */; };
 		6BB21C5D1A0FAB9C00ED2310 /* Structs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BB21C5C1A0FAB9C00ED2310 /* Structs.m */; };
 		6BB21C5E1A0FAB9C00ED2310 /* Structs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BB21C5C1A0FAB9C00ED2310 /* Structs.m */; };
 		6BC2C08C1A09EAFF005973C2 /* NewGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2C08B1A09EAFF005973C2 /* NewGameTest.m */; };
@@ -150,8 +153,6 @@
 		6B133A3919FA180C00BC749E /* Tactic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tactic.m; sourceTree = "<group>"; };
 		6B1D458E1A1C5D29006633A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
 		6B1D45901A1C5D29006633A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
-		6B1D459F1A1E38FE006633A9 /* TacticViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TacticViewController.h; sourceTree = "<group>"; };
-		6B1D45A01A1E38FE006633A9 /* TacticViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TacticViewController.m; sourceTree = "<group>"; };
 		6B1D45A81A208929006633A9 /* PlayersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlayersViewController.h; path = ../PlayersViewController.h; sourceTree = "<group>"; };
 		6B1D45A91A208929006633A9 /* PlayersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlayersViewController.m; path = ../PlayersViewController.m; sourceTree = "<group>"; };
 		6B1D45B11A20A6B5006633A9 /* PlayerInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerInfoViewController.h; sourceTree = "<group>"; };
@@ -162,7 +163,11 @@
 		6B1D45BB1A24464D006633A9 /* PlanViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlanViewController.m; sourceTree = "<group>"; };
 		6B1D45C11A262C21006633A9 /* PlayerList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerList.h; sourceTree = "<group>"; };
 		6B1D45C21A262C21006633A9 /* PlayerList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerList.m; sourceTree = "<group>"; };
-		6B1D45CB1A2DA0F6006633A9 /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
+		6B675B4C1A2F657E007E5696 /* TacticView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TacticView.h; sourceTree = "<group>"; };
+		6B675B4D1A2F657E007E5696 /* TacticView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TacticView.m; sourceTree = "<group>"; };
+		6B675B501A30EC46007E5696 /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
+		6B675B541A31A78E007E5696 /* FixturesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FixturesViewController.h; sourceTree = "<group>"; };
+		6B675B551A31A78F007E5696 /* FixturesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FixturesViewController.m; sourceTree = "<group>"; };
 		6BB21C5B1A0FAB9C00ED2310 /* Structs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structs.h; sourceTree = "<group>"; };
 		6BB21C5C1A0FAB9C00ED2310 /* Structs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Structs.m; sourceTree = "<group>"; };
 		6BC2C08B1A09EAFF005973C2 /* NewGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameTest.m; sourceTree = "<group>"; };
@@ -244,11 +249,11 @@
 		6B1339A919EECC5400BC749E /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				6B675B501A30EC46007E5696 /* database.db */,
 				6B1D45B41A20F7FF006633A9 /* 8-BIT WONDER.TTF */,
 				6B1D45B71A2122D3006633A9 /* visitor1.ttf */,
 				6B1339AA19EECC5400BC749E /* Game2-Info.plist */,
 				6B1339AB19EECC5400BC749E /* InfoPlist.strings */,
-				6B1D45CB1A2DA0F6006633A9 /* database.db */,
 				6B1339AE19EECC5400BC749E /* main.m */,
 				6B1339B019EECC5400BC749E /* Game2-Prefix.pch */,
 			);
@@ -345,14 +350,15 @@
 		6B1D45881A1C563C006633A9 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				6B675B531A31A74C007E5696 /* Parallels */,
 				6B1339BA19EECC5400BC749E /* ViewController.h */,
 				6B1339BB19EECC5400BC749E /* ViewController.m */,
 				6B1D45C11A262C21006633A9 /* PlayerList.h */,
 				6B1D45C21A262C21006633A9 /* PlayerList.m */,
+				6B675B4C1A2F657E007E5696 /* TacticView.h */,
+				6B675B4D1A2F657E007E5696 /* TacticView.m */,
 				6B1D45BA1A24464D006633A9 /* PlanViewController.h */,
 				6B1D45BB1A24464D006633A9 /* PlanViewController.m */,
-				6B1D459F1A1E38FE006633A9 /* TacticViewController.h */,
-				6B1D45A01A1E38FE006633A9 /* TacticViewController.m */,
 				6B1D45A81A208929006633A9 /* PlayersViewController.h */,
 				6B1D45A91A208929006633A9 /* PlayersViewController.m */,
 				6B1D45B11A20A6B5006633A9 /* PlayerInfoViewController.h */,
@@ -361,6 +367,15 @@
 				6B1D458F1A1C5D29006633A9 /* Main_iPad.storyboard */,
 			);
 			name = View;
+			sourceTree = "<group>";
+		};
+		6B675B531A31A74C007E5696 /* Parallels */ = {
+			isa = PBXGroup;
+			children = (
+				6B675B541A31A78E007E5696 /* FixturesViewController.h */,
+				6B675B551A31A78F007E5696 /* FixturesViewController.m */,
+			);
+			name = Parallels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -441,7 +456,7 @@
 			files = (
 				6B1D45921A1C5D29006633A9 /* Main_iPad.storyboard in Resources */,
 				6B1D45911A1C5D29006633A9 /* Main_iPhone.storyboard in Resources */,
-				6B1D45CC1A2DA0F6006633A9 /* database.db in Resources */,
+				6B675B511A30EC46007E5696 /* database.db in Resources */,
 				6B1D45B81A2122D3006633A9 /* visitor1.ttf in Resources */,
 				6B1D45B51A20F7FF006633A9 /* 8-BIT WONDER.TTF in Resources */,
 				6B1339BE19EECC5400BC749E /* Images.xcassets in Resources */,
@@ -453,7 +468,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6B1D45CD1A2DA0F6006633A9 /* database.db in Resources */,
+				6B675B521A30EC46007E5696 /* database.db in Resources */,
 				6B1D45B61A20F7FF006633A9 /* 8-BIT WONDER.TTF in Resources */,
 				6B1D45B91A2122D3006633A9 /* visitor1.ttf in Resources */,
 				6B1339CF19EECC5400BC749E /* InfoPlist.strings in Resources */,
@@ -467,15 +482,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6B1D45A11A1E38FE006633A9 /* TacticViewController.m in Sources */,
 				6B1D45BC1A24464D006633A9 /* PlanViewController.m in Sources */,
 				6B1D45AA1A208929006633A9 /* PlayersViewController.m in Sources */,
 				6B1339BC19EECC5400BC749E /* ViewController.m in Sources */,
 				6B133A2C19EECF7B00BC749E /* Training.m in Sources */,
 				6B1D45B31A20A6B5006633A9 /* PlayerInfoViewController.m in Sources */,
 				6B133A0919EECF2600BC749E /* GlobalVariableModel.m in Sources */,
+				6B675B4E1A2F657E007E5696 /* TacticView.m in Sources */,
 				6B133A0719EECF2600BC749E /* GameModel.m in Sources */,
 				6B1339E019EECE7B00BC749E /* Action.m in Sources */,
+				6B675B561A31A78F007E5696 /* FixturesViewController.m in Sources */,
 				6B1339EF19EECEB500BC749E /* Match.m in Sources */,
 				6B133A2619EECF7B00BC749E /* Scouting.m in Sources */,
 				6B1339FB19EECEFC00BC749E /* FMDatabase.m in Sources */,
@@ -510,10 +526,12 @@
 				6B1D45BD1A24464D006633A9 /* PlanViewController.m in Sources */,
 				6B1339FC19EECEFC00BC749E /* FMDatabase.m in Sources */,
 				6B133A2D19EECF7B00BC749E /* Training.m in Sources */,
+				6B675B571A31A78F007E5696 /* FixturesViewController.m in Sources */,
 				6BC2C08C1A09EAFF005973C2 /* NewGameTest.m in Sources */,
 				6B1339F019EECEB500BC749E /* Match.m in Sources */,
 				6B1339FE19EECEFC00BC749E /* FMDatabasePool.m in Sources */,
 				6B133A0C19EECF2600BC749E /* SinglePlayerData.m in Sources */,
+				6B675B4F1A2F657E007E5696 /* TacticView.m in Sources */,
 				6B133A2B19EECF7B00BC749E /* Team.m in Sources */,
 				6B133A2119EECF7B00BC749E /* Fixture.m in Sources */,
 				6B133A2319EECF7B00BC749E /* Generator.m in Sources */,

@@ -13,5 +13,4 @@
 @interface PlayerInfoViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 @property Player* thisPlayer;
 @property PositionSide tacticPS;
-@property NSDictionary* source;
 @end

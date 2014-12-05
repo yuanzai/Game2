@@ -47,7 +47,7 @@
 }
 
 + (UIFont*) newFont2Small {
-    return [UIFont fontWithName:@"Visitor TT1 BRK" size:14.0];
+    return [UIFont fontWithName:@"Visitor TT1 BRK" size:12.0];
 }
 
 + (UIFont*) newFont2Medium {
@@ -161,6 +161,11 @@
     return teamList;
 }
 
+- (Team*) getTeamFromID:(NSInteger) TEAMID
+{
+    return [teamList objectForKey:[@(TEAMID) stringValue]];
+}
+
 - (NSMutableDictionary*) playerList
 {
     if (!playerList){
@@ -271,17 +276,14 @@
         }
         
         if (isProbDy) {
-            
-            //if (![obj objectForKey:@"PROB"])
-              //  [NSException raise:@"table returns no prob" format:@"table %@ returns no prob",tbl];
-            
-            if (exPS.position != PositionCount ) {
-                PositionSide ps = [Structs getPositionSideFromTextWithPosition:[obj objectForKey:@"OUTPOSITION"] Side:[obj objectForKey:@"OUTSIDE"]];
-                if (![team.currentTactic hasPlayerAtPositionSide:ps])
+            if (team) {
+                PositionSide ps = [Structs getPositionSideFromDictionary:obj];
+                if (![team.currentTactic hasPositionAtPositionSide:ps])
                     return;
                 if (ps.position == exPS.position && ps.side == exPS.side)
                     return;
             }
+            
             sumProb += [[obj objectForKey:@"PROB"]integerValue];
             [resultList addObject:obj];
         } else {
@@ -307,6 +309,10 @@
     if (!result)
         [NSException raise:@"table returns no result" format:@"table %@ returns no result",tbl];
     
+    if (isProbDy && exPS.position != PositionCount)
+        if (![team.currentTactic hasPositionAtPositionSide:[Structs getPositionSideFromDictionary:result]])
+            [NSException raise:@"No such PS" format:@"No Such PS %@",result];
+        
     return result;
 }
 

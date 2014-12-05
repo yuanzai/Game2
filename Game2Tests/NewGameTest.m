@@ -221,7 +221,7 @@
     Team* newTeam = [[Team alloc]initWithTeamID:0];
     [newTeam updateFromDatabase];
     LineUp* lineup = [[LineUp alloc]initWithTeam:newTeam];
-    lineup.currentTactic = [[Tactic alloc]initWithTacticID:0];
+    lineup.currentTactic = [[Tactic alloc]initWithTacticID:0 WithPlayerDict:nil];
     
     [lineup fillLineup];
     [lineup printFormation];
@@ -231,7 +231,7 @@
     Team* opp = [[Team alloc]initWithTeamID:1];
     [opp updateFromDatabase];
     LineUp* oppLineup = [[LineUp alloc]initWithTeam:opp];
-    oppLineup.currentTactic = [[Tactic alloc]initWithTacticID:2];
+    oppLineup.currentTactic = [[Tactic alloc]initWithTacticID:2 WithPlayerDict:nil];
     [oppLineup fillLineup];
     [oppLineup printFormation];
     

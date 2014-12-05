@@ -8,13 +8,11 @@
 
 #import "GameModel.h"
 #import "Fixture.h"
-#import "DatabaseModel.h"
 #import "LineUp.h"
 #import "Match.h"
 #import "Generator.h"
 
 #import "ViewController.h"
-#import "TacticViewController.h"
 #import "PlayersViewController.h"
 #import "PlayerInfoViewController.h"
 #import "PlanViewController.h"
@@ -26,7 +24,7 @@
 @synthesize myGlobalVariableModel;
 @synthesize myStoryboard;
 @synthesize currentViewController;
-
+@synthesize source;
 
 #pragma mark Initialization Methods
 
@@ -52,22 +50,12 @@
 
 + (DatabaseModel*) myDB
 {
-/* 
-    if (![[self myGame]myDB]){
-        GameModel* myGame = [self myGame];
-        myGame.myDB = [DatabaseModel new];
-    }*/
     return [[self myGame]myDB];
 }
 
 
 + (GlobalVariableModel*) myGlobalVariableModel
 {
-    /*
-    if (![[self myGame]myGlobalVariableModel]){
-        GameModel* myGame = [self myGame];
-        myGame.myGlobalVariableModel = [GlobalVariableModel new];
-    }*/
     return [[self myGame]myGlobalVariableModel];
 }
 
@@ -82,23 +70,19 @@
     [[GameModel myDB]deleteFromTable:@"fixtures" withData:nil];
     [[GameModel myDB]deleteFromTable:@"trainingExp" withData:nil];
 
-    
-
     myData = [[SinglePlayerData alloc]init];
     GameID = thisGameID;
 
     myData.SaveGameID = thisGameID;
     self.myData.myGame = self;
     [myData setUpData];
-    [[GameModel myGame]startSeason];
+    [[GameModel myGame]enterPreWeek];
     [[GameModel myGame]saveThisGame];
-    [self goToView];
-
-
 }
 
 - (void) loadWithGameID:(NSInteger) thisGameID
 {
+    NSLog(@"Load Game");
     GameID = thisGameID;
 
     if ([[NSFileManager defaultManager] fileExistsAtPath:[self getGamePath]]) {
@@ -129,24 +113,14 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectoryPath = [paths objectAtIndex:0];
     NSString *filePath = [documentsDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"SaveGame%i",GameID]];
-    ///Users/junyuanlau/Library/Application Support/iPhone Simulator/7.1/Applications/BB7CF23F-D46F-4F01-A585-322FA24E7E27/Documents
-
     return  filePath;
 }
 
 #pragma mark View Controller Methods
 - (void) goToView
-{    
+{
     ViewController *vc = (ViewController*)[currentViewController.storyboard instantiateViewControllerWithIdentifier:myData.weekStage];
     [currentViewController presentViewController:vc animated:YES completion:nil];
-    /*
-    [vc getButtons];
-    
-    for (id subview in vc.view.subviews) {
-        if ([subview isKindOfClass:[UIButton class]])
-            [(UIButton*) subview addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
-    }
-    */
     currentViewController = vc;
 }
 
@@ -164,20 +138,22 @@
     myData.weekdate++;
     if (myData.week>50) {
         myData.week = 0;
+        
+    }
+    
+    if (myData.week == 0) {
         [self startSeason];
     }
     myData.week++;
     [myData setNextFixture];
     [myData setNextMatchOpponents];
-    
-    [self goToView];
 }
 
 - (void) enterPreTask
 {
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
     myData.weekTask = nil;
-    [self goToView];
+    [self saveThisGame];
 }
 
 - (void) setTask:(NSString*) task
@@ -189,7 +165,7 @@
 {
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
     myData.weekTask = nil;
-    [self goToView];
+    [self saveThisGame];
 }
 
 - (void) enterPostTask
@@ -199,20 +175,15 @@
     //TODO: - process admin
     //TODO: - process task
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
-
-    [self goToView];
+    [self saveThisGame];
 }
 
 - (void) enterPreGame
 {
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
-
-    myData.currentLineup = [[LineUp alloc]initWithTeam: myData.myTeam];
-    myData.currentLineup.currentTactic = myData.currentTactic;
     [myData.myTeam updateConditionPreGame];
     [myData.currentLineup populateMatchDayForm];
-    [self goToView];
-
+    [self saveThisGame];
 }
 
 - (void) enterGame
@@ -221,21 +192,19 @@
 
     //TODO: - process opponent selection
     [myData setNextMatch];
-    [self goToView];
-
+    //[self saveThisGame];
 }
 
 - (void) enterPostGame
 {
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
 
-    //TODO: - process single player fixture
+    NSLog(@"Updating Match Fixture");
     [myData.nextMatch updateMatchFixture];
 
-    //TODO: - process tournament games played
+    NSLog(@"Updating All Match Fixtures");
     NSDictionary* tournamentList = [myGlobalVariableModel tournamentList];
-    
-
+    /*
     [tournamentList enumerateKeysAndObjectsUsingBlock:^(id key, Tournament* t, BOOL *stop) {
         NSArray* thisT = [t getFixturesForNonSinglePlayerForDate:myData.weekdate];
         for (Fixture* fx in thisT) {
@@ -248,60 +217,60 @@
         }
         [t setCurrentLeagueTable];
     }];
-    [self goToView];
+     */
+    [self saveThisGame];
 }
+
+//Parellel views
 
 - (void) enterTraining
 {
-    myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
-    [self goToView];
 }
 
-- (void) enterPlanWith:(NSDictionary*) source
+- (void) enterPlan
 {
-    PlanViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:@"enterPlan"];
-
-    vc.source = source;
-    [currentViewController presentViewController:vc animated:YES completion:nil];
-    currentViewController = vc;
-
 }
 
 
-- (void) enterTacticFrom:(NSDictionary*) source
+- (void) enterTactic
 {
-    myData.weekStage = @"enterTactic";
-    TacticViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:myData.weekStage];
-    vc.source = source;
+    ViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:[NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)]];
     [currentViewController presentViewController:vc animated:YES completion:nil];
     currentViewController = vc;
 }
 
-- (void) exitTacticTo:(NSDictionary*) source
+- (void) exitTactic
 {
-    SEL s = NSSelectorFromString([NSString stringWithFormat:@"%@", [source objectForKey:@"source"]]);
-    [self performSelector:s];
+    [self saveThisGame];
 }
 
 
-- (void) enterPlayersFrom:(NSDictionary*) source
+- (void) enterPlayers
 {
+    NSLog(@"enterPlayers");
+    NSLog(@"%@",currentViewController);
     PlayersViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:@"enterPlayers"];
-    vc.source = source;
     [currentViewController presentViewController:vc animated:YES completion:nil];
     currentViewController = vc;
+    
 }
 
-- (void) exitPlayersTo:(NSDictionary*) source
+- (void) enterPlayerInfo
 {
-    if ([[source objectForKey:@"source"] isEqualToString:@"enterTactic"]) {
-        [self enterTacticFrom:[source objectForKey:@"supersource"]];
-    } else if ([[source objectForKey:@"source"] isEqualToString:@"enterPlanPlayers"]) {
-        NSMutableDictionary* newSource = [NSMutableDictionary dictionaryWithDictionary:source];
-        [newSource setObject:[source objectForKey:@"supersource"] forKey:@"source"];
-        [self enterPlanWith:newSource];
+    PlayerInfoViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:@"enterInfo"];;
+    [currentViewController presentViewController:vc animated:YES completion:nil];
+}
+
+- (void) exitPlayers
+{
+    NSString* sourceString = [source objectForKey:@"source"];
+    if ([sourceString isEqualToString:@"enterTactic"]) {
+        [self enterTactic];
+    } else if ([sourceString isEqualToString:@"enterPreGame"]) {
+        [self goToView];
+    } else if ([sourceString isEqualToString:@"enterPlanPlayers"]) {
+        [self enterPlan];
     }
-    
 }
 
 

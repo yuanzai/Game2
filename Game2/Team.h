@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Player.h"
 
 @class Player;
 @class Tournament;
@@ -29,4 +30,8 @@
 - (void) updateConditionPreGame;
 
 - (void) transferActivity;
+
+//Querying
+- (NSArray*) getAllGKWithInjured:(BOOL) withInjured;
+- (NSArray*) getAllOutfieldWithInjured:(BOOL) withInjured;;
 @end

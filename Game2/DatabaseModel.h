@@ -51,6 +51,7 @@
 
 //Generic CRUD - update
 - (BOOL) updateDatabaseTable:(NSString*) table withKeyField:(NSString*)keyField withKey:(NSInteger)key withDictionary:(NSDictionary*) data;
+- (BOOL) updateDatabaseTable:(NSString *)table whereDictionary:(NSDictionary *)whereData setDictionary:(NSDictionary *)setData;
 
 
 

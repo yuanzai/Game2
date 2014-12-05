@@ -7,8 +7,6 @@
 //
 
 #import "LineUp.h"
-#import "Team.h"
-#import "GlobalVariableModel.h"
 #import "Math.h"
 
 @implementation LineUp
@@ -88,23 +86,28 @@
     __block BOOL isValid = YES;
     __block NSMutableSet* playerList = [NSMutableSet set];
     
+    if (!currentTactic.GoalKeeper) {
+        isValid = NO;
+        NSLog(@"No GK");
+    }
+    
     [[currentTactic getAllPlayers]enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
         if (p.Condition <= 0) {
             isValid = NO;
             *stop = YES;
-            //NSLog(@"Player Condition");
+            NSLog(@"Player Condition");
         }
         if ([playerList containsObject:p]) {
             isValid = NO;
             *stop = YES;
-            //NSLog(@"Player Dupe");
+            NSLog(@"Player Dupe");
         }
         [playerList addObject:p];
 
             }];
     if ([[currentTactic getAllPlayers]count]!=11-redCard) {
         isValid = NO;
-        //NSLog(@"Player Count");
+        NSLog(@"Player Count");
     }
     
     return isValid;

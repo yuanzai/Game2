@@ -24,7 +24,6 @@
 }
 @synthesize thisPlayer;
 @synthesize tacticPS;
-@synthesize source;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -40,6 +39,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     myGame = [GameModel myGame];
+    thisPlayer = [myGame.source objectForKey:@"player"];
+    
     UIButton* doneButton = (UIButton*)[self.view viewWithTag:999];
     [doneButton addTarget:self action:@selector(backTo:) forControlEvents:UIControlEventTouchDown];
     
@@ -112,7 +113,7 @@
 - (void) backTo:(UIButton*) button
 {
     myGame.currentViewController = self;
-    [myGame enterPlayersFrom:source];
+    [myGame enterPlayers];
 }
 
 

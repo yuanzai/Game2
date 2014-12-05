@@ -226,17 +226,16 @@ const NSInteger insertQueueMax = 10;
     return [self getArrayFrom:table whereData:[[NSDictionary alloc]initWithObjectsAndKeys:key,keyField, nil] sortFieldAsc:sortAsc];
 }
 
-- (BOOL) updateDatabaseTable:(NSString*) table withKeyField:(NSString*)keyField withKey:(NSInteger)key withDictionary:(NSDictionary*) data
+- (BOOL) updateDatabaseTable:(NSString *)table whereDictionary:(NSDictionary *)whereData setDictionary:(NSDictionary *)setData
 {
     [db closeOpenResultSets];
-    NSString* query;
-
     FMResultSet * test = [db executeQuery:[NSString stringWithFormat:@"SELECT * FROM %@ LIMIT 1",table]];
     if (![test next])
         [NSException raise:@"NO SUCH TABLE, TABLE IS EMPTY" format:@"NO SUCH TABLE, TABLE IS EMPTY - %@",table];
-    
+    [db closeOpenResultSets];
+
     NSMutableArray* UpdateValues = [[NSMutableArray alloc]init];
-    [data enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+    [setData enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         //[obj class];
         if ([obj isKindOfClass:[NSString class]]){
             [UpdateValues addObject:[NSString stringWithFormat:@"%@ = '%@'",key, obj]];
@@ -245,10 +244,15 @@ const NSInteger insertQueueMax = 10;
         }
     }];
     NSString* setString = [UpdateValues componentsJoinedByString:@","];
-    
-    query = [NSString stringWithFormat:@"UPDATE %@ SET %@ WHERE %@ = %i",table,setString, keyField,key];
+
+    NSString* query = [NSString stringWithFormat:@"UPDATE %@ SET %@ %@", table, setString, [self getWhereSQL:whereData]];
 
     return [db executeUpdate:query];
+}
+
+- (BOOL) updateDatabaseTable:(NSString*) table withKeyField:(NSString*)keyField withKey:(NSInteger)key withDictionary:(NSDictionary*) data
+{
+    return [self updateDatabaseTable:table whereDictionary:[NSDictionary dictionaryWithObjectsAndKeys:@(key),keyField, nil] setDictionary:data];
 }
 
 - (NSArray*) getResultSetArray:(FMResultSet*) resultSet SelectField:(NSString*) select

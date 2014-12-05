@@ -8,8 +8,8 @@
 
 #import "Tactic.h"
 #import "GameModel.h"
-#import "DatabaseModel.h"
 #import "Player.h"
+
 @implementation TacticPosition
 @synthesize ps;
 @synthesize player;
@@ -18,31 +18,68 @@
 @end
 
 @implementation Tactic
+{
+    NSMutableDictionary* dataPlayerList;
+}
 @synthesize TacticID;
 @synthesize GoalKeeper;
 @synthesize SubList;
+@synthesize positionArray;
 
-- (id)initWithTacticID:(NSInteger) InputID;
+- (id)initWithTacticID:(NSInteger) InputID WithPlayerDict:(NSMutableDictionary*) playerList
 {
     self = [super init];
     if (self) {
-
+        dataPlayerList = playerList;
         TacticID = InputID;
+        SubList = [NSMutableArray array];
+        positionArray = [NSMutableArray array];
         NSArray* formationData = [[GameModel myDB]getArrayFrom:@"tactics" whereKeyField:@"TACTICID" hasKey:[NSNumber numberWithInteger:InputID] sortFieldAsc:@""];
-        [formationData enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            formationArray[[[obj objectForKey:@"POSITIONVAL"]integerValue]][[[obj objectForKey:@"SIDEVAL"]integerValue]] = YES;
+        
+        [formationData enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
+            TacticPosition* tp = [TacticPosition new];
+            tp.PositionID = idx;
+            tp.ps = (PositionSide) {[[obj objectForKey:@"POSITIONVAL"]integerValue],[[obj objectForKey:@"SIDEVAL"]integerValue]};
+            if (playerList) {
+                if ([playerList objectForKey:[@(idx) stringValue]])
+                    tp.player = [[[[GameModel myGame]myGlobalVariableModel]playerList]objectForKey:[[playerList objectForKey:[@(idx) stringValue]]stringValue]];
+            }
+            formationArray[[[obj objectForKey:@"POSITIONVAL"]integerValue]][[[obj objectForKey:@"SIDEVAL"]integerValue]] = tp;
+            [positionArray addObject:tp];
         }];
+        if (playerList) {
+            if ([playerList objectForKey:@"GK"])
+                GoalKeeper = [[[[GameModel myGame]myGlobalVariableModel]playerList]objectForKey:[[playerList objectForKey:@"GK"]stringValue]];
+            
+            for (NSInteger i = 0; i < 7; i++) {
+                if ([playerList objectForKey:[NSString stringWithFormat:@"SUB%i",i]]) {
+                    [SubList addObject:[[[[GameModel myGame]myGlobalVariableModel]playerList]objectForKey:[[playerList objectForKey:[NSString stringWithFormat:@"SUB%i",i]]stringValue]]];
+                }
+            }
+        }
     } return self;
 }
+
+- (NSArray*) getOutFieldPositions
+{
+    NSMutableArray* result = [NSMutableArray array];
+    for (int i = 0; i < 5;i++) {
+        for (int j = 0; j < 5;j++) {
+            if (formationArray[i][j])
+                [result addObject:formationArray[i][j]];
+        }
+    };
+    return result;
+}
+
 
 - (NSArray*) getOutFieldPlayers
 {
     NSMutableArray* result = [NSMutableArray array];
     for (int i = 0; i < 5;i++) {
         for (int j = 0; j < 5;j++) {
-            if (playerArray[i][j])
-                [result addObject:playerArray[i][j]];
-                
+            if (formationArray[i][j].player)
+                [result addObject:formationArray[i][j].player];
         }
     };
     return result;
@@ -55,45 +92,41 @@
     return result;
 }
 
+- (TacticPosition*) getTacticPositionAtPositionSide:(PositionSide) ps
+{
+    return formationArray[ps.position][ps.side];
+}
+
+
 - (Player*) getPlayerAtPositionSide:(PositionSide) ps
 {
-    if (!formationArray[ps.position][ps.side]) {
-        playerArray[ps.position][ps.side] = nil;
-        return nil;
-    }
-    return playerArray[ps.position][ps.side];
+    return formationArray[ps.position][ps.side].player;
 }
 
 - (BOOL) hasPlayerAtPositionSide:(PositionSide) ps
 {
-    if (!playerArray[ps.position][ps.side])
-        return NO;
-    return YES;
+    if(formationArray[ps.position][ps.side].player)
+        return YES;
+    return NO;
 }
 
 
 - (BOOL) populatePlayer:(Player*) player PositionSide:(PositionSide) ps ForceSwap:(BOOL) swap
 {
-    if (!formationArray[ps.position][ps.side])
+    if (ps.side == GKSide) {
+        GoalKeeper = player;
+        return YES;
+    }
+
+    
+    if (![self hasPositionAtPositionSide:ps])
         return NO;
-    if (playerArray[ps.position][ps.side].PlayerID == player.PlayerID)
+    if (formationArray[ps.position][ps.side].player && formationArray[ps.position][ps.side].player.PlayerID == player.PlayerID)
         return YES;
     
-    for (int i = 0; i < 5;i++) {
-        for (int j = 0; j < 5;j++) {
-            if (playerArray[i][j]) {
-                if (playerArray[i][j].PlayerID == player.PlayerID) {
-                    if (swap) {
-                        return [self movePlayerAtPositionSide:(PositionSide){i,j} ToPositionSide:ps];
-                    } else {
-                        return NO;
-                    }
-                }
-            }
-        }
-    };
+    [self removePlayerFromTactic:player];
+    formationArray[ps.position][ps.side].player = player;
 
-    playerArray[ps.position][ps.side] = player;
     return YES;
 }
 
@@ -101,7 +134,9 @@
 {
     if (!formationArray[ps.position][ps.side])
         return NO;
-    playerArray[ps.position][ps.side] = nil;
+    if (!formationArray[ps.position][ps.side].player)
+        return YES;
+    formationArray[ps.position][ps.side].player = nil;
     return YES;
 }
 
@@ -109,29 +144,36 @@
 {
     for (int i = 0; i < 5;i++) {
         for (int j = 0; j < 5;j++) {
-            if (playerArray[i][j]) {
-                if (playerArray[i][j].PlayerID == player.PlayerID)
-                    playerArray[i][j] = nil;
+            if (formationArray[i][j]) {
+                if (formationArray[i][j].player.PlayerID == player.PlayerID)
+                    formationArray[i][j].player = nil;
             }
         }
     }
+    [SubList enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+        if (p.PlayerID == player.PlayerID)
+            [SubList removeObjectAtIndex:idx];
+    }];
+    if (GoalKeeper.PlayerID == player.PlayerID)
+        GoalKeeper = nil;
 }
 
 
-- (BOOL) movePlayerAtPositionSide:(PositionSide) fromPS ToPositionSide:(PositionSide) toPS
+- (BOOL) moveTacticPositionAtPositionSide:(PositionSide) fromPS ToPositionSide:(PositionSide) toPS
 {
-    if (!formationArray[fromPS.position][fromPS.side] && !formationArray[toPS.position][toPS.side])
+    if (!formationArray[fromPS.position][fromPS.side])
         return NO;
-
-    Player* temp;
-    BOOL tempBool;
-    temp = playerArray[fromPS.position][fromPS.side];
-    playerArray[fromPS.position][fromPS.side] = playerArray[toPS.position][toPS.side];
-    playerArray[toPS.position][toPS.side] = temp;
     
-    tempBool = formationArray[fromPS.position][fromPS.side];
+    TacticPosition* tempTP;
+    tempTP = formationArray[fromPS.position][fromPS.side];
     formationArray[fromPS.position][fromPS.side] = formationArray[toPS.position][toPS.side];
-    formationArray[toPS.position][toPS.side] = tempBool;
+    formationArray[toPS.position][toPS.side] = tempTP;
+    
+    formationArray[toPS.position][toPS.side].ps = toPS;
+
+    if (formationArray[fromPS.position][fromPS.side])
+        formationArray[fromPS.position][fromPS.side].ps = fromPS;
+    
     return YES;
 }
 
@@ -154,14 +196,40 @@
 
 - (BOOL) hasPositionAtPositionSide: (PositionSide) ps
 {
-    return formationArray[ps.position][ps.side];
+    if (formationArray[ps.position][ps.side])
+        return YES;
+    return NO;
 }
 
 - (BOOL) updateTacticsInDatabase
 {
-    //TODO
+    NSInteger PositionID = 1;
+    for (int i = 0; i < 5;i++) {
+        for (int j = 0; j < 5;j++) {
+            if (PositionID > 9)
+                return NO;
+            if (formationArray[i][j]) {
+                [[GameModel myDB]updateDatabaseTable:@"tactics" whereDictionary:[NSDictionary dictionaryWithObjectsAndKeys:@(TacticID),@"TACTICID",@(PositionID),@"PLAYER", nil] setDictionary:[NSDictionary dictionaryWithObjectsAndKeys:@(i),@"POSITIONVAL",@(j),@"SIDEVAL", nil]];
+                PositionID++;
+            }
+        }
+    }
     return YES;
 }
 
+- (BOOL) updatePlayerLineup
+{
+    [dataPlayerList removeAllObjects];
+    [dataPlayerList setObject:@(GoalKeeper.PlayerID) forKey:@"GK"];
+    [[self getOutFieldPositions] enumerateObjectsUsingBlock:^(TacticPosition* tp, NSUInteger idx, BOOL *stop) {
+        [dataPlayerList setObject:@(tp.player.PlayerID) forKey:[@(tp.PositionID) stringValue]];
+    }];
+    
+    [SubList enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+        [dataPlayerList setObject:@(p.PlayerID) forKey:[NSString stringWithFormat:@"SUB%lu",idx]];
+    }];
+    
+    return YES;
+}
 
 @end

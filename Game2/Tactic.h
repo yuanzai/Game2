@@ -20,11 +20,9 @@
 
 @interface Tactic : NSObject
 {    
-    __block BOOL formationArray[5][5];
-    __block BOOL tacticPositionArray[5][5];
-    Player* playerArray[5][5];
+    __block TacticPosition* formationArray[5][5];
 }
-
+@property __block NSMutableArray* positionArray;
 @property NSInteger TacticID;
 @property Player* GoalKeeper;
 @property NSMutableArray* SubList;
@@ -32,22 +30,21 @@
 - (NSArray*) getOutFieldPlayers;
 - (NSArray*) getAllPlayers;
 
+- (id)initWithTacticID:(NSInteger) InputID WithPlayerDict:(NSMutableDictionary*) playerList;
 
-- (id) initWithTacticID:(NSInteger) InputID;
 - (BOOL) populatePlayer:(Player*) player PositionSide:(PositionSide) ps ForceSwap:(BOOL) swap;
 - (BOOL) removePlayerAtPositionSide:(PositionSide) ps;
 - (void) removePlayerFromTactic : (Player*) player;
+- (BOOL) moveTacticPositionAtPositionSide:(PositionSide) fromPS ToPositionSide:(PositionSide) toPS;
 
+- (TacticPosition*) getTacticPositionAtPositionSide:(PositionSide) ps;
 - (Player*) getPlayerAtPositionSide:(PositionSide) ps;
 - (BOOL) hasPlayerAtPositionSide:(PositionSide) ps;
-
-- (BOOL) movePlayerAtPositionSide:(PositionSide) fromPS ToPositionSide:(PositionSide) toPS;
+- (BOOL) hasPositionAtPositionSide: (PositionSide) ps;
 
 - (BOOL) isFormationFilled;
 
-- (BOOL) hasPositionAtPositionSide: (PositionSide) ps;
-
-
 - (BOOL) updateTacticsInDatabase;
+- (BOOL) updatePlayerLineup;
 
 @end

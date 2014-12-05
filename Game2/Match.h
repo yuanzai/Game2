@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "LineUp.h"
+
 @class LineUp;
 @class Action;
 @class Fixture;
