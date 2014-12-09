@@ -24,6 +24,7 @@
 @synthesize Stats;
 
 @synthesize Consistency;
+@synthesize Ability;
 @synthesize Potential;
 @synthesize Form;
 @synthesize Condition;
@@ -53,6 +54,7 @@
     LastName= [record objectForKey:@"LASTNAME"];
     FirstName= [record objectForKey:@"FIRSTNAME"];
     
+    Ability = [[record objectForKey:@"ABILITY"] integerValue];
     Consistency = [[record objectForKey:@"CONSISTENCY"] integerValue];
     Potential = [[record objectForKey:@"POTENTIAL"] integerValue];
     Form = [[record objectForKey:@"FORM"] integerValue];
@@ -116,11 +118,12 @@
     }
     
     if (UpdateStats) {
-        if (isGoalKeeper){
-            [[GameModel myDB]updateDatabaseTable:@"gk" withKeyField:@"PlayerID" withKey:PlayerID withDictionary:Stats];
-        }else{
-            [updateDictionary addEntriesFromDictionary:Stats];
-        }
+        [updateDictionary addEntriesFromDictionary:Stats];
+        __block NSInteger sumStat;
+        [Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            sumStat += [obj integerValue];
+        }];
+        [updateDictionary setObject:@(sumStat) forKey:@"ABILITY"];
     }
     if (UpdatePosition) {
         [updateDictionary addEntriesFromDictionary:PreferredPosition];

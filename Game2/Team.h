@@ -32,6 +32,7 @@
 - (void) transferActivity;
 
 //Querying
+- (NSArray*) getAllPlayersSortByValuation;
 - (NSArray*) getAllGKWithInjured:(BOOL) withInjured;
 - (NSArray*) getAllOutfieldWithInjured:(BOOL) withInjured;;
 @end

@@ -226,6 +226,14 @@ const NSInteger insertQueueMax = 10;
     return [self getArrayFrom:table whereData:[[NSDictionary alloc]initWithObjectsAndKeys:key,keyField, nil] sortFieldAsc:sortAsc];
 }
 
+- (NSArray*) getArrayFromQuery:(NSString*) sql
+{
+    FMResultSet* result = [db executeQuery:sql];
+    NSArray *resultArray = [self getResultSetArray:result SelectField:@""];
+    [db closeOpenResultSets];
+    return resultArray;
+}
+
 - (BOOL) updateDatabaseTable:(NSString *)table whereDictionary:(NSDictionary *)whereData setDictionary:(NSDictionary *)setData
 {
     [db closeOpenResultSets];

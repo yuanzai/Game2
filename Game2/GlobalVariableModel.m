@@ -176,9 +176,12 @@
         playerList = result;
     }
     return playerList;
-
 }
 
+- (Player*) getPlayerFromID:(NSInteger) PLAYERID
+{
+    return [playerList objectForKey:[@(PLAYERID) stringValue]];
+}
 # pragma mark Training Methods
 
 - (NSDictionary*) statBiasTable {

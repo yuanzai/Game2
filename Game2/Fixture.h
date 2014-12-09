@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Team.h"
+
 @class Team;
 @class  Fixture;
 @interface Tournament : NSObject

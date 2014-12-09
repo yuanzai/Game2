@@ -367,6 +367,7 @@ static double runtime3 =0.0;
 
 - (BOOL) createPlayerWithAbility:(NSInteger)ability Potential:(NSInteger) potential Season:(NSInteger) season
 {
+    NSDate* date = [NSDate date];
 
 
     NSMutableDictionary* newPlayer = [NSMutableDictionary dictionary];
@@ -528,7 +529,6 @@ static double runtime3 =0.0;
             [Stats setObject:[NSNumber numberWithInteger:stat+1] forKey:[statList objectAtIndex:r]];
         }
     }
-    NSDate* date = [NSDate date];
     
     if (!isGoalKeeper) {
         Plan* newPlayerTraining = [[Plan alloc]initWithPotential:potential Age:1-BirthYear];
@@ -540,10 +540,6 @@ static double runtime3 =0.0;
 
     [GeneratePlayer addToRuntime:1 amt:-[date timeIntervalSinceNow]];
     date = [NSDate date];
-    
-    [GeneratePlayer addToRuntime:2 amt:-[date timeIntervalSinceNow]];
-    date = [NSDate date];
-
     
     [newPlayer addEntriesFromDictionary:Stats];
 
@@ -567,8 +563,15 @@ static double runtime3 =0.0;
 
 
     [newPlayer setObject:[NSNumber numberWithDouble:Valuation] forKey:@"Valuation"];
+    [GeneratePlayer addToRuntime:2 amt:-[date timeIntervalSinceNow]];
+    date = [NSDate date];
+
+    
+    
+    BOOL result = [[GameModel myDB]insertDatabaseTable:@"players" withData:newPlayer];
     [GeneratePlayer addToRuntime:3 amt:-[date timeIntervalSinceNow]];
-    return [[GameModel myDB]insertDatabaseTable:@"players" withData:newPlayer];
+
+    return result;
 }
 
 + (double) addToRuntime:(int)no amt:(double) amt{

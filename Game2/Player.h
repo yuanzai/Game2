@@ -46,6 +46,7 @@
 @property NSMutableDictionary* Stats;
 
 @property NSInteger Consistency;
+@property NSInteger Ability;
 @property NSInteger Potential;
 @property NSInteger Form;
 @property double Condition;

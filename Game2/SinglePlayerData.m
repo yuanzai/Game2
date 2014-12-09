@@ -27,6 +27,7 @@
 @synthesize currentLeagueTournament;
 @synthesize nextMatchOpponents;
 
+//Saved Data
 @synthesize weekdate;
 @synthesize week;
 @synthesize season;
@@ -34,6 +35,10 @@
 @synthesize weekStage;
 @synthesize weekTask;
 @synthesize lineUpPlayers;
+@synthesize shortList;
+
+//End Saved data
+
 
 @synthesize myTraining;
 
@@ -48,6 +53,7 @@
         self.week = 0;
         self.weekStage = @"enterPreWeek";
         self.lineUpPlayers = [NSMutableDictionary dictionary];
+        self.shortList = [NSMutableArray array];
     }; return self;
 }
 
@@ -63,6 +69,7 @@
     self.weekStage = [decoder decodeObjectForKey:@"weekStage"];
     self.weekTask = [decoder decodeObjectForKey:@"weekTask"];
     self.lineUpPlayers = [decoder decodeObjectForKey:@"lineUpPlayers"];
+    self.shortList = [decoder decodeObjectForKey:@"shortList"];
     return self;
 }
 
@@ -74,6 +81,7 @@
     [encoder encodeObject:self.weekStage forKey:@"weekStage"];
     [encoder encodeObject:self.weekTask forKey:@"weekTask"];
     [encoder encodeObject:self.lineUpPlayers forKey:@"lineUpPlayers"];
+    [encoder encodeObject:self.shortList forKey:@"shortList"];
 }
 
 - (void) setUpData
@@ -90,7 +98,9 @@
     NSInteger tournamentID = myTeam.TournamentID;
     self.currentLeagueTournament = [[[GameModel myGlobalVariableModel] tournamentList] objectForKey:
     [NSString stringWithFormat:@"%i",tournamentID]];
+    [currentLeagueTournament setCurrentLeagueTable];
     NSLog(@"Current Tournament - %@",currentLeagueTournament);
+    NSLog(@"Current Tournament Table- %@",currentLeagueTournament.currentLeagueTable);
 
 }
 

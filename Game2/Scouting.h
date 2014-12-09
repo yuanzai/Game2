@@ -22,21 +22,36 @@ Factors
  4) fine tune scouting?
  5) scout perk/ability
  6)
- 
- 
  */
 
+typedef enum {
+    SquadPlayer,
+    StarPlayer,
+    Youth
+} ScoutTypes;
+
+typedef enum {
+    ScoutAny,
+    ScoutGoalkeeper,
+    ScoutDef,
+    ScoutMid,
+    ScoutAtt
+} ScoutPosition;
 
 #import <Foundation/Foundation.h>
 @class Scout;
 @interface Scouting : NSObject
+@property Scout* scout0;
 @property Scout* scout1;
 @property Scout* scout2;
 @property Scout* scout3;
-@property Scout* scout4;
+@property NSMutableArray* scoutArray;
+@property __block NSMutableArray* shortList;
 
-- (NSArray*) getPlayerArrayForScout:(Scout*) scout Type:(NSString*) type;
 
+- (void) updateAllScoutsToDatabase;
+
+- (void) runAllWeeklyScouting;
 
 @end
 
@@ -48,7 +63,13 @@ Factors
 @property NSInteger VALUE; // abilty to price ratio
 @property NSInteger KNOWLEDGE; // useful perks spotting
 @property NSInteger DILIGENCE; // probabilty of more names
+@property ScoutTypes SCOUTTYPE;
+@property ScoutPosition SCOUTPOSITION;
+@property NSArray* scoutResults;
+@property NSArray* valueArray;
 
 - (id) initWithScoutID: (NSInteger) thisScoutID;
+- (void) updateScoutToDatabase;
+- (NSArray*) getScoutingPlayerArray;
 @end
 

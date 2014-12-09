@@ -132,6 +132,7 @@
     //TODO: - process date
     //TODO: - process cash
     //TODO: - process next match
+    NSLog(@"enterPreWeek");
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
     [self saveThisGame];
     
@@ -147,6 +148,7 @@
     myData.week++;
     [myData setNextFixture];
     [myData setNextMatchOpponents];
+    [myData.currentLeagueTournament setCurrentLeagueTable];
 }
 
 - (void) enterPreTask
@@ -218,7 +220,7 @@
         [t setCurrentLeagueTable];
     }];
      */
-    [self saveThisGame];
+    //[self saveThisGame];
 }
 
 //Parellel views

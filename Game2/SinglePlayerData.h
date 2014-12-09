@@ -40,6 +40,7 @@
 @property NSString* weekStage;
 @property NSString* weekTask;
 @property NSMutableDictionary* lineUpPlayers;
+@property NSMutableArray* shortList;
 
 
 - (void) setUpData;

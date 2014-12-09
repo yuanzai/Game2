@@ -78,6 +78,8 @@
 		6B675B521A30EC46007E5696 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B675B501A30EC46007E5696 /* database.db */; };
 		6B675B561A31A78F007E5696 /* FixturesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B551A31A78F007E5696 /* FixturesViewController.m */; };
 		6B675B571A31A78F007E5696 /* FixturesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B551A31A78F007E5696 /* FixturesViewController.m */; };
+		6B675B5E1A3251D5007E5696 /* LeagueTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B5D1A3251D5007E5696 /* LeagueTableViewController.m */; };
+		6B675B5F1A3251D5007E5696 /* LeagueTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B5D1A3251D5007E5696 /* LeagueTableViewController.m */; };
 		6BB21C5D1A0FAB9C00ED2310 /* Structs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BB21C5C1A0FAB9C00ED2310 /* Structs.m */; };
 		6BB21C5E1A0FAB9C00ED2310 /* Structs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BB21C5C1A0FAB9C00ED2310 /* Structs.m */; };
 		6BC2C08C1A09EAFF005973C2 /* NewGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2C08B1A09EAFF005973C2 /* NewGameTest.m */; };
@@ -168,6 +170,8 @@
 		6B675B501A30EC46007E5696 /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
 		6B675B541A31A78E007E5696 /* FixturesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FixturesViewController.h; sourceTree = "<group>"; };
 		6B675B551A31A78F007E5696 /* FixturesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FixturesViewController.m; sourceTree = "<group>"; };
+		6B675B5C1A3251D5007E5696 /* LeagueTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeagueTableViewController.h; sourceTree = "<group>"; };
+		6B675B5D1A3251D5007E5696 /* LeagueTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeagueTableViewController.m; sourceTree = "<group>"; };
 		6BB21C5B1A0FAB9C00ED2310 /* Structs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structs.h; sourceTree = "<group>"; };
 		6BB21C5C1A0FAB9C00ED2310 /* Structs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Structs.m; sourceTree = "<group>"; };
 		6BC2C08B1A09EAFF005973C2 /* NewGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameTest.m; sourceTree = "<group>"; };
@@ -374,6 +378,8 @@
 			children = (
 				6B675B541A31A78E007E5696 /* FixturesViewController.h */,
 				6B675B551A31A78F007E5696 /* FixturesViewController.m */,
+				6B675B5C1A3251D5007E5696 /* LeagueTableViewController.h */,
+				6B675B5D1A3251D5007E5696 /* LeagueTableViewController.m */,
 			);
 			name = Parallels;
 			sourceTree = "<group>";
@@ -500,6 +506,7 @@
 				6B1339ED19EECEB500BC749E /* LineUp.m in Sources */,
 				6B1D45C31A262C21006633A9 /* PlayerList.m in Sources */,
 				6BB21C5D1A0FAB9C00ED2310 /* Structs.m in Sources */,
+				6B675B5E1A3251D5007E5696 /* LeagueTableViewController.m in Sources */,
 				6B1339EB19EECEB500BC749E /* Event.m in Sources */,
 				6B1339FD19EECEFC00BC749E /* FMDatabasePool.m in Sources */,
 				6B133A2019EECF7B00BC749E /* Fixture.m in Sources */,
@@ -518,6 +525,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B675B5F1A3251D5007E5696 /* LeagueTableViewController.m in Sources */,
 				6B1D45C41A262C21006633A9 /* PlayerList.m in Sources */,
 				6B133A2519EECF7B00BC749E /* Player.m in Sources */,
 				6B1339EE19EECEB500BC749E /* LineUp.m in Sources */,

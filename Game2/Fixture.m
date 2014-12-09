@@ -8,7 +8,6 @@
 
 #import "Fixture.h"
 #import "DatabaseModel.h"
-#import "Team.h"
 #import "GameModel.h"
 
 @implementation Tournament

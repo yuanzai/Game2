@@ -10,6 +10,7 @@
 #import "Structs.h"
 @class LineUp;
 @class Team;
+@class Player;
 @interface GlobalVariableModel : NSObject
 
 //Fonts
@@ -50,4 +51,5 @@
 
 //PlayerList
 - (NSMutableDictionary*) playerList;
+- (Player*) getPlayerFromID:(NSInteger) PLAYERID;
 @end

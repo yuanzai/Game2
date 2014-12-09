@@ -49,6 +49,8 @@
 - (NSArray*) getArrayFrom:(NSString*)table withSelectField:(NSString*)selectField whereKeyField:(NSString*)keyField hasKey:(id)key;
 - (NSArray*) getArrayFrom:(NSString*)table withSelectField:(NSString*)selectField WhereString:(NSString*)whereString OrderBy:(NSString*)orderby Limit:(NSString*) limit;
 
+- (NSArray*) getArrayFromQuery:(NSString*) sql;
+
 //Generic CRUD - update
 - (BOOL) updateDatabaseTable:(NSString*) table withKeyField:(NSString*)keyField withKey:(NSInteger)key withDictionary:(NSDictionary*) data;
 - (BOOL) updateDatabaseTable:(NSString *)table whereDictionary:(NSDictionary *)whereData setDictionary:(NSDictionary *)setData;
