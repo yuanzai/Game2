@@ -151,7 +151,8 @@
         case 1212:
         case 1213:
             myGame.source = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(sender.tag-1210),@"PlanID",@"enterPlan",@"source", nil];
-            [myGame enterPlan];
+            NSLog(@"Data source %@",myGame.source);
+            //[myGame enterPlan];
             break;
         default:
             break;

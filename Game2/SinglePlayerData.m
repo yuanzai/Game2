@@ -55,6 +55,7 @@
         self.shortList = [NSMutableArray array];
         self.weekTask = TaskNone;
         self.taskData = [NSMutableDictionary dictionary];
+        self.myTraining = [Training new];
     }; return self;
 }
 
@@ -72,6 +73,8 @@
     self.lineUpPlayers = [decoder decodeObjectForKey:@"lineUpPlayers"];
     self.shortList = [decoder decodeObjectForKey:@"shortList"];
     self.taskData = [decoder decodeObjectForKey:@"taskData"];
+    self.myTraining = [decoder decodeObjectForKey:@"myTraining"];
+
     return self;
 }
 
@@ -85,6 +88,9 @@
     [encoder encodeObject:self.lineUpPlayers forKey:@"lineUpPlayers"];
     [encoder encodeObject:self.shortList forKey:@"shortList"];
     [encoder encodeObject:self.taskData forKey:@"taskData"];
+
+    [encoder encodeObject:self.myTraining.Plans];
+    [encoder encodeObject:self.myTraining forKey:@"myTraining"];
 }
 
 - (void) setUpData
@@ -93,7 +99,7 @@
     [self setCurrentLeagueTournament];
     [self setNextFixture];
     [self setCurrentLineup];
-    [self setMyTraining];
+    //[self setMyTraining];
     [self setMyScouting];
 }
 

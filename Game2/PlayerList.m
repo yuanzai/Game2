@@ -23,7 +23,8 @@
 }
 @synthesize target;
 @synthesize players;
-- (id) initWithTarget:(id) thisTarget Source:(NSDictionary*) thisSource;
+
+- (id) initWithTarget:(id) thisTarget
 {
     self = [super init];
     if (self) {

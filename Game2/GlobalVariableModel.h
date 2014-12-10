@@ -25,6 +25,8 @@
 + (NSMutableArray*) playerStatList;
 + (NSMutableArray*) gkStatList;
 + (NSMutableDictionary*) playerGroupStatList;
++ (NSMutableArray*) coachStatList;
++ (NSMutableArray*) scoutStatList;
 
 //Valuations
 - (NSDictionary*)valuationStatListForFlank:(NSString*) flank;

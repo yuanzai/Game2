@@ -13,7 +13,7 @@
 @property(nonatomic,retain) id target;
 @property __block NSMutableArray* players;
 
-- (id) initWithTarget:(id) thisTarget Source:(NSDictionary*) thisSource;
+- (id) initWithTarget:(id) thisTarget;
 //- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
 //- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 

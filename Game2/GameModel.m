@@ -12,6 +12,7 @@
 #import "Match.h"
 #import "Generator.h"
 #import "Task.h"
+#import "Training.h"
 
 #import "ViewController.h"
 #import "PlayersViewController.h"
@@ -36,7 +37,7 @@
     dispatch_once(&onceToken, ^{
         myGame = [[self alloc] init];
         myGame.myDB = [DatabaseModel new];
-        myGame.myGlobalVariableModel = [GlobalVariableModel new];
+        //myGame.myGlobalVariableModel = [GlobalVariableModel new];
         myGame.myStoryboard = [UIStoryboard storyboardWithName:@"Main_iPhone" bundle:nil];
     });
     return myGame;
@@ -76,7 +77,20 @@
 
     myData.SaveGameID = thisGameID;
     self.myData.myGame = self;
+    
+    //Training New Coach
+    
+    
     [myData setUpData];
+    
+    Plan* thisPlan = [myData.myTraining.Plans objectAtIndex:0];
+    thisPlan.isActive = YES;
+    thisPlan.thisCoach = [newGenerator generateNewCoachWithAbility:45];
+    thisPlan.PlayerList = [NSMutableSet setWithArray:myData.myTeam.PlayerList];
+    for (Player* p in thisPlan.PlayerList) {
+        [thisPlan.PlayerIDList addObject:@(p.PlayerID)];
+    }
+
     [[GameModel myGame]enterPreWeek];
     [[GameModel myGame]saveThisGame];
 }
@@ -95,6 +109,7 @@
             self.myData.SaveGameID = thisGameID;
             self.myData.myGame = self;
             [myData setUpData];
+
             if ([myData.weekStage isEqualToString:@""] || myData.weekStage == nil)
                 myData.weekStage = @"enterPreWeek";
             [self goToView];

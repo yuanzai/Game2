@@ -25,8 +25,6 @@
 }
 
 @synthesize tableSource;
-@synthesize source;
-@synthesize PlanID;
 @synthesize playersView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -51,31 +49,43 @@
 */
     // Do any additional setup after loading the view.
     [super viewDidLoad];
-    PlanID = [[source objectForKey:@"PlanID"]integerValue];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self loadData];
+}
+
+- (void) loadData
+{
     myGame = [GameModel myGame];
-    thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:PlanID];
+    myGame.currentViewController = self;
+    thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[myGame.source objectForKey:@"PlanID"]integerValue]];
     statArray = [GlobalVariableModel planStats];
     
-//    playersView = (UITableView*) [self.view viewWithTag:1];
-    tableSource = [[PlayerList alloc]initWithTarget:self Source:source];
+    //    playersView = (UITableView*) [self.view viewWithTag:1];
+    tableSource = [[PlayerList alloc]initWithTarget:self];
     playersView.delegate = tableSource;
     playersView.dataSource = tableSource;
+    
 
     UILabel* playerCount = (UILabel*)[self.view viewWithTag:20];
     [playerCount setFont:[GlobalVariableModel newFont2Medium]];
     [playerCount setText:[NSString stringWithFormat:@" %i Players",[thisPlan.PlayerList count]]];
+
     
     UIButton* add = (UIButton*)[self.view viewWithTag:30];
     NSInteger unassignedCount = [[myGame.myData.myTraining getUnassignedPlayers]count];
     [add setTitle:[NSString stringWithFormat:@"Add players (%i)",unassignedCount] forState:UIControlStateNormal];
     [add.titleLabel setFont:[GlobalVariableModel newFont2Medium]];
-    [add invalidateIntrinsicContentSize];
+    //[add invalidateIntrinsicContentSize];
     [add addTarget:self action:@selector(addPlayers:) forControlEvents:UIControlEventTouchUpInside];
     
     UIButton* coach = (UIButton*)[self.view viewWithTag:100];
-    [coach setTitle:[thisPlan.Coach objectForKey:@"NAME"] forState:UIControlStateNormal];
+    [coach setTitle:thisPlan.thisCoach.COACHNAME forState:UIControlStateNormal];
     [coach.titleLabel setFont:[GlobalVariableModel newFont2Medium]];
     //[coach.titleLabel setFont:[GlobalVariableModel newFont2Large]];
+    
     
     planStatButtons = [NSMutableArray array];
     for (NSInteger i = 0;i<5;i++) {
@@ -83,19 +93,25 @@
         NSString* stat = [statArray objectAtIndex:i];
         
         [button setTitle:[NSString stringWithFormat:@"%i",[[thisPlan.PlanStats objectForKey:stat] integerValue]] forState:UIControlStateNormal];
-        [button invalidateIntrinsicContentSize];
+        //[button invalidateIntrinsicContentSize];
         [button.titleLabel setFont:[GlobalVariableModel newFont2Medium]];
         [button addTarget:self action:@selector(pressPlanStat:) forControlEvents:UIControlEventTouchUpInside];
         [planStatButtons addObject:button];
     }
     UIButton* back = (UIButton*)[self.view viewWithTag:999];
     [back addTarget:self action:@selector(backTo:) forControlEvents:UIControlEventTouchUpInside];
+     
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void) viewDidDisappear:(BOOL)animated
+{
+    [myGame saveThisGame];
 }
 
 - (void) pressPlanStat:(UIButton*) sender {
@@ -113,9 +129,8 @@
 }
 - (void) addPlayers:(UIButton*) sender
 {
-    NSMutableDictionary* newSource = [NSMutableDictionary dictionaryWithDictionary:source];
-    [newSource setObject:@"enterPlan" forKey:@"supersource"];
-    [newSource setObject:@"enterPlanPlayers" forKey:@"source"];
+    [myGame.source setObject:@"enterPlan" forKey:@"supersource"];
+    [myGame.source setObject:@"enterPlanPlayers" forKey:@"source"];
     [myGame enterPlayers];
 }
 
@@ -128,6 +143,7 @@
 - (void) refreshTable
 {
     [self viewDidLoad];
+    [self viewWillAppear:YES];
 }
 
 

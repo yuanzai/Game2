@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "Player.h"
 @class Player;
-
+@class Coach;
+@class Scout;
 @interface Generator : NSObject
 @property NSArray* FirstNames;
 @property NSArray* LastNames;
@@ -20,7 +21,9 @@
 - (void) generateNewGameWithTeamName:(NSString*) myTeamName;
 
 - (void) generatePlayersWithSeason:(NSInteger) season NumberOfPlayers:(NSInteger) number;
-
++ (NSMutableDictionary*) generateStatsWithAbility:(NSInteger) ability StatList:(NSArray*)statList;
+- (Coach*) generateNewCoachWithAbility:(NSInteger) ability;
+- (Scout*) generateNewScoutWithAbility:(NSInteger) ability;
 @end
 
 @interface GeneratePlayer : Player

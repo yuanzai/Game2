@@ -8,6 +8,7 @@
 
 #import "Generator.h"
 #import "Training.h"
+#import "Scouting.h"
 #import "GameModel.h"
 
 @implementation Generator
@@ -106,6 +107,30 @@ const NSInteger maxTurn = 16;
     
 }
 
+- (Coach*) generateNewCoachWithAbility:(NSInteger) ability
+{
+    Coach* newCoach = [Coach new];
+    NSString* FirstName = [FirstNames objectAtIndex:arc4random() % [FirstNames count]];
+    NSString* LastName = [LastNames objectAtIndex:arc4random() % [LastNames count]];
+
+    newCoach.COACHNAME = [NSString stringWithFormat:@"%@ %@", FirstName, LastName];
+    NSMutableDictionary* stats = [Generator generateStatsWithAbility:ability StatList:[GlobalVariableModel coachStatList]];
+    [newCoach setValuesForKeysWithDictionary:stats];
+    return newCoach;
+}
+
+- (Scout*) generateNewScoutWithAbility:(NSInteger) ability
+{
+    Scout* newScout = [Scout new];
+    NSString* FirstName = [FirstNames objectAtIndex:arc4random() % [FirstNames count]];
+    NSString* LastName = [LastNames objectAtIndex:arc4random() % [LastNames count]];
+    
+    newScout.NAME = [NSString stringWithFormat:@"%@ %@", FirstName, LastName];
+    NSMutableDictionary* stats = [Generator generateStatsWithAbility:ability StatList:[GlobalVariableModel scoutStatList]];
+    [newScout setValuesForKeysWithDictionary:stats];
+    
+    return newScout;
+}
 
 - (void) assignPlayersToTeams
 {
@@ -337,6 +362,44 @@ const NSInteger maxTurn = 16;
     return tempArray;
 }
 
++ (NSMutableDictionary*) generateStatsWithAbility:(NSInteger) ability StatList:(NSArray*)statList
+{
+    NSMutableDictionary* result = [NSMutableDictionary dictionary];
+    /*
+     [statList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+     [result setObject:@1 forKey:obj];
+     }];
+     
+     for (NSInteger i = 0; i < ability - [statList count]; i++) {
+     NSInteger r = arc4random() % [statList count];
+     NSInteger stat = [[result objectForKey:[statList objectAtIndex:r]]integerValue];
+     if (stat == 20) {
+     i--;
+     } else {
+     [result setObject:[NSNumber numberWithInteger:stat+1] forKey:[statList objectAtIndex:r]];
+     }
+     }
+     */
+    NSInteger statCount = [statList count];
+    NSInteger statArray[statCount];
+    for (NSInteger i = 0; i < statCount; i++) {
+        statArray[i] = 1;
+    }
+    
+    for (NSInteger i = 0; i < ability - statCount; i++) {
+        NSInteger r = arc4random() % [statList count];
+        if (statArray[r] == 20) {
+            i --;
+        } else {
+            statArray[r]++;
+        }
+    }
+    for (NSInteger i = 0; i < statCount; i++) {
+        [result setObject:@(statArray[i]) forKey:[statList objectAtIndex:i]];
+    }
+    
+    return result;
+}
 
 @end
 
@@ -504,7 +567,7 @@ static double runtime3 =0.0;
         ability = (double) ability / (double)[[GlobalVariableModel playerStatList] count] * (double)[[GlobalVariableModel gkStatList]count];
     }
 
-    Stats = [self generateStatsWithAbility:ability StatList:statList];
+    Stats = [Generator generateStatsWithAbility:ability StatList:statList];
 
     [GeneratePlayer addToRuntime:1 amt:-[date timeIntervalSinceNow]];
     date = [NSDate date];
@@ -551,44 +614,7 @@ static double runtime3 =0.0;
     return result;
 }
 
-- (NSMutableDictionary*) generateStatsWithAbility:(NSInteger) ability StatList:(NSArray*)statList
-{
-    NSMutableDictionary* result = [NSMutableDictionary dictionary];
-    /*
-    [statList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        [result setObject:@1 forKey:obj];
-    }];
-    
-    for (NSInteger i = 0; i < ability - [statList count]; i++) {
-        NSInteger r = arc4random() % [statList count];
-        NSInteger stat = [[result objectForKey:[statList objectAtIndex:r]]integerValue];
-        if (stat == 20) {
-            i--;
-        } else {
-            [result setObject:[NSNumber numberWithInteger:stat+1] forKey:[statList objectAtIndex:r]];
-        }
-    }
-     */
-    NSInteger statCount = [statList count];
-    NSInteger statArray[statCount];
-    for (NSInteger i = 0; i < statCount; i++) {
-        statArray[i] = 1;
-    }
-    
-    for (NSInteger i = 0; i < ability - statCount; i++) {
-        NSInteger r = arc4random() % [statList count];
-        if (statArray[r] == 20) {
-            i --;
-        } else {
-            statArray[r]++;
-        }
-    }
-    for (NSInteger i = 0; i < statCount; i++) {
-        [result setObject:@(statArray[i]) forKey:[statList objectAtIndex:i]];
-    }
 
-    return result;
-}
 
 + (double) addToRuntime:(int)no amt:(double) amt{
     if (no==1) {

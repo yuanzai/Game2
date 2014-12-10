@@ -10,7 +10,7 @@
 @class Team;
 @class Player;
 
-@interface Coach : NSObject
+@interface Coach : NSObject <NSCoding>
 @property NSString* COACHNAME;
 @property NSInteger COACHDRILLS;
 @property NSInteger COACHSHOOTING;
@@ -20,6 +20,9 @@
 @property NSInteger MOTIVATION;
 @property NSInteger JUDGEMENT;
 @property NSArray* valueArray;
+
+
+
 @end
 
 
@@ -30,11 +33,15 @@
 @property Coach* thisCoach;
 @property NSMutableSet* PlayerList;
 @property NSMutableDictionary* PlanStats;
+@property NSMutableSet* PlayerIDList;
+@property BOOL isActive;
 
 - (id) initWithTrainingID:(NSInteger) thisTrainingID;
 - (id) initWithPotential:(NSInteger) potential Age:(NSInteger) age;
 - (id) initWithCoach:(Coach*) newCoach PlayerList:(NSArray*) playerArray StatsGroup:(NSArray*) statGroupArray
 ;
+- (void) setPlayerList;
+- (void) setVariables;
 
 - (void) runTrainingPlan;
 
@@ -53,11 +60,20 @@
 + (double) addToRuntime:(int)no amt:(double) amt;
 @end
 
-@interface Training : NSObject
+@interface Training : NSObject <NSCoding>
 @property NSMutableArray* Plans;
+@property NSMutableDictionary* playerExps;
 
 - (void) runAllPlans;
 - (NSArray*) getUnassignedPlayers;
 
+@end
+
+@interface PlayerExp : NSObject <NSCoding>
+@property NSInteger DRILLS;
+@property NSInteger SHOOTING;
+@property NSInteger PHYSICAL;
+@property NSInteger TACTICS;
+@property NSInteger SKILLS;
 
 @end

@@ -34,6 +34,17 @@
     
 }
 
++ (id)myGlobalVariable
+{
+    static GlobalVariableModel *myGlobalVariable;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        myGlobalVariable = [[self alloc] init];
+    });
+    return myGlobalVariable;
+}
+
+
 //Fonts
 + (UIFont*) newFont1Small {
     return [UIFont fontWithName:@"8BIT WONDER" size:8.0];
@@ -90,6 +101,16 @@
     [List setObject: [[NSMutableArray alloc]initWithObjects:
                       @"TEC", @"HEA", @"DRI", @"TAC", nil] forKey:@"SKILLS"];
     return List;
+}
+
++ (NSMutableArray*) coachStatList
+{
+    return [NSMutableArray arrayWithObjects:@"COACHDRILLS", @"COACHPHYSICAL", @"COACHSHOOTING", @"COACHSKILLS", @"COACHTACTICS", @"JUDGEMENT", @"MOTIVATION", nil];
+}
+
++ (NSMutableArray*) scoutStatList
+{
+    return [NSMutableArray arrayWithObjects:@"JUDGEMENT", @"YOUTH", @"VALUE", @"KNOWLEDGE", @"DILIGENCE", nil];
 }
 
 - (NSDictionary*) valuationStatListForFlank:(NSString*) flank;

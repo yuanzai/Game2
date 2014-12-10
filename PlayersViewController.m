@@ -26,7 +26,7 @@
     myGame = [GameModel myGame];
 
     UITableView* playersView = (UITableView*) [self.view viewWithTag:1];
-    tableSource = [[PlayerList alloc]initWithTarget:self Source:myGame.source];
+    tableSource = [[PlayerList alloc]initWithTarget:self];
     playersView.delegate = tableSource;
     playersView.dataSource = tableSource;
 

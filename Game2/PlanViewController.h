@@ -9,8 +9,6 @@
 #import <UIKit/UIKit.h>
 @class PlayerList;
 @interface PlanViewController : UIViewController
-@property NSInteger PlanID;
-@property NSDictionary* source;
 @property (strong,nonatomic) PlayerList *tableSource;
 @property (strong,nonatomic) IBOutlet UITableView* playersView;
 - (void) refreshTable;
