@@ -22,8 +22,8 @@
 {    
     __block TacticPosition* formationArray[5][5];
 }
-@property __block NSMutableArray* positionArray;
 @property NSInteger TacticID;
+@property __block NSMutableArray* positionArray;
 @property Player* GoalKeeper;
 @property NSMutableArray* SubList;
 

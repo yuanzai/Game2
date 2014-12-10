@@ -75,19 +75,36 @@
         case 100:
             [myGame enterPreTask];
             break;
-        case 231:
-        case 232:
-        case 233:
         case 211:
+            myGame.myData.weekTask = TaskScout1;
+            break;
         case 212:
+            myGame.myData.weekTask = TaskScout2;
+            break;
         case 213:
+            myGame.myData.weekTask = TaskScout3;
+            break;
         case 221:
+            myGame.myData.weekTask = TaskTraining1;
+            break;
         case 222:
+            myGame.myData.weekTask = TaskTraining2;
+            break;
         case 223:
-            [myGame setTask:[@(sender.tag) stringValue]];
+            myGame.myData.weekTask = TaskTraining3;
+            break;
+        case 231:
+            myGame.myData.weekTask = TaskAdmin1;
+            break;
+        case 232:
+            myGame.myData.weekTask = TaskAdmin2;
+            break;
+        case 233:
+            myGame.myData.weekTask = TaskAdmin3;
             break;
         case 200:
-            [myGame enterTask];
+            if (myGame.myData.weekTask != TaskNone)
+                [myGame enterTask];
             break;
         case 300:
             [myGame enterPostTask];
@@ -99,19 +116,23 @@
             [myGame enterGame];
             break;
         case 600:
-            [myGame enterPostGame];
+            if (myGame.myData.nextMatch.isOver)
+                [myGame enterPostGame];
             break;
         case 601:
             [self startMatch];
             break;
             
         case 602:
-            [myGame.myData.nextMatch resumeMatch];
-            [self updateCommentaryBoxWith:@"Match Resumes!"];
+            if (myGame.myData.nextMatch.isPaused && !myGame.myData.nextMatch.isOver) {
+                [myGame.myData.nextMatch resumeMatch];
+                [self updateCommentaryBoxWith:@"Match Resumes!"];
+            }
             break;
             
         case 603:
-            [myGame.myData.nextMatch pauseMatch];
+            if (!myGame.myData.nextMatch.isPaused && myGame.myData.nextMatch.matchMinute > 0)
+                [myGame.myData.nextMatch pauseMatch];
             break;
             
         case 700:

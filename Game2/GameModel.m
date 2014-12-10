@@ -11,6 +11,7 @@
 #import "LineUp.h"
 #import "Match.h"
 #import "Generator.h"
+#import "Task.h"
 
 #import "ViewController.h"
 #import "PlayersViewController.h"
@@ -129,9 +130,7 @@
 
 - (void) enterPreWeek
 {
-    //TODO: - process date
     //TODO: - process cash
-    //TODO: - process next match
     NSLog(@"enterPreWeek");
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
     [self saveThisGame];
@@ -154,11 +153,11 @@
 - (void) enterPreTask
 {
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
-    myData.weekTask = nil;
+    myData.weekTask = TaskNone;
     [self saveThisGame];
 }
 
-- (void) setTask:(NSString*) task
+- (void) setTask:(WeekTask) task
 {
     myData.weekTask = task;
 }
@@ -166,17 +165,17 @@
 - (void) enterTask
 {
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
-    myData.weekTask = nil;
+    myData.weekTask = TaskNone;
     [self saveThisGame];
 }
 
 - (void) enterPostTask
 {
-    //TODO: - process training
-    //TODO: - process scouting
-    //TODO: - process admin
-    //TODO: - process task
+    // scout task
+    
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
+    Task* newTask = [[Task alloc]init];
+    [newTask runTask];
     [self saveThisGame];
 }
 
@@ -192,7 +191,6 @@
 {
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
 
-    //TODO: - process opponent selection
     [myData setNextMatch];
     //[self saveThisGame];
 }
@@ -206,21 +204,19 @@
 
     NSLog(@"Updating All Match Fixtures");
     NSDictionary* tournamentList = [myGlobalVariableModel tournamentList];
-    /*
+    
     [tournamentList enumerateKeysAndObjectsUsingBlock:^(id key, Tournament* t, BOOL *stop) {
         NSArray* thisT = [t getFixturesForNonSinglePlayerForDate:myData.weekdate];
         for (Fixture* fx in thisT) {
             Match* simulateMatch = [[Match alloc]initWithFixture:fx WithSinglePlayerTeam:nil];
             NSLog(@"%i %i %@ v %@",t.tournamentID,fx.MATCHID,simulateMatch.team1.team.Name, simulateMatch.team2.team.Name);
-            
             [simulateMatch playFullGame];
             [simulateMatch updateMatchFixture];
-
         }
         [t setCurrentLeagueTable];
     }];
-     */
-    //[self saveThisGame];
+    
+    [self saveThisGame];
 }
 
 //Parellel views
@@ -292,5 +288,8 @@
 {
 
 }
+
+
+//TODO: Finances
 
 @end

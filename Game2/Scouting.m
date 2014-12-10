@@ -15,7 +15,6 @@
 {
     GameModel* myGame;
 }
-@synthesize shortList;
 @synthesize scoutArray;
 
 - (id) init
@@ -27,10 +26,6 @@
         for (NSInteger i = 0; i < 4; i ++) {
             [scoutArray addObject:[[Scout alloc]initWithScoutID:i]];
         }
-        NSArray* shortListID = [[myGame myData]shortList];
-        [shortListID enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            [shortList addObject:[[myGame myGlobalVariableModel]getPlayerFromID:[obj integerValue]]];
-        }];
     }; return self;
 }
 
@@ -41,11 +36,28 @@
     }];
 }
 
+- (NSArray*) getShortList
+{
+    __block NSMutableArray* shortList = [NSMutableArray array];
+    NSMutableArray* shortListID = [[myGame myData]shortList];
+    [shortListID enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        Player* p = [[myGame myGlobalVariableModel]getPlayerFromID:[obj integerValue]];
+        if (p.TeamID !=0) {
+            [shortList addObject:p];
+        } else {
+            [shortList removeObjectAtIndex:idx];
+        }
+    }];
+    return shortList;
+}
 
-- (void) runAllWeeklyScouting
+- (void) runAllScouting
 {
     [scoutArray enumerateObjectsUsingBlock:^(Scout* s, NSUInteger idx, BOOL *stop) {
-        s.scoutResults = [s getScoutingPlayerArray];
+        if (s.ISACTIVE && s.isScoutingSuccess) {
+            s.scoutResults = [NSMutableArray array];
+            [s.scoutResults addObjectsFromArray:[s getScoutingPlayerArray]];
+        }
     }];
 }
 
@@ -62,6 +74,7 @@
 @synthesize VALUE; // abilty to price ratio
 @synthesize KNOWLEDGE; // useful perks spotting
 @synthesize DILIGENCE; // probabilty of more names
+@synthesize ISACTIVE;
 @synthesize SCOUTTYPE; // scout type
 @synthesize SCOUTPOSITION; // scout type
 @synthesize scoutResults;
@@ -70,6 +83,7 @@
 - (id) initWithScoutID: (NSInteger) thisScoutID {
     self = [super init];
     if (self) {
+        SCOUTID = thisScoutID;
         myGame = [GameModel myGame];
         NSDictionary* result = [[GameModel myDB]getResultDictionaryForTable:@"scouts" withKeyField:@"SCOUTID" withKey:thisScoutID];
         valueArray = [result allKeys];
@@ -89,7 +103,7 @@
     [[GameModel myDB]updateDatabaseTable:@"scouts" withKeyField:@"SCOUTID" withKey:SCOUTID withDictionary:updateData];
 }
 
-- (NSArray*) getScoutingPlayerArray
+- (BOOL) isScoutingSuccess
 {
     NSInteger success;
     switch (SCOUTTYPE) {
@@ -111,8 +125,12 @@
     success = (NSInteger)((double) success * (1 + (double)DILIGENCE * 0.03));
     
     if (arc4random() % 1000 > success)
-        return nil;
-    
+        return NO;
+    return YES;
+}
+
+- (NSArray*) getScoutingPlayerArray
+{
     ScoutPosition pos;
     if (SCOUTPOSITION == ScoutAny) {
         NSInteger r = arc4random() % 100;
@@ -125,6 +143,8 @@
         } else {
             pos = ScoutAtt;
         }
+    } else {
+        pos = SCOUTPOSITION;
     }
     
     double valueLimit = 0.0;
@@ -163,7 +183,7 @@
     
     NSMutableArray* resultArray = [NSMutableArray array];
     [resultArray addObject:[self scoutingResultwithFinalCut:finalCut RandomCut:randomCut FirstCut:firstCut PotentialCut:potentialCut ValueLimit:valueLimit Position:pos AgeLimit:ageLimit]];
-    return nil;
+    return resultArray;
 }
 
 
@@ -205,4 +225,36 @@
     return [[myGame myGlobalVariableModel]getPlayerFromID:[[resultArray[0] objectForKey:@"PLAYERID"]integerValue]];
 }
 
+- (void) removeScout
+{
+    ISACTIVE = NO;
+}
+
+- (NSString*) getStringForScoutType:(ScoutTypes)type{
+    if (type == SquadPlayer) {
+        return @"Squad Player";
+    } else if (type == StarPlayer) {
+        return @"Star Player";
+    } else if (type == Youth) {
+        return @"Youth Player";
+    } else {
+        return nil;
+    }
+}
+
+- (NSString*) getStringForScoutPosition:(ScoutPosition) pos{
+    if (pos == ScoutAny) {
+        return @"All Positions";
+    } else if (pos == ScoutDef) {
+        return @"Defender";
+    } else if (pos == ScoutMid) {
+        return @"Midfielder";
+    } else if (pos == ScoutAtt) {
+        return @"Striker";
+    } else if (pos == ScoutGoalkeeper) {
+        return @"Goalkeeper";
+    } else {
+        return nil;
+    }
+}
 @end

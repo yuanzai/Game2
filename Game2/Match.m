@@ -72,6 +72,7 @@
 
 - (BOOL) startMatch
 {
+
     if (team1 == nil || team2 == nil)
         return NO;
     
@@ -86,6 +87,8 @@
 
 - (NSArray*) nextMinute
 {
+    if (isPaused || isOver)
+        return nil;
     matchMinute++;
     
     
@@ -277,4 +280,6 @@
 {
     NSLog(@"%i t1:%i t2:%i %i - %i", thisFixture.MATCHID, thisFixture.HOMETEAM, thisFixture.AWAYTEAM, team1.score, team2.score);
 }
+
+//TODO: injury/redcard
 @end

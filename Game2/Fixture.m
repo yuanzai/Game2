@@ -22,6 +22,8 @@
 @synthesize playerCount;
 @synthesize currentLeagueTable;
 
+//TODO: Remove reliance on db for table/fixture info. problem when no games are played.
+
 - (id) initWithTournamentID:(NSInteger) TournamentID
 {
     self = [super init];
@@ -271,7 +273,6 @@
     return self;
 }
 
-//TODO: update fixture
 -(void) updateFixtureInDatabase
 {
     NSMutableDictionary* updateData = [NSMutableDictionary dictionary];

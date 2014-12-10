@@ -13,6 +13,36 @@
 #import "Player.h"
 #import "SinglePlayerData.h"
 
+@implementation Coach
+{
+    GameModel* myGame;
+}
+@synthesize valueArray;
+@synthesize COACHDRILLS, COACHPHYSICAL,COACHSHOOTING,COACHSKILLS,COACHTACTICS,COACHNAME,JUDGEMENT,MOTIVATION;
+
+- (id) initWithCoachID: (NSInteger) thisCoachID {
+    self = [super init];
+    if (self) {
+        myGame = [GameModel myGame];
+        valueArray = [NSArray arrayWithObjects:@"COACHDRILLS",
+                      @"COACHPHYSICAL",
+                      @"COACHSHOOTING",
+                      @"COACHSKILLS",
+                      @"COACHTACTICS",
+                      @"COACHNAME",
+                      @"JUDGEMENT",
+                      @"MOTIVATION", nil];
+        NSDictionary* result = [[GameModel myDB]getResultDictionaryForTable:@"training" withKeyField:@"TRAININGID" withKey:thisCoachID];
+        NSLog(@"Coach %@",result);
+        [valueArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [self setValue:[result objectForKey:obj] forKey:obj];
+        }];
+    }
+    return self;
+}
+
+@end
+
 @implementation Plan {
     NSArray *groupArray;
     NSDictionary * groupStatList;
@@ -26,7 +56,7 @@
 }
 
 @synthesize TrainingID;
-@synthesize Coach;
+@synthesize thisCoach;
 @synthesize PlayerList;
 @synthesize PlanStats;
 @synthesize PlayersExp;
@@ -64,23 +94,23 @@ static double runtime3 =0.0;
                      @"0",@"SKILLS",
                      @"1",@"INTENSITY", nil];
         
-        NSMutableDictionary* setCoach = [NSMutableDictionary dictionary];
-        [setCoach setValue:@"6" forKeyPath:@"DRILLS"];
-        [setCoach setValue:@"6" forKeyPath:@"SHOOTING"];
-        [setCoach setValue:@"6" forKeyPath:@"PHYSICAL"];
-        [setCoach setValue:@"6" forKeyPath:@"TACTICS"];
-        [setCoach setValue:@"6" forKeyPath:@"SKILLS"];
-        [setCoach setValue:@"6" forKeyPath:@"MOTIVATION"];
+        thisCoach = [Coach new];
+        [thisCoach setValue:@(6) forKeyPath:@"COACHDRILLS"];
+        [thisCoach setValue:@(6) forKeyPath:@"COACHSHOOTING"];
+        [thisCoach setValue:@(6) forKeyPath:@"COACHPHYSICAL"];
+        [thisCoach setValue:@(6) forKeyPath:@"COACHTACTICS"];
+        [thisCoach setValue:@(6) forKeyPath:@"COACHSKILLS"];
+        [thisCoach setValue:@(6) forKeyPath:@"MOTIVATION"];
+        [thisCoach setValue:[NSArray arrayWithObjects:@"COACHDRILLS",@"COACHSHOOTING",@"COACHPHYSICAL",@"COACHTACTICS",@"COACHSKILLS",@"MOTIVATION", nil] forKey:@"valueArray"];
         
         NSInteger r = (potential / 16 + (arc4random() % 5) + MIN(age/3,3)) * 6;
         
         for (NSInteger i = 0; i < r; i++) {
             NSInteger k = arc4random() % 6;
-            NSString* key = [[setCoach allKeys]objectAtIndex:k];
-            NSInteger stat = [[setCoach objectForKey:key]integerValue];
-            [setCoach setObject:[NSNumber numberWithInteger:stat+1] forKey:key];
+            NSString* key = [thisCoach.valueArray objectAtIndex:k];
+            NSInteger stat = [[thisCoach valueForKey:key]integerValue];
+            [thisCoach setValue:[NSNumber numberWithInteger:stat+1] forKey:key];
         }
-        Coach = setCoach;
     }
     return self;
 }
@@ -92,8 +122,8 @@ static double runtime3 =0.0;
         TrainingID = thisTrainingID;
         PlanStats = [[NSMutableDictionary alloc]initWithDictionary:[[GameModel myDB]getResultDictionaryForTable:@"training" withKeyField:@"TRAININGID" withKey:thisTrainingID]];
 
-        NSInteger CoachID = [[PlanStats objectForKey:@"COACHID"]integerValue];
-        Coach = [[GameModel myDB]getResultDictionaryForTable:@"coaches" withKeyField:@"COACHID" withKey:CoachID];
+        thisCoach = [[Coach alloc]initWithCoachID:TrainingID];
+        
         //Populate Player ID List
         PlayerIDList = [NSMutableSet setWithArray:[[GameModel myDB]getArrayFrom:@"trainingExp" withSelectField:@"PLAYERID" whereKeyField:@"TRAININGID" hasKey:[NSNumber numberWithInteger:thisTrainingID]]];
 
@@ -115,6 +145,24 @@ static double runtime3 =0.0;
         }];
     }
     return self;
+}
+
+- (id) initWithCoach:(Coach*) newCoach PlayerList:(NSArray*) playerArray StatsGroup:(NSArray*) statGroupArray
+{
+    self = [self initWithDefault];
+    if (self) {
+        thisCoach = newCoach;
+        PlanStats = [[NSMutableDictionary alloc]initWithObjectsAndKeys:
+                     @"0",@"DRILLS",
+                     @"0",@"SHOOTING",
+                     @"0",@"PHYSICAL",
+                     @"0",@"TACTICS",
+                     @"0",@"SKILLS",
+                     @"1",@"INTENSITY", nil];
+        if (groupArray)
+            groupArray = statGroupArray;
+        PlayerList = [NSMutableSet setWithArray:playerArray];
+    } ; return self;
 }
 
 - (void) runTrainingPlan
@@ -144,17 +192,13 @@ static double runtime3 =0.0;
 
 - (void) runTrainingPlanForPlayer:(Player*) thisPlayer TrainingExp:(NSMutableDictionary*) trainingEXP
 {
-    
-    
-
     __block double totalStat;
     [thisPlayer.Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         totalStat += [obj doubleValue];
     }];
+    
     [groupArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         __block double gStat = 0.0;
-
-        
         
         NSInteger statExp = [[trainingEXP objectForKey:obj]integerValue];
         NSArray* thisArray = (NSArray*)[groupStatList objectForKey:obj];
@@ -193,8 +237,6 @@ static double runtime3 =0.0;
     }];
 }
 
-
-
 - (void) updateTrainingExpForPlayer:(Player*) player WithExp:(NSDictionary*) data
 {
     [[GameModel myDB]updateDatabaseTable:@"trainingExp" withKeyField:@"PLAYERID" withKey:player.PlayerID withDictionary:data];
@@ -218,8 +260,7 @@ static double runtime3 =0.0;
     double decayProb;
     double trainingProb;
     int expChange = 0;
-
-
+    NSDate * date = [NSDate date];
 
     NSInteger age = season - player.BirthYear;
     
@@ -228,17 +269,17 @@ static double runtime3 =0.0;
         coachM = 1;
     } else {
         trainingM = [self getTrainingPlanMultiplerWithGroup:group];
-        coachM = [self getCoachMultiplierWithCoach:Coach Group:group PlayerGroupStat:gStat];
+        coachM = [self getCoachMultiplierGroup:group PlayerGroupStat:gStat];
     }
 
     potentialM = ((double) player.Potential + 15) / 200;
 
     growthM = [self getMultiplierWithType:@"GROWTH" ID:player.GrowthID Age:age];
-    NSDate * date = [NSDate date];
     double decay = [self getMultiplierWithType:@"DECAY" ID:player.DecayID Age:age];
-    [Plan addToRuntime:1 amt:-[date timeIntervalSinceNow]];
 
+    [Plan addToRuntime:1 amt:-[date timeIntervalSinceNow]];
     date = [NSDate date];
+    
     double decayK = [self getMultiplierWithType:@"DECAYCONSTANT" ID:player.DecayConstantID Age:age];
     [Plan addToRuntime:2 amt:-[date timeIntervalSinceNow]];
 
@@ -266,7 +307,8 @@ static double runtime3 =0.0;
         if (arc4random()*10000 < trainingProb*10000) expChange++;
         if (arc4random()*10000 < decayProb*10000) expChange--;
     }
-    
+    [Plan addToRuntime:3 amt:-[date timeIntervalSinceNow]];
+
     return expChange;
 }
 
@@ -369,15 +411,16 @@ static double runtime3 =0.0;
     return [self updateTrainingPlanToDatabase];
 }
 
-- (double) getCoachMultiplierWithCoach:(NSDictionary*)coach Group:(NSString*) group PlayerGroupStat:(NSInteger)gStat {
+- (double) getCoachMultiplierGroup:(NSString*) group PlayerGroupStat:(NSInteger)gStat {
+    NSString* key = [NSString stringWithFormat:@"COACH%@",group];
     return MAX(
                MIN(
-                   (0.15 * [[coach objectForKey:group]doubleValue] + -0.25 * gStat / 4 + 2.2) *
-                   (0.7 + [[coach objectForKey:group]doubleValue] * 0.015) //Min1
+                   (0.15 * [[thisCoach valueForKey:key]doubleValue] + -0.25 * gStat / 4 + 2.2) *
+                   (0.7 + [[thisCoach valueForKey:key]doubleValue] * 0.015) //Min1
                    ,1) //Min2 / Max1
                ,0) * //Max2
-    (0.7 + [[coach objectForKey:group]doubleValue] * 0.015) *
-    (0.9 + [[coach objectForKey:@"MOTIVATION"]doubleValue]/20);
+    (0.7 + [[thisCoach valueForKey:key]doubleValue] * 0.015) *
+    (0.9 + [[thisCoach valueForKey:@"MOTIVATION"]doubleValue]/20);
 }
 
 

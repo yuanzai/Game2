@@ -43,11 +43,17 @@
  - process next match
 
  Highlights
- - see stat gain from game
+
  - see lastgame result
  - see table standing
+ - see stat gain from game
+ 
  - see news
  - see awards/injuries/
+ - see transfer requests
+ - [end season] prize money
+ - [new season] youth players
+ -
  
  News
  - see special actionables
@@ -97,15 +103,19 @@
  Start week
  - choose week's task
    - scout
-     - team
+     - you
      - (high count, low quality)
      - (low quality, high count)
  
    - train
-     - team
-     - player
-     - motivation (up form for % of team)
+     - team + 2x area training? or 1x general training?
+     - player + 5x area trainings @ max intensity + 1 x normal training
+     - motivation (up form for % of team) form + 1 for 1/3 of team, form + 2 for 1/6
    
+   - match prep
+     - watch videos - boost effectiveness
+     -
+ 
    - admin
      - cash
      - refresh job seekers
@@ -141,31 +151,28 @@
  [POST GAME]
  - process tournament games played
  - process single player fixture
+ - [SCENE] bus travelling with weather depending on result
 
 */
 
 //Static Method
-
 + (id)myGame;
 + (DatabaseModel*) myDB;
 + (GlobalVariableModel*) myGlobalVariableModel;
-
 
 //Save Load
 - (void) newWithGameID:(NSInteger) thisGameID;
 - (void) loadWithGameID:(NSInteger) thisGameID;
 - (void) saveThisGame;
 
-
 //Seaons
 - (void) startSeason;
-
 
 //Turns
 + (SinglePlayerData*) gameData;
 - (void) enterPreWeek; // do admin, player transfers, news
 - (void) enterPreTask; // select the task this week
-- (void) setTask:(NSString*) task;
+- (void) setTask:(WeekTask) task;
 - (void) enterTask; // do other stuff etc, see tactics buy players etc
 - (void) enterPostTask; // show task results
 - (void) enterPreGame; // show match day form

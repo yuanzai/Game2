@@ -54,8 +54,6 @@
     self.redCard = 0;
 }
 
-
-//TODO: Set Pre Match Form
 - (void) populateMatchDayForm
 {
     [team.PlayerList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {

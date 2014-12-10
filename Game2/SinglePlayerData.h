@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Structs.h"
 @class Team;
 @class Fixture;
 @class Tournament;
@@ -15,30 +16,34 @@
 @class Match;
 @class GameModel;
 @class Training;
+@class Scouting;
 
 @interface SinglePlayerData : NSObject <NSCoding>
+@property GameModel* myGame;
 @property NSInteger SaveGameID;
+
 @property Team* myTeam;
 @property LineUp* currentLineup;
+@property Tournament* currentLeagueTournament;
+@property Training* myTraining;
+@property Scouting* myScouting;
+
 
 @property Fixture* nextFixture;
 @property Match* nextMatch;
 @property Fixture* lastMatch;
-
 @property Team* nextMatchOpponents;
 
-@property Tournament* currentLeagueTournament;
 
-@property GameModel* myGame;
-
-@property Training* myTraining;
 
 @property NSInteger weekdate;
 @property NSInteger week;
 @property NSInteger season;
 @property NSInteger money;
 @property NSString* weekStage;
-@property NSString* weekTask;
+@property WeekTask weekTask;
+@property NSMutableDictionary* taskData;
+
 @property NSMutableDictionary* lineUpPlayers;
 @property NSMutableArray* shortList;
 

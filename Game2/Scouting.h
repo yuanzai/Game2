@@ -46,12 +46,11 @@ typedef enum {
 @property Scout* scout2;
 @property Scout* scout3;
 @property NSMutableArray* scoutArray;
-@property __block NSMutableArray* shortList;
 
 
 - (void) updateAllScoutsToDatabase;
 
-- (void) runAllWeeklyScouting;
+- (void) runAllScouting;
 
 @end
 
@@ -63,13 +62,20 @@ typedef enum {
 @property NSInteger VALUE; // abilty to price ratio
 @property NSInteger KNOWLEDGE; // useful perks spotting
 @property NSInteger DILIGENCE; // probabilty of more names
+@property BOOL ISACTIVE;
 @property ScoutTypes SCOUTTYPE;
 @property ScoutPosition SCOUTPOSITION;
-@property NSArray* scoutResults;
+@property NSMutableArray* scoutResults;
 @property NSArray* valueArray;
 
 - (id) initWithScoutID: (NSInteger) thisScoutID;
 - (void) updateScoutToDatabase;
+
+- (BOOL) isScoutingSuccess;
 - (NSArray*) getScoutingPlayerArray;
+
+- (NSString*) getStringForScoutType:(ScoutTypes)type;
+- (NSString*) getStringForScoutPosition:(ScoutPosition) pos;
+
 @end
 

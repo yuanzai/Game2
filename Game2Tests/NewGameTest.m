@@ -175,7 +175,7 @@
     }
     NSLog(@"%f",[date timeIntervalSinceNow] * -1);
 
-    
+    /*
     date = [NSDate date];
     for (int i =0; i<10000; i++){
         NSDictionary* ageP = [[GameModel myGlobalVariableModel] ageProfile];
@@ -192,7 +192,7 @@
         [h isEqualToString:h];
     }
     NSLog(@"%f",[date timeIntervalSinceNow] * -1);
-    
+    */
 }
 
 - (void)ttestDatabase

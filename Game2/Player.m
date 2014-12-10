@@ -136,6 +136,9 @@
     return YES;
 }
 
+// TODO: Generate player in Player object instead
+// TODO: GK Ability base to 400 instead
+
 - (BOOL) valuePlayer
 {
 
@@ -403,4 +406,11 @@
     hasPlayed = NO;
 }
 
+- (BOOL) addToShortlist
+{
+    //TODO: add to shortlist
+    return YES;
+}
+
+//TODO: PERKS
 @end

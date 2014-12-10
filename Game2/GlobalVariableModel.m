@@ -281,7 +281,7 @@
         if (isProbDy) {
             if (team) {
                 PositionSide ps = [Structs getPositionSideFromDictionary:obj];
-                if (![team.currentTactic hasPositionAtPositionSide:ps])
+                if (![team.currentTactic hasPlayerAtPositionSide:ps])
                     return;
                 if (ps.position == exPS.position && ps.side == exPS.side)
                     return;
@@ -313,7 +313,7 @@
         [NSException raise:@"table returns no result" format:@"table %@ returns no result",tbl];
     
     if (isProbDy && exPS.position != PositionCount)
-        if (![team.currentTactic hasPositionAtPositionSide:[Structs getPositionSideFromDictionary:result]])
+        if (![team.currentTactic hasPlayerAtPositionSide:[Structs getPositionSideFromDictionary:result]])
             [NSException raise:@"No such PS" format:@"No Such PS %@",result];
         
     return result;
@@ -354,6 +354,14 @@
         result = [[obj objectForKey:@"PROB"]integerValue];
     }];
     return result;
+}
+
++ (NSArray*) shuffleArray:(NSArray*) arrayInput{
+    NSMutableArray* tempArray = [[NSMutableArray alloc]initWithArray:arrayInput];
+    for (NSInteger i = 0; i < [tempArray count]; ++i) {
+        [tempArray exchangeObjectAtIndex:i withObjectAtIndex:arc4random() % [tempArray count]];
+    }
+    return tempArray;
 }
 
 @end

@@ -30,7 +30,8 @@
 {
     self = [super init];
     if (self) {
-        dataPlayerList = playerList;
+        if (TacticID ==0)
+            dataPlayerList = playerList;
         TacticID = InputID;
         SubList = [NSMutableArray array];
         positionArray = [NSMutableArray array];

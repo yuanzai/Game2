@@ -86,4 +86,6 @@
 - (void) populatePosCoeff;
 - (void) populateMatchStats;
 - (void) clearMatchVariable;
+
+- (BOOL) addToShortlist;
 @end

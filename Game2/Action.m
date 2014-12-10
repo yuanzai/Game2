@@ -521,7 +521,7 @@ static double runtime3 =0.0;
 
 - (void) setCommentary
 {
-
+//TODO: Actual Commentary
     if (result == Success){
         Commentary = [NSString stringWithFormat:@"%@ from %@",AttackType,FromPlayer.DisplayName];
     } else if (result == Fail) {

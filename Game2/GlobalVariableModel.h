@@ -52,4 +52,9 @@
 //PlayerList
 - (NSMutableDictionary*) playerList;
 - (Player*) getPlayerFromID:(NSInteger) PLAYERID;
+
+//ShuffleArray
++ (NSArray*) shuffleArray:(NSArray*) arrayInput;
+
+//TODO: Fixed pricing
 @end

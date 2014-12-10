@@ -8,13 +8,12 @@
 
 #import "SinglePlayerData.h"
 #import "GameModel.h"
-#import "DatabaseModel.h"
-#import "Team.h"
 #import "Fixture.h"
 #import "Tactic.h"
 #import "Match.h"
 #import "LineUp.h"
 #import "Training.h"
+#import "Scouting.h"
 
 @implementation SinglePlayerData
 @synthesize SaveGameID;
@@ -41,7 +40,7 @@
 
 
 @synthesize myTraining;
-
+@synthesize myScouting;
 @synthesize myGame;
 
 - (id) init
@@ -54,6 +53,8 @@
         self.weekStage = @"enterPreWeek";
         self.lineUpPlayers = [NSMutableDictionary dictionary];
         self.shortList = [NSMutableArray array];
+        self.weekTask = TaskNone;
+        self.taskData = [NSMutableDictionary dictionary];
     }; return self;
 }
 
@@ -67,9 +68,10 @@
     self.season = [decoder decodeIntegerForKey:@"season"];
     self.money = [decoder decodeIntegerForKey:@"money"];
     self.weekStage = [decoder decodeObjectForKey:@"weekStage"];
-    self.weekTask = [decoder decodeObjectForKey:@"weekTask"];
+    self.weekTask = (WeekTask) {[decoder decodeIntegerForKey:@"weekTask"]};
     self.lineUpPlayers = [decoder decodeObjectForKey:@"lineUpPlayers"];
     self.shortList = [decoder decodeObjectForKey:@"shortList"];
+    self.taskData = [decoder decodeObjectForKey:@"taskData"];
     return self;
 }
 
@@ -79,9 +81,10 @@
     [encoder encodeInteger:self.season forKey:@"season"];
     [encoder encodeInteger:self.money forKey:@"money"];
     [encoder encodeObject:self.weekStage forKey:@"weekStage"];
-    [encoder encodeObject:self.weekTask forKey:@"weekTask"];
+    [encoder encodeInteger:self.weekTask forKey:@"weekTask"];
     [encoder encodeObject:self.lineUpPlayers forKey:@"lineUpPlayers"];
     [encoder encodeObject:self.shortList forKey:@"shortList"];
+    [encoder encodeObject:self.taskData forKey:@"taskData"];
 }
 
 - (void) setUpData
@@ -91,6 +94,12 @@
     [self setNextFixture];
     [self setCurrentLineup];
     [self setMyTraining];
+    [self setMyScouting];
+}
+
+- (void) setMyScouting
+{
+    myScouting = [Scouting new];
 }
 
 - (void) setCurrentLeagueTournament
@@ -137,6 +146,8 @@
 {
     myTraining = [[Training alloc]init];
 }
+
+
 /*
 - (void) setLastMatch;
 {

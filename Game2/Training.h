@@ -9,17 +9,32 @@
 #import <Foundation/Foundation.h>
 @class Team;
 @class Player;
-@interface Plan: NSObject
+
+@interface Coach : NSObject
+@property NSString* COACHNAME;
+@property NSInteger COACHDRILLS;
+@property NSInteger COACHSHOOTING;
+@property NSInteger COACHPHYSICAL;
+@property NSInteger COACHTACTICS;
+@property NSInteger COACHSKILLS;
+@property NSInteger MOTIVATION;
+@property NSInteger JUDGEMENT;
+@property NSArray* valueArray;
+@end
+
+
+@interface Plan: NSObject <NSCoding>
 
 @property NSInteger TrainingID;
 @property NSMutableDictionary* PlayersExp;
-@property NSDictionary* Coach;
+@property Coach* thisCoach;
 @property NSMutableSet* PlayerList;
 @property NSMutableDictionary* PlanStats;
 
 - (id) initWithTrainingID:(NSInteger) thisTrainingID;
 - (id) initWithPotential:(NSInteger) potential Age:(NSInteger) age;
-
+- (id) initWithCoach:(Coach*) newCoach PlayerList:(NSArray*) playerArray StatsGroup:(NSArray*) statGroupArray
+;
 
 - (void) runTrainingPlan;
 
@@ -43,4 +58,6 @@
 
 - (void) runAllPlans;
 - (NSArray*) getUnassignedPlayers;
+
+
 @end

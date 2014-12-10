@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-
+@class Scout;
+@class Coach;
 @interface Staff : NSObject
 
 @end

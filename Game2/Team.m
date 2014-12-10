@@ -106,11 +106,11 @@
 
 - (void) updateConditionPreGame
 {
-//TODO update condition method
+//TODO: Weekly - update condition method
 }
 
 - (void) transferActivity
 {
-    //TODO transfer activity
+    //TODO: AI - transfer activity
 }
 @end

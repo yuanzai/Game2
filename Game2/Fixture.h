@@ -23,7 +23,6 @@
 @property NSInteger playerCount;
 @property NSArray* currentLeagueTable;
 
-
 - (id) initWithTournamentID:(NSInteger) TournamentID;
 
 - (BOOL) createFixturesForSeason:(NSInteger)season;

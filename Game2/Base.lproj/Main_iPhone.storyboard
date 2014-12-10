@@ -99,56 +99,56 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" tag="211" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GpE-SB-egm">
-                                <rect key="frame" x="20" y="20" width="54" height="30"/>
+                            <button opaque="NO" tag="211" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GpE-SB-egm">
+                                <rect key="frame" x="16" y="20" width="91" height="30"/>
                                 <state key="normal" title="Scout 1">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button opaque="NO" tag="212" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pn4-9T-uRR">
-                                <rect key="frame" x="82" y="20" width="54" height="30"/>
+                            <button opaque="NO" tag="212" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pn4-9T-uRR">
+                                <rect key="frame" x="115" y="20" width="90" height="30"/>
                                 <state key="normal" title="Scout 2">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button opaque="NO" tag="213" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jut-29-phW">
-                                <rect key="frame" x="144" y="20" width="54" height="30"/>
+                            <button opaque="NO" tag="213" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jut-29-phW">
+                                <rect key="frame" x="213" y="20" width="91" height="30"/>
                                 <state key="normal" title="Scout 3">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button opaque="NO" tag="221" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vob-kg-SsM">
-                                <rect key="frame" x="20" y="58" width="46" height="30"/>
+                            <button opaque="NO" tag="221" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vob-kg-SsM">
+                                <rect key="frame" x="16" y="58" width="85" height="30"/>
                                 <state key="normal" title="Train 1">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button opaque="NO" tag="222" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b9y-qE-gG1">
-                                <rect key="frame" x="82" y="58" width="46" height="30"/>
+                            <button opaque="NO" tag="222" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b9y-qE-gG1">
+                                <rect key="frame" x="117" y="58" width="86" height="30"/>
                                 <state key="normal" title="Train 2">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button opaque="NO" tag="223" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t7d-SV-EDk">
-                                <rect key="frame" x="144" y="58" width="46" height="30"/>
+                            <button opaque="NO" tag="223" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t7d-SV-EDk">
+                                <rect key="frame" x="219" y="58" width="85" height="30"/>
                                 <state key="normal" title="Train 3">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button opaque="NO" tag="231" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pws-1L-aKH">
-                                <rect key="frame" x="20" y="96" width="57" height="30"/>
+                            <button opaque="NO" tag="231" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pws-1L-aKH">
+                                <rect key="frame" x="16" y="96" width="93" height="30"/>
                                 <state key="normal" title="Admin 1">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button opaque="NO" tag="232" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rKo-Qk-z5O">
-                                <rect key="frame" x="82" y="96" width="57" height="30"/>
+                            <button opaque="NO" tag="232" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rKo-Qk-z5O">
+                                <rect key="frame" x="114" y="96" width="92" height="30"/>
                                 <state key="normal" title="Admin 2">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button opaque="NO" tag="233" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mKt-Pz-Rfl">
-                                <rect key="frame" x="144" y="96" width="57" height="30"/>
+                            <button opaque="NO" tag="233" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mKt-Pz-Rfl">
+                                <rect key="frame" x="211" y="96" width="93" height="30"/>
                                 <state key="normal" title="Admin 3">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -165,8 +165,39 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="ngv-sQ-JXg" firstAttribute="top" secondItem="rKo-Qk-z5O" secondAttribute="bottom" constant="143" id="13g-7U-Ble"/>
                             <constraint firstAttribute="centerX" secondItem="ngv-sQ-JXg" secondAttribute="centerX" id="2bQ-Mx-khI"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="t7d-SV-EDk" secondAttribute="trailing" id="5dz-7C-XaM"/>
+                            <constraint firstItem="rKo-Qk-z5O" firstAttribute="width" secondItem="mKt-Pz-Rfl" secondAttribute="width" id="DAE-Oe-wBc"/>
+                            <constraint firstItem="t7d-SV-EDk" firstAttribute="top" secondItem="Pn4-9T-uRR" secondAttribute="bottom" constant="8" id="F39-FC-8dH"/>
+                            <constraint firstItem="Pn4-9T-uRR" firstAttribute="width" secondItem="jut-29-phW" secondAttribute="width" id="Iih-at-kjv"/>
+                            <constraint firstItem="pws-1L-aKH" firstAttribute="top" secondItem="Vob-kg-SsM" secondAttribute="bottom" constant="8" id="MqZ-75-V91"/>
+                            <constraint firstItem="Vob-kg-SsM" firstAttribute="top" secondItem="GpE-SB-egm" secondAttribute="bottom" constant="8" id="NNZ-Kh-olY"/>
+                            <constraint firstItem="b9y-qE-gG1" firstAttribute="leading" secondItem="Vob-kg-SsM" secondAttribute="trailing" constant="16" id="TUv-bU-aTm"/>
+                            <constraint firstItem="pws-1L-aKH" firstAttribute="leading" secondItem="tZA-o8-5Lg" secondAttribute="leadingMargin" id="Uws-QL-SNR"/>
+                            <constraint firstItem="t7d-SV-EDk" firstAttribute="leading" secondItem="b9y-qE-gG1" secondAttribute="trailing" constant="16" id="V2Q-L1-3gu"/>
+                            <constraint firstItem="GpE-SB-egm" firstAttribute="top" secondItem="Atm-eH-Mzb" secondAttribute="bottom" id="ZCf-XH-FAF"/>
+                            <constraint firstItem="GpE-SB-egm" firstAttribute="leading" secondItem="tZA-o8-5Lg" secondAttribute="leadingMargin" id="a5h-6v-GQY"/>
+                            <constraint firstItem="Vob-kg-SsM" firstAttribute="width" secondItem="b9y-qE-gG1" secondAttribute="width" id="b41-wl-zvz"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="mKt-Pz-Rfl" secondAttribute="trailing" id="ctT-dt-ycW"/>
+                            <constraint firstAttribute="centerX" secondItem="rKo-Qk-z5O" secondAttribute="centerX" id="dxb-DF-cBn"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="jut-29-phW" secondAttribute="trailing" id="eKi-N3-u29"/>
+                            <constraint firstItem="mKt-Pz-Rfl" firstAttribute="leading" secondItem="rKo-Qk-z5O" secondAttribute="trailing" constant="5" id="fJq-HW-VIh"/>
                             <constraint firstAttribute="centerY" secondItem="ngv-sQ-JXg" secondAttribute="centerY" id="hNb-7r-P3d"/>
+                            <constraint firstItem="rKo-Qk-z5O" firstAttribute="width" secondItem="pws-1L-aKH" secondAttribute="width" id="ic1-Sv-rJf"/>
+                            <constraint firstItem="Pn4-9T-uRR" firstAttribute="width" secondItem="GpE-SB-egm" secondAttribute="width" id="jBS-ul-nvY"/>
+                            <constraint firstItem="mKt-Pz-Rfl" firstAttribute="top" secondItem="t7d-SV-EDk" secondAttribute="bottom" constant="8" id="lGZ-kJ-6AS"/>
+                            <constraint firstItem="Pn4-9T-uRR" firstAttribute="top" secondItem="Atm-eH-Mzb" secondAttribute="bottom" id="nAR-5y-9sc"/>
+                            <constraint firstAttribute="centerX" secondItem="b9y-qE-gG1" secondAttribute="centerX" id="nXu-Jx-tXl"/>
+                            <constraint firstItem="Pn4-9T-uRR" firstAttribute="leading" secondItem="GpE-SB-egm" secondAttribute="trailing" constant="8" id="obr-u3-KuJ"/>
+                            <constraint firstItem="b9y-qE-gG1" firstAttribute="top" secondItem="Pn4-9T-uRR" secondAttribute="bottom" constant="8" id="qRY-gr-l3u"/>
+                            <constraint firstItem="jut-29-phW" firstAttribute="leading" secondItem="Pn4-9T-uRR" secondAttribute="trailing" constant="8" id="sj6-hg-b7G"/>
+                            <constraint firstItem="Vob-kg-SsM" firstAttribute="leading" secondItem="tZA-o8-5Lg" secondAttribute="leadingMargin" id="uGe-qI-b3a"/>
+                            <constraint firstItem="Vob-kg-SsM" firstAttribute="width" secondItem="t7d-SV-EDk" secondAttribute="width" id="uKU-0w-36Y"/>
+                            <constraint firstItem="jut-29-phW" firstAttribute="top" secondItem="Atm-eH-Mzb" secondAttribute="bottom" id="w1s-9f-xeQ"/>
+                            <constraint firstItem="Pn4-9T-uRR" firstAttribute="top" secondItem="Atm-eH-Mzb" secondAttribute="bottom" id="wVa-rW-Pp8"/>
+                            <constraint firstItem="rKo-Qk-z5O" firstAttribute="leading" secondItem="pws-1L-aKH" secondAttribute="trailing" constant="5" id="xAd-87-lpA"/>
+                            <constraint firstItem="rKo-Qk-z5O" firstAttribute="top" secondItem="b9y-qE-gG1" secondAttribute="bottom" constant="8" id="yVu-o1-6x5"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -472,7 +503,7 @@
         <!--View Controller-->
         <scene sceneID="NfY-zq-Rjt">
             <objects>
-                <viewController id="kkl-tI-ea6" sceneMemberID="viewController">
+                <viewController id="kkl-tI-ea6" customClass="ViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="YYT-3j-ozr"/>
                         <viewControllerLayoutGuide type="bottom" id="HXl-dq-H4j"/>
@@ -481,8 +512,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Scout" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y3a-3X-tn3">
-                                <rect key="frame" x="20" y="20" width="280" height="30"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Shortlist" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y3a-3X-tn3">
+                                <rect key="frame" x="16" y="20" width="288" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="WSY-Ka-JtY"/>
                                 </constraints>
@@ -490,13 +521,192 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="p4U-NR-71e">
+                                <rect key="frame" x="16" y="58" width="288" height="452"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r1n-Xn-elp">
+                                <rect key="frame" x="258" y="20" width="48" height="30"/>
+                                <state key="normal" title="Scouts">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="Nb8-AR-RI7" kind="modal" id="UgU-jd-WdP"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="200" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qup-HT-yKA">
+                                <rect key="frame" x="16" y="518" width="288" height="30"/>
+                                <color key="backgroundColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="Done"/>
+                                <connections>
+                                    <segue destination="NSx-yv-BXD" kind="modal" id="33H-7q-Ic7"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Y3a-3X-tn3" firstAttribute="leading" secondItem="xW3-3P-zC8" secondAttribute="leadingMargin" id="4UW-8m-8Lm"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Y3a-3X-tn3" secondAttribute="trailing" id="c4c-2A-YfC"/>
+                            <constraint firstItem="Y3a-3X-tn3" firstAttribute="top" secondItem="YYT-3j-ozr" secondAttribute="bottom" id="cJj-rb-GA6"/>
+                            <constraint firstItem="Qup-HT-yKA" firstAttribute="leading" secondItem="xW3-3P-zC8" secondAttribute="leadingMargin" id="mXG-vw-N2H"/>
+                            <constraint firstItem="Qup-HT-yKA" firstAttribute="trailing" secondItem="xW3-3P-zC8" secondAttribute="trailingMargin" id="soM-WQ-gn9"/>
+                            <constraint firstItem="HXl-dq-H4j" firstAttribute="top" secondItem="Qup-HT-yKA" secondAttribute="bottom" constant="20" id="tH5-Y7-5MY"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lwO-ra-ZNZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1318" y="508"/>
+        </scene>
+        <!--Scouts View Controller-->
+        <scene sceneID="gVl-yt-VAT">
+            <objects>
+                <viewController id="Nb8-AR-RI7" customClass="ScoutsViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="bwK-KR-Wzh"/>
+                        <viewControllerLayoutGuide type="bottom" id="lMq-00-Tv5"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="eXD-XA-9Ae">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Scouts" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XRg-Li-jQg">
+                                <rect key="frame" x="16" y="20" width="288" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="vbu-Lz-ixI"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i4O-q6-Vyr">
+                                <rect key="frame" x="16" y="20" width="57" height="30"/>
+                                <state key="normal" title="Shortlist">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="kkl-tI-ea6" kind="modal" id="dyI-JK-D24"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="200" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dK0-rf-mD8">
+                                <rect key="frame" x="16" y="518" width="288" height="30"/>
+                                <color key="backgroundColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="Done"/>
+                                <connections>
+                                    <segue destination="NSx-yv-BXD" kind="modal" id="DXM-Pw-VB8"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="3" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qtw-jf-4GG">
+                                <rect key="frame" x="162" y="58" width="142" height="30"/>
+                                <state key="normal" title="Squad Players">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" tag="4" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SIX-pc-Sg6">
+                                <rect key="frame" x="162" y="96" width="142" height="30"/>
+                                <state key="normal" title="All Positions">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B4u-EE-AlA">
+                                <rect key="frame" x="16" y="58" width="66" height="68"/>
+                                <state key="normal" title="Scout 0">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cgu-tk-HlX">
+                                <rect key="frame" x="90" y="58" width="64" height="68"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" tag="13" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PAA-nR-KvY">
+                                <rect key="frame" x="162" y="134" width="142" height="30"/>
+                                <state key="normal" title="Squad Players">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" tag="14" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0ip-zh-eLB">
+                                <rect key="frame" x="162" y="172" width="142" height="30"/>
+                                <state key="normal" title="All Positions">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" tag="11" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VG3-YX-0Yv">
+                                <rect key="frame" x="16" y="134" width="66" height="68"/>
+                                <state key="normal" title="Scout 1">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" tag="12" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ui2-Jo-EFk">
+                                <rect key="frame" x="90" y="134" width="64" height="68"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" tag="23" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ode-ph-Uq6">
+                                <rect key="frame" x="162" y="210" width="142" height="30"/>
+                                <state key="normal" title="Squad Players">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" tag="24" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zhh-Gd-6iv">
+                                <rect key="frame" x="162" y="248" width="142" height="30"/>
+                                <state key="normal" title="All Positions">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" tag="21" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yOX-Ic-zZP">
+                                <rect key="frame" x="16" y="210" width="66" height="68"/>
+                                <state key="normal" title="Scout 2">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" tag="22" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q8i-QW-0xP">
+                                <rect key="frame" x="90" y="210" width="64" height="68"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" tag="33" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g8A-N7-MIO">
+                                <rect key="frame" x="162" y="286" width="142" height="30"/>
+                                <state key="normal" title="Squad Players">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" tag="34" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mgo-sT-Ycc">
+                                <rect key="frame" x="162" y="324" width="142" height="30"/>
+                                <state key="normal" title="All Positions">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" tag="31" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PoA-Da-Y7n">
+                                <rect key="frame" x="16" y="286" width="66" height="68"/>
+                                <state key="normal" title="Scout 3">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" tag="32" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sTg-II-d6l">
+                                <rect key="frame" x="90" y="286" width="64" height="68"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="dK0-rf-mD8" firstAttribute="trailing" secondItem="eXD-XA-9Ae" secondAttribute="trailingMargin" id="IIe-8S-tli"/>
+                            <constraint firstItem="dK0-rf-mD8" firstAttribute="leading" secondItem="eXD-XA-9Ae" secondAttribute="leadingMargin" id="IeC-Ji-3ZG"/>
+                            <constraint firstItem="XRg-Li-jQg" firstAttribute="leading" secondItem="eXD-XA-9Ae" secondAttribute="leadingMargin" id="O4F-oE-qGe"/>
+                            <constraint firstItem="XRg-Li-jQg" firstAttribute="top" secondItem="bwK-KR-Wzh" secondAttribute="bottom" id="ioz-pN-1t9"/>
+                            <constraint firstItem="XRg-Li-jQg" firstAttribute="trailing" secondItem="eXD-XA-9Ae" secondAttribute="trailingMargin" id="pu5-xB-Hte"/>
+                            <constraint firstItem="lMq-00-Tv5" firstAttribute="top" secondItem="dK0-rf-mD8" secondAttribute="bottom" constant="20" id="tVk-gc-uni"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5YK-Zb-NTf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1318" y="1157"/>
         </scene>
         <!--Plan View Controller-->
         <scene sceneID="llF-Wg-4PF">
@@ -1209,8 +1419,9 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="vc7-cx-Is7"/>
+        <segue reference="dyI-JK-D24"/>
         <segue reference="XAH-2K-sBM"/>
+        <segue reference="bN1-0t-eRE"/>
         <segue reference="vyB-AB-UoZ"/>
         <segue reference="nuF-C1-9Z6"/>
     </inferredMetricsTieBreakers>

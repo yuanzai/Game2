@@ -58,6 +58,19 @@ struct ZoneFlank {
 
 typedef struct ZoneFlank ZoneFlank;
 
+typedef enum {
+    TaskNone,
+    TaskScout1,
+    TaskScout2,
+    TaskScout3,
+    TaskTraining1,
+    TaskTraining2,
+    TaskTraining3,
+    TaskAdmin1,
+    TaskAdmin2,
+    TaskAdmin3,
+} WeekTask;
+
 
 @interface Structs : NSObject
 + (NSString*) getPositionString:(PositionSide) ps;
