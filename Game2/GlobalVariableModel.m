@@ -9,7 +9,7 @@
 #import "GlobalVariableModel.h"
 #import "GameModel.h"
 #import "Fixture.h"
-
+#import 'C2DArray_double.h'
 #import "LineUp.h"
 @implementation GlobalVariableModel
 {
@@ -32,7 +32,7 @@
     NSMutableDictionary* teamList;
     NSMutableDictionary* playerList;
     
-    double* ageProfile2;
+    NSMutableDictionary* trainingProfile;
 }
 
 + (id)myGlobalVariable
@@ -260,15 +260,37 @@
     return ageProfile;
 }
 
-- (double*) ageProfile2
+- (NSMutableDictionary*) trainingProfile
 {
-    if (ageProfile2 == nil) {
-        double hello[5][5];
-        ageProfile2 = *hello;
-        ageProfile2[2][2]= 0;
+    if (!trainingProfile) {
+        NSMutableDictionary* result = [NSMutableDictionary dictionary];
+        NSArray* allProfiles = [[GameModel myDB]getArrayFrom:@"trainingProfile" whereData:nil sortFieldAsc:@""];
+        __block NSInteger maxAge = 0;
+        __block NSInteger maxProfileID = 0;
+        [allProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            if ([[obj objectForKey:@"AGE"]integerValue] > maxAge)
+                maxAge = [[obj objectForKey:@"AGE"]integerValue]
+            if ([[obj objectForKey:@"PROFILEID"]integerValue] > maxProfileID)
+                maxProfileID = [[obj objectForKey:@"AGE"]integerValue]
+        }];
+        NSDictionary* temp = allProfiles[0];
         
+        [[temp allKeys] enumerateObjectsUsingBlock:^(id key, NSUInteger idx, BOOL *stop) {
+            if ([key isEqualToString@"AGE"] || [key isEqualToString@"PROFILEID"])
+                return;
+                
+            C2DArray_double* new2DArray = [C2DArray_double alloc]initWithRows:maxAge Columns:maxProfileID;
+
+            [allProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                [new2DArray setValue:[[obj objectForKey:@"PROB"]doubleValue] atRow:[[obj objectForKey:@"AGE"]integerValue] Column:[[obj objectForKey:@"PROFILEID"]integerValue]];
+            }];
+                
+            [result setObject:key forKey:new2DArray];
+        }];
+
+        trainingProfile = result;
     }
-    return ageProfile2;
+    return trainingProfile;
 }
 
 + (NSArray*) planStats
