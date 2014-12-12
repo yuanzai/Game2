@@ -1,4 +1,6 @@
-@implementation C2DArray_NSInteger{
+#Import "C2DArray_double.h"
+
+@implementation C2DArray_double{
     NSInteger* matrix_;
     NSUInteger columnCount_;
     NSUInteger rowCount_;
@@ -32,11 +34,11 @@
     return columnCount_;
 }
 
-- (NSInteger)valueAtRow:(NSUInteger)rowIndex Column:(NSUInteger)columnIndex 
+- (double)valueAtRow:(NSUInteger)rowIndex Column:(NSUInteger)columnIndex 
 {
     return matrix_[rowIndex*columnCount_+columnIndex];
 }
-- (void)setValue:(NSInteger)value atRow:(NSUInteger)rowIndex Column:(NSUInteger)columnIndex 
+- (void)setValue:(double)value atRow:(NSUInteger)rowIndex Column:(NSUInteger)columnIndex 
 {
     matrix_[rowIndex*columnCount_+columnIndex] = value;
 }
