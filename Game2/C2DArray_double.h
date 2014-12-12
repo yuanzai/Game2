@@ -1,4 +1,4 @@
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 @interface C2DArray_double : NSObject 
 
 - (id)initWithRows:(NSUInteger)rowCount Columns:(NSUInteger)columnCount;
