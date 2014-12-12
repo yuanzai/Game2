@@ -1,4 +1,4 @@
-#Import "C2DArray_double.h"
+#import "C2DArray_double.h"
 
 @implementation C2DArray_double{
     NSInteger* matrix_;
