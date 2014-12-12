@@ -39,23 +39,29 @@ typedef enum {
 } ScoutPosition;
 
 #import <Foundation/Foundation.h>
+@class Player;
 @class Scout;
-@interface Scouting : NSObject
-@property Scout* scout0;
-@property Scout* scout1;
-@property Scout* scout2;
-@property Scout* scout3;
+@class GameModel;
+@interface Scouting : NSObject<NSCoding>
 @property NSMutableArray* scoutArray;
+@property NSMutableArray* shortListID;
+@property NSInteger shortListLimit;
+@property GameModel* myGame;
+@property NSInteger lastRun;
 
-
-- (void) updateAllScoutsToDatabase;
-
+- (NSArray*) getAllScoutsResults;
 - (void) runAllScouting;
+- (void) removeExcessPlayersFromShortlist;
+- (void) addPlayersFromResultToShortlist;
+- (void) addPlayerToShortList:(Player*)player;
+- (void) removeFromShortList:(Player*)player;
+- (NSArray*) getShortList;
+
+
 
 @end
 
-@interface Scout : NSObject
-@property NSInteger SCOUTID;
+@interface Scout : NSObject <NSCoding>
 @property NSString* NAME;
 @property NSInteger JUDGEMENT; // judging ability + potential
 @property NSInteger YOUTH; // judging potential in < 23yr olds
@@ -67,15 +73,21 @@ typedef enum {
 @property ScoutPosition SCOUTPOSITION;
 @property NSMutableArray* scoutResults;
 @property NSArray* valueArray;
-
-- (id) initWithScoutID: (NSInteger) thisScoutID;
-- (void) updateScoutToDatabase;
+@property GameModel* myGame;
 
 - (BOOL) isScoutingSuccess;
 - (NSArray*) getScoutingPlayerArray;
-
 - (NSString*) getStringForScoutType:(ScoutTypes)type;
 - (NSString*) getStringForScoutPosition:(ScoutPosition) pos;
+
+- (Player*) scoutingResultwithFinalCut:(NSInteger) finalCut
+                             RandomCut:(NSInteger) randomCut
+                              FirstCut:(NSInteger) firstCut
+                          PotentialCut:(NSInteger) potentialCut
+                            ValueLimit:(double) valueLimit
+                              Position:(ScoutPosition) pos
+                              AgeLimit:(NSInteger) ageLimit;
+
 
 @end
 

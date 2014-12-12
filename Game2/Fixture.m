@@ -195,6 +195,21 @@
     return fixtureList;
 }
 
+- (NSArray*) getScoresForNonSinglePlayerForDate:(NSInteger)date
+{
+    NSMutableArray* result = [NSMutableArray array];
+    NSArray* temp = [self getFixturesForNonSinglePlayerForDate:date];
+    [temp enumerateObjectsUsingBlock:^(Fixture* fx, NSUInteger idx, BOOL *stop) {
+        NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+        [dict setObject:fx.homeTeam.Name forKey:@"HomeTeam"];
+        [dict setObject:fx.awayTeam.Name forKey:@"AwayTeam"];
+        [dict setObject:@(fx.HOMESCORE) forKey:@"HomeScore"];
+        [dict setObject:@(fx.AWAYSCORE) forKey:@"AwayScore"];
+        [result addObject:dict];
+    }];
+    return result;
+}
+
 - (void) setCurrentLeagueTable
 {
     currentLeagueTable = [self getLeagueTableForSeason:[[GameModel gameData]season]];
@@ -229,6 +244,18 @@
     return [[Fixture alloc]initWithMatchID:matchID];
 }
 
+- (NSInteger) getTeamPositionInLeague:(NSInteger) TeamID
+{
+    __block NSInteger result = 0;
+    [currentLeagueTable enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if ([[obj objectForKey:@"TEAMID"]integerValue] == TeamID) {
+            result = [[obj objectForKey:@"TEAMID"]integerValue];
+            *stop = YES;
+        }
+    }];
+    return result;
+}
+
 - (void) printTable
 {
     [currentLeagueTable enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
@@ -261,6 +288,8 @@
 @synthesize AWAYLOGJSON;
 @synthesize PLAYED;
 
+@synthesize homeTeam, awayTeam;
+
 - (id) initWithMatchID:(NSInteger) thisMatchID
 {
     self = [super init];
@@ -269,6 +298,9 @@
         [result enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
             [self setValuesForKeysWithDictionary:result];
         }];
+        GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
+        homeTeam = [globals getTeamFromID:HOMETEAM];
+        awayTeam = [globals getTeamFromID:AWAYTEAM];
     }
     return self;
 }

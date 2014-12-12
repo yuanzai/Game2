@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface TacticView : UIView
-@property(nonatomic,retain) id target;
+@property(nonatomic,retain) UIViewController* target;
 @end

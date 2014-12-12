@@ -8,9 +8,11 @@
 
 #import "PlayersViewController.h"
 #import "GameModel.h"
-#import "LineUp.h"
 #import "PlayerInfoViewController.h"
 #import "PlayerList.h"
+
+#import "ViewController.h"
+#import "PlanViewController.h"
 
 @interface PlayersViewController ()
 
@@ -21,11 +23,12 @@
     GameModel* myGame;
 }
 @synthesize tableSource;
+@synthesize playersView;
 - (void)viewDidLoad
 {
     myGame = [GameModel myGame];
-
-    UITableView* playersView = (UITableView*) [self.view viewWithTag:1];
+    [myGame.source setObject:[myGame.source objectForKey:@"source"] forKey:@"enterPlayers"];
+    [myGame.source setObject:@"enterPlayers" forKey:@"source"];
     tableSource = [[PlayerList alloc]initWithTarget:self];
     playersView.delegate = tableSource;
     playersView.dataSource = tableSource;
@@ -44,11 +47,20 @@
 
 - (void) backTo:(UIButton*) sender
 {
-    myGame.currentViewController = self;
-    [myGame saveThisGame];
-    [myGame exitPlayers];
+    NSString* enterPlayersSource = [myGame.source objectForKey:@"enterPlayers"];
+    if ([enterPlayersSource isEqualToString:@"enterTactic"] || [enterPlayersSource isEqualToString:@"enterPreGame"]) {
+        ViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:enterPlayersSource];
+        [self presentViewController:vc animated:YES completion:nil];
+
+    } else if ([enterPlayersSource isEqualToString:@"enterPlan"]){
+        PlanViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:enterPlayersSource];
+        [self presentViewController:vc animated:YES completion:nil];
+    }
 }
 
+- (void)viewDidDisappear:(BOOL)animated{
+    [myGame saveThisGame];
+}
 /*
 #pragma mark - Navigation
 

@@ -7,6 +7,7 @@
 //
 
 #import "PlanViewController.h"
+#import "PlayersViewController.h"
 #import "GameModel.h"
 #import "GlobalVariableModel.h"
 #import "Training.h"
@@ -56,10 +57,14 @@
     [self loadData];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [myGame saveThisGame];
+}
+
 - (void) loadData
 {
     myGame = [GameModel myGame];
-    myGame.currentViewController = self;
     thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[myGame.source objectForKey:@"PlanID"]integerValue]];
     statArray = [GlobalVariableModel planStats];
     
@@ -131,12 +136,12 @@
 {
     [myGame.source setObject:@"enterPlan" forKey:@"supersource"];
     [myGame.source setObject:@"enterPlanPlayers" forKey:@"source"];
-    [myGame enterPlayers];
+    PlayersViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"enterPlayers"];
+    [self presentViewController:vc animated:YES completion:nil];
 }
 
 - (void) backTo:(UIButton*) sender
 {
-    [thisPlan updateTrainingPlanToDatabase];
     [myGame enterTraining];
 }
 

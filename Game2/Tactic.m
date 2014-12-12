@@ -43,18 +43,18 @@
             tp.ps = (PositionSide) {[[obj objectForKey:@"POSITIONVAL"]integerValue],[[obj objectForKey:@"SIDEVAL"]integerValue]};
             if (playerList) {
                 if ([playerList objectForKey:[@(idx) stringValue]])
-                    tp.player = [[[[GameModel myGame]myGlobalVariableModel]playerList]objectForKey:[[playerList objectForKey:[@(idx) stringValue]]stringValue]];
+                    tp.player = [[[GlobalVariableModel myGlobalVariable] playerList]objectForKey:[[playerList objectForKey:[@(idx) stringValue]]stringValue]];
             }
             formationArray[[[obj objectForKey:@"POSITIONVAL"]integerValue]][[[obj objectForKey:@"SIDEVAL"]integerValue]] = tp;
             [positionArray addObject:tp];
         }];
         if (playerList) {
             if ([playerList objectForKey:@"GK"])
-                GoalKeeper = [[[[GameModel myGame]myGlobalVariableModel]playerList]objectForKey:[[playerList objectForKey:@"GK"]stringValue]];
+                GoalKeeper = [[[GlobalVariableModel myGlobalVariable] playerList]objectForKey:[[playerList objectForKey:@"GK"]stringValue]];
             
             for (NSInteger i = 0; i < 7; i++) {
                 if ([playerList objectForKey:[NSString stringWithFormat:@"SUB%i",i]]) {
-                    [SubList addObject:[[[[GameModel myGame]myGlobalVariableModel]playerList]objectForKey:[[playerList objectForKey:[NSString stringWithFormat:@"SUB%i",i]]stringValue]]];
+                    [SubList addObject:[[[GlobalVariableModel myGlobalVariable] playerList]objectForKey:[[playerList objectForKey:[NSString stringWithFormat:@"SUB%i",i]]stringValue]]];
                 }
             }
         }
@@ -176,6 +176,16 @@
         formationArray[fromPS.position][fromPS.side].ps = fromPS;
     
     return YES;
+}
+
+- (void) validateTactic
+{
+    if (GoalKeeper.isInjured)
+        GoalKeeper = nil;
+    [positionArray enumerateObjectsUsingBlock:^(TacticPosition* tp, NSUInteger idx, BOOL *stop) {
+        if (tp.player.isInjured)
+            tp.player = nil;
+    }];
 }
 
 - (BOOL) isFormationFilled

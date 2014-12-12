@@ -12,43 +12,114 @@
 #import "Team.h"
 
 @implementation Scouting
-{
-    GameModel* myGame;
-}
-@synthesize scoutArray;
+
+@synthesize scoutArray, shortListID, shortListLimit, myGame, lastRun;
 
 - (id) init
 {
     self = [super init];
     if (self){
-        myGame = [GameModel myGame];
         scoutArray = [NSMutableArray array];
         for (NSInteger i = 0; i < 4; i ++) {
-            [scoutArray addObject:[[Scout alloc]initWithScoutID:i]];
+            [scoutArray addObject:[Scout new]];
         }
+        shortListLimit = 50;
     }; return self;
 }
 
-- (void) updateAllScoutsToDatabase
-{
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+    self.scoutArray = [decoder decodeObjectForKey:@"scoutArray"];
+    self.shortListID = [decoder decodeObjectForKey:@"shortListID"];
+    self.shortListLimit = [decoder decodeIntegerForKey:@"shortListLimit"];
+    self.lastRun = [decoder decodeIntegerForKey:@"lastRun"];
+
     [scoutArray enumerateObjectsUsingBlock:^(Scout* s, NSUInteger idx, BOOL *stop) {
-        [s updateScoutToDatabase];
+        s.myGame = myGame;
     }];
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)encoder {
+    [encoder encodeObject:self.scoutArray forKey:@"scoutArray"];
+    [encoder encodeObject:self.shortListID forKey:@"shortListID"];
+    [encoder encodeInteger:self.shortListLimit forKey:@"shortListLimit"];
+    [encoder encodeInteger:self.lastRun forKey:@"lastRun"];
 }
 
 - (NSArray*) getShortList
 {
     __block NSMutableArray* shortList = [NSMutableArray array];
-    NSMutableArray* shortListID = [[myGame myData]shortList];
     [shortListID enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        Player* p = [[myGame myGlobalVariableModel]getPlayerFromID:[obj integerValue]];
+        Player* p = [[GlobalVariableModel myGlobalVariable]getPlayerFromID:[obj integerValue]];
         if (p.TeamID !=0) {
             [shortList addObject:p];
         } else {
-            [shortList removeObjectAtIndex:idx];
+            [shortListID removeObjectAtIndex:idx];
         }
     }];
     return shortList;
+}
+
+- (void) addPlayerToShortList:(Player*)player
+{
+    [shortListID enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if ([obj integerValue] == player.PlayerID) {
+            *stop = YES;
+            return;
+        }
+    }];
+    [shortListID addObject:@(player.PlayerID)];
+}
+
+- (void) removeFromShortList:(Player*)player
+{
+    [shortListID enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if ([obj integerValue] == player.PlayerID) {
+            [shortListID removeObjectAtIndex:idx];
+            *stop = YES;
+            return;
+        }
+    }];
+}
+
+- (NSArray*) getAllScoutsResults
+{
+    NSMutableSet* resultSet = [NSMutableSet set];
+    [scoutArray enumerateObjectsUsingBlock:^(Scout* s, NSUInteger idx, BOOL *stop) {
+        if (s.ISACTIVE) {
+            if (s.scoutResults) {
+                [resultSet addObjectsFromArray:s.scoutResults];
+            }
+        }
+    }];
+    return [resultSet allObjects];
+}
+
+- (void) addPlayersFromResultToShortlist
+{
+    [scoutArray enumerateObjectsUsingBlock:^(Scout* s, NSUInteger idx, BOOL *stop) {
+        if (s.ISACTIVE) {
+            if (s.scoutResults) {
+                [s.scoutResults enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+                    [self addPlayerToShortList:p];
+                }];
+            }
+        }
+    }];
+}
+
+- (void) removeExcessPlayersFromShortlist
+{
+    if ([shortListID count] > shortListLimit) {
+        NSInteger toRemove =[shortListID count] - shortListLimit;
+        for (NSInteger i = 0; i<toRemove; i++) {
+            [shortListID removeObjectAtIndex:i];
+        }
+    }
 }
 
 - (void) runAllScouting
@@ -59,15 +130,12 @@
             [s.scoutResults addObjectsFromArray:[s getScoutingPlayerArray]];
         }
     }];
+    lastRun = myGame.myData.weekdate;
 }
 
 @end
 
 @implementation Scout
-{
-    GameModel* myGame;
-}
-@synthesize SCOUTID;
 @synthesize NAME;
 @synthesize JUDGEMENT; // judging ability + potential
 @synthesize YOUTH; // judging potential in < 23yr olds
@@ -79,29 +147,52 @@
 @synthesize SCOUTPOSITION; // scout type
 @synthesize scoutResults;
 @synthesize valueArray;
+@synthesize myGame;
 
-- (id) initWithScoutID: (NSInteger) thisScoutID {
+- (id)init {
     self = [super init];
     if (self) {
-        SCOUTID = thisScoutID;
         myGame = [GameModel myGame];
-        NSDictionary* result = [[GameModel myDB]getResultDictionaryForTable:@"scouts" withKeyField:@"SCOUTID" withKey:thisScoutID];
-        valueArray = [result allKeys];
-        [result enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-            [self setValuesForKeysWithDictionary:result];
-        }];
+        SCOUTPOSITION = ScoutAny;
+        SCOUTTYPE = SquadPlayer;
+        ISACTIVE = NO;
+    }; return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (!self) {
+        return nil;
     }
+    
+    self.JUDGEMENT = [decoder decodeIntegerForKey:@"JUDGEMENT"];
+    self.YOUTH = [decoder decodeIntegerForKey:@"YOUTH"];
+    self.VALUE = [decoder decodeIntegerForKey:@"VALUE"];
+    self.KNOWLEDGE = [decoder decodeIntegerForKey:@"KNOWLEDGE"];
+    self.DILIGENCE = [decoder decodeIntegerForKey:@"DILIGENCE"];
+    self.NAME = [decoder decodeObjectForKey:@"NAME"];
+
+    self.SCOUTTYPE = [decoder decodeIntegerForKey:@"SCOUTTYPE"];
+    self.SCOUTPOSITION = [decoder decodeIntegerForKey:@"SCOUTPOSITION"];
+    self.ISACTIVE = [decoder decodeIntegerForKey:@"ISACTIVE"];
+
     return self;
 }
 
-- (void) updateScoutToDatabase
-{
-    __block NSMutableDictionary* updateData = [NSMutableDictionary dictionary];
-    [valueArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        [updateData setObject:[self valueForKey:obj] forKey:obj];
-    }];
-    [[GameModel myDB]updateDatabaseTable:@"scouts" withKeyField:@"SCOUTID" withKey:SCOUTID withDictionary:updateData];
+- (void)encodeWithCoder:(NSCoder *)encoder {
+    [encoder encodeInteger:self.JUDGEMENT forKey:@"JUDGEMENT"];
+    [encoder encodeInteger:self.YOUTH forKey:@"YOUTH"];
+    [encoder encodeInteger:self.VALUE forKey:@"VALUE"];
+    [encoder encodeInteger:self.KNOWLEDGE forKey:@"KNOWLEDGE"];
+    [encoder encodeInteger:self.DILIGENCE forKey:@"DILIGENCE"];
+    [encoder encodeObject:self.NAME forKey:@"NAME"];
+    
+    [encoder encodeInteger:self.SCOUTTYPE forKey:@"SCOUTTYPE"];
+    [encoder encodeInteger:self.SCOUTPOSITION forKey:@"SCOUTPOSITION"];
+    [encoder encodeInteger:self.ISACTIVE forKey:@"ISACTIVE"];
+
 }
+
 
 - (BOOL) isScoutingSuccess
 {
@@ -124,8 +215,10 @@
     }
     success = (NSInteger)((double) success * (1 + (double)DILIGENCE * 0.03));
     
+    /*
     if (arc4random() % 1000 > success)
         return NO;
+     */
     return YES;
 }
 
@@ -216,13 +309,13 @@
             break;
     }
     
-    NSString* firstCutSQL = [NSString stringWithFormat:@"SELECT * FROM players WHERE BIRTHYEAR > %i AND VALUATION < %f AND %@ ORDER BY ABILITY DESC LIMIT %i",ageLimit, valueLimit,positionSQL,firstCut];
+    NSString* firstCutSQL = [NSString stringWithFormat:@"SELECT * FROM players WHERE BIRTHYEAR > %i AND VALUATION < %f %@ ORDER BY ABILITY DESC LIMIT %i",ageLimit, valueLimit,positionSQL,firstCut];
     NSString* potentialCutSQL = [NSString stringWithFormat:@"SELECT * FROM (%@) ORDER BY POTENTIAL DESC LIMIT %i",firstCutSQL, potentialCut];
     NSString* randomCutSQL = [NSString stringWithFormat:@"SELECT * FROM (SELECT * FROM (%@) ORDER BY POTENTIAL LIMIT %i) ORDER BY RANDOM() LIMIT %i",firstCutSQL, firstCut - potentialCut, randomCut - potentialCut];
-    NSString* finalCutSQL = [NSString stringWithFormat:@"SELECT * FROM ((%@) UNION (%@)) ORDER BY ABILITY DESC LIMIT %i",potentialCutSQL,randomCutSQL,finalCut];
+    NSString* finalCutSQL = [NSString stringWithFormat:@"SELECT * FROM (SELECT * FROM (%@) UNION SELECT * FROM (%@)) ORDER BY ABILITY DESC LIMIT %i",potentialCutSQL,randomCutSQL,finalCut];
     NSString* finalOneSQL = [NSString stringWithFormat:@"SELECT PLAYERID FROM (%@) ORDER BY RANDOM() LIMIT 1",finalCutSQL];
     NSArray* resultArray = [[myGame myDB]getArrayFromQuery:finalOneSQL];
-    return [[myGame myGlobalVariableModel]getPlayerFromID:[[resultArray[0] objectForKey:@"PLAYERID"]integerValue]];
+    return [[GlobalVariableModel myGlobalVariable]getPlayerFromID:[[resultArray[0] objectForKey:@"PLAYERID"]integerValue]];
 }
 
 - (void) removeScout

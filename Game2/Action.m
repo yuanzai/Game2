@@ -70,7 +70,7 @@ static double runtime3 =0.0;
 {
     //ZONE //FLANK //ATTACKTYPE
     if (!previousAction){
-        NSDictionary* record = [[GameModel myGlobalVariableModel] getProbResultFromTable:@"ActionStart_ZF" ZoneFlank:ZFNil PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:NO Team:nil PositionSideToExclude:PSNil];
+        NSDictionary* record = [[GlobalVariableModel myGlobalVariable] getProbResultFromTable:@"ActionStart_ZF" ZoneFlank:ZFNil PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:NO Team:nil PositionSideToExclude:PSNil];
         
         FromZoneFlank = [Structs getZoneFlankFromDictionary:record];
         AttackType = [record objectForKey:@"OUTATTACKTYPE"];
@@ -81,7 +81,7 @@ static double runtime3 =0.0;
             FromPlayer = thisTeam.currentTactic.GoalKeeper;
             
         } else {
-            record = [[GameModel myGlobalVariableModel] getProbResultFromTable:@"ActionStartPS_PS" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
+            record = [[GlobalVariableModel myGlobalVariable] getProbResultFromTable:@"ActionStartPS_PS" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
             FromPositionSide = [Structs getPositionSideFromDictionary:record];
             FromPlayer = [thisTeam.currentTactic getPlayerAtPositionSide:FromPositionSide];
             if (!FromPlayer)
@@ -121,13 +121,13 @@ static double runtime3 =0.0;
     if (![self isGoalAttempt:AttackType]) {
         
             date = [NSDate date];
-        record = [[GameModel myGlobalVariableModel] getProbResultFromTable:@"ToZoneFlankZF_ZFAtt" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:NO Team:nil PositionSideToExclude:PSNil];
+        record = [[GlobalVariableModel myGlobalVariable] getProbResultFromTable:@"ToZoneFlankZF_ZFAtt" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:NO Team:nil PositionSideToExclude:PSNil];
         ToZoneFlank = [Structs getZoneFlankFromDictionary:record];
         [Action addToRuntime:1 amt:-[date timeIntervalSinceNow]];
 
         date = [NSDate date];
 
-        record = [[GameModel myGlobalVariableModel] getProbResultFromTable:@"ToPlayerToZF_PS_dy" ZoneFlank:ToZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:FromPositionSide];
+        record = [[GlobalVariableModel myGlobalVariable] getProbResultFromTable:@"ToPlayerToZF_PS_dy" ZoneFlank:ToZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:FromPositionSide];
         [Action addToRuntime:2 amt:-[date timeIntervalSinceNow]];
         date = [NSDate date];
         ToPositionSide = [Structs getPositionSideFromDictionary:record];
@@ -137,7 +137,7 @@ static double runtime3 =0.0;
         ToPlayer = [thisTeam.currentTactic getPlayerAtPositionSide:ToPositionSide];
 
 
-        record = [[GameModel myGlobalVariableModel] getProbResultFromTable:@"NextAttackType_ZFAtt" ZoneFlank:ToZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:NO Team:nil PositionSideToExclude:PSNil];
+        record = [[GlobalVariableModel myGlobalVariable] getProbResultFromTable:@"NextAttackType_ZFAtt" ZoneFlank:ToZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:NO Team:nil PositionSideToExclude:PSNil];
         NextAttack = [record objectForKey:@"OUTATTACKTYPE"];
 
     }
@@ -156,10 +156,10 @@ static double runtime3 =0.0;
         DefenseType = AttackType;
     } else if (!([self isSetPieceShot:AttackType] || FromZoneFlank.zone == GK)) {
         
-        record = [[GameModel myGlobalVariableModel] getProbResultFromTable:@"DefenseType_ZFAtt_dy" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:YES Team:nil PositionSideToExclude:PSNil];
+        record = [[GlobalVariableModel myGlobalVariable] getProbResultFromTable:@"DefenseType_ZFAtt_dy" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:AttackType DefenseType:@"" isDynamicProb:YES Team:nil PositionSideToExclude:PSNil];
         DefenseType = [record objectForKey:@"OUTDEFENSETYPE"];
         
-        record = [[GameModel myGlobalVariableModel] getProbResultFromTable:@"OppPlayerPS_PS_dy" ZoneFlank:ZFNil PositionSide:FromPositionSide AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:oppTeam PositionSideToExclude:PSNil];
+        record = [[GlobalVariableModel myGlobalVariable] getProbResultFromTable:@"OppPlayerPS_PS_dy" ZoneFlank:ZFNil PositionSide:FromPositionSide AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:oppTeam PositionSideToExclude:PSNil];
         OppPositionSide = [Structs getPositionSideFromDictionary:record];
         OppPlayer = [oppTeam.currentTactic getPlayerAtPositionSide:OppPositionSide];
         
@@ -187,8 +187,8 @@ static double runtime3 =0.0;
     __block double TopQ = 0.0;
     __block double StatQ = 0.0;
     
-    NSDictionary* statGrid = [[GameModel myGlobalVariableModel] getSGridForType:type Coeff:@"COEFF"];
-    NSDictionary* topStatGrid = [[GameModel myGlobalVariableModel] getSGridForType:type Coeff:@"TOP"];;
+    NSDictionary* statGrid = [[GlobalVariableModel myGlobalVariable] getSGridForType:type Coeff:@"COEFF"];
+    NSDictionary* topStatGrid = [[GlobalVariableModel myGlobalVariable] getSGridForType:type Coeff:@"TOP"];;
     
     __block int topStatRandom = arc4random() % 6;
     
@@ -272,7 +272,7 @@ static double runtime3 =0.0;
     }
     
     if (arc4random()%10000 < foulProb) {
-        record = [[GameModel myGlobalVariableModel] getProbResultFromTable:@"NextAttackType_ZFAtt" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"FoulDef" DefenseType:@"" isDynamicProb:NO Team:nil PositionSideToExclude:PSNil];
+        record = [[GlobalVariableModel myGlobalVariable] getProbResultFromTable:@"NextAttackType_ZFAtt" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"FoulDef" DefenseType:@"" isDynamicProb:NO Team:nil PositionSideToExclude:PSNil];
         NextAttack = [record objectForKey:@"OUTATTACKTYPE"];
         ToZoneFlank = FromZoneFlank;
         
@@ -339,7 +339,7 @@ static double runtime3 =0.0;
         OppPlayer = OppKeeper;
     } else {
         
-        NSDictionary* record = [[GameModel myGlobalVariableModel] getProbResultFromTable:@"FreeKickPlayerPS_ZF_dy" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
+        NSDictionary* record = [[GlobalVariableModel myGlobalVariable] getProbResultFromTable:@"FreeKickPlayerPS_ZF_dy" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:YES Team:thisTeam PositionSideToExclude:PSNil];
         
         FromPositionSide =[Structs getPositionSideFromDictionary:record];
         FromPlayer = [thisTeam.currentTactic getPlayerAtPositionSide:FromPositionSide];
@@ -404,7 +404,7 @@ static double runtime3 =0.0;
     if (previousAction)
         onTarget = previousAction.attQuotient * (10+r)/100 + attQuotient * (90-r)/100;
 
-    NSLog(@"a-%f d-%f",attQuotient,defQuotient);
+    //NSLog(@"a-%f d-%f",attQuotient,defQuotient);
     if ([AttackType isEqualToString:@"Penalty"]) {
         if (arc4random() % 10000 > MAX((onTarget/30*500 + 9500),9950)) {
             result = OffTarget;
@@ -459,7 +459,7 @@ static double runtime3 =0.0;
         [AttackType isEqualToString:@"FreekickCross"]) {
         
         NSString* freekickAttack = [AttackType stringByReplacingOccurrencesOfString:@"Freekick" withString:@""];
-        NSInteger prob = [[GameModel myGlobalVariableModel] getAttackOutcomesForZoneFlank:FromZoneFlank AttackType:freekickAttack];
+        NSInteger prob = [[GlobalVariableModel myGlobalVariable] getAttackOutcomesForZoneFlank:FromZoneFlank AttackType:freekickAttack];
         
         if (prob > (arc4random() % 10000)) {
             result = Fail;
@@ -468,10 +468,10 @@ static double runtime3 =0.0;
         }
     } else {
         
-        NSInteger prob = [[GameModel myGlobalVariableModel] getAttackOutcomesForZoneFlank:FromZoneFlank AttackType:AttackType];
+        NSInteger prob = [[GlobalVariableModel myGlobalVariable] getAttackOutcomesForZoneFlank:FromZoneFlank AttackType:AttackType];
         
         if (prob > (arc4random() % 10000)) {
-            record = [[GameModel myGlobalVariableModel] getProbResultFromTable:@"FailOut_ZF" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:NO Team:nil PositionSideToExclude:PSNil];
+            record = [[GlobalVariableModel myGlobalVariable] getProbResultFromTable:@"FailOut_ZF" ZoneFlank:FromZoneFlank PositionSide:PSNil AttackType:@"" DefenseType:@"" isDynamicProb:NO Team:nil PositionSideToExclude:PSNil];
             NSString* recordOutcome = [record objectForKey:@"OUTCORNER"];
             
             //result = ThrowIn;

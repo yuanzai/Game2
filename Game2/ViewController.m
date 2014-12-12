@@ -11,6 +11,7 @@
 #import "GlobalVariableModel.h"
 #import "Match.h"
 #import "LineUp.h"
+#import "TacticView.h"
 
 @interface ViewController ()
 
@@ -23,11 +24,10 @@
 - (void)viewDidLoad
 {
     myGame = [GameModel myGame];
-    myGame.currentViewController = self;
     [self getButtons];
     UILabel* time = (UILabel*)[self.view viewWithTag:620];
     time.font = [GlobalVariableModel newFont2Large];
-
+    
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 }
@@ -35,6 +35,11 @@
 - (void) getButtons
 {
     for (id subview in self.view.subviews) {
+        if ([subview isKindOfClass:[TacticView class]]) {
+            TacticView* t = (TacticView*) subview;
+            t.target = self;
+        }
+        
         if ([subview isKindOfClass:[UILabel class]]) {
             UILabel* l = (UILabel*) subview;
             if (l.tag == 201) {
@@ -53,11 +58,12 @@
 
 - (void) viewDidDisappear:(BOOL)animated
 {
-    NSLog(@"DisAppear");
+
 }
 - (void) viewDidAppear:(BOOL)animated
 {
-    NSLog(@"Appear");
+    NSLog(@"myGame.source - %@", myGame.source);
+    
 }
 
 - (void) buttonAction:(UIButton*) sender
@@ -69,6 +75,7 @@
             break;
         case 1002:
             [myGame loadWithGameID:1];
+            [self goToView];
             break;
         case 1003:
             break;
@@ -103,8 +110,7 @@
             myGame.myData.weekTask = TaskAdmin3;
             break;
         case 200:
-            if (myGame.myData.weekTask != TaskNone)
-                [myGame enterTask];
+            //see shouldPerformSegue
             break;
         case 300:
             [myGame enterPostTask];
@@ -142,6 +148,7 @@
             [myGame saveThisGame];
             break;
         case 1100:
+            [myGame enterTactic];
             break;
         case 1200:
             [myGame enterTraining];
@@ -151,8 +158,7 @@
         case 1212:
         case 1213:
             myGame.source = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(sender.tag-1210),@"PlanID",@"enterPlan",@"source", nil];
-            NSLog(@"Data source %@",myGame.source);
-            //[myGame enterPlan];
+            [myGame enterPlan];
             break;
         default:
             break;
@@ -186,19 +192,23 @@
     time.text = [@(myGame.myData.nextMatch.matchMinute) stringValue];
     
     if (!myGame.myData.nextMatch.isOver && ! myGame.myData.nextMatch.isPaused)
-        [self performSelector:@selector(updateCommentaryBoxWith:) withObject:nextLine afterDelay:.2];
+        [self performSelector:@selector(updateCommentaryBoxWith:) withObject:nextLine afterDelay:.1];
 }
 
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender
 {
     switch (((UIButton*)sender).tag) {
         case 500:
-            if (![myGame.myData.currentLineup validateTactic]) {
+            if (![myGame.myData.myLineup validateTactic]) {
                 NSLog(@"Invalid Tactic");
                 return NO;
             }
             break;
-            
+        case 200:
+            if (myGame.myData.weekTask == TaskNone)
+                return NO;
+            [myGame enterTask];
+            break;
         default:
             break;
             
@@ -210,6 +220,11 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void) goToView{
+    ViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:myGame.myData.weekStage];
+    [self presentViewController:vc animated:YES completion:nil];
 }
 
 @end

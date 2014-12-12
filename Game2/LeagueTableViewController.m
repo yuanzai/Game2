@@ -34,7 +34,7 @@
     //leagueTableView = (UITableView*) [self.view viewWithTag:1410];
     leagueTableView.delegate = self;
     leagueTableView.dataSource = self;
-    if (!myGame.myData.currentLeagueTournament.currentLeagueTable)
+    if (!myGame.myData.myTournament.currentLeagueTable)
         [NSException raise:@"No League Table" format:@"No League Table"];
     // Do any additional setup after loading the view.
 }
@@ -46,7 +46,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [myGame.myData.currentLeagueTournament.currentLeagueTable count] + 1;
+    return [myGame.myData.myTournament.currentLeagueTable count] + 1;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -67,9 +67,9 @@
         return cell;
     
     
-    NSDictionary* row = myGame.myData.currentLeagueTournament.currentLeagueTable[indexPath.row - 1];
+    NSDictionary* row = myGame.myData.myTournament.currentLeagueTable[indexPath.row - 1];
     NSLog(@"row %@",row);
-    Team* thisTeam = [myGame.myGlobalVariableModel.teamList objectForKey:[[row objectForKey:@"TEAM"]stringValue]];
+    Team* thisTeam = [[[GlobalVariableModel myGlobalVariable]teamList] objectForKey:[[row objectForKey:@"TEAM"]stringValue]];
     
     cell.team.font = [GlobalVariableModel newFont2Small];
     cell.pos.text = [@(indexPath.row) stringValue];

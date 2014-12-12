@@ -23,7 +23,7 @@
     NextTeamName.lineBreakMode = NSLineBreakByWordWrapping;
     NextTeamName.textAlignment = NSTextAlignmentCenter;
 
-    NextTeamName.text = [NSString stringWithFormat:@"%@\nv\n%@",[myGame.myGlobalVariableModel getTeamFromID:myGame.myData.nextFixture.HOMETEAM].Name,[myGame.myGlobalVariableModel getTeamFromID:myGame.myData.nextFixture.AWAYTEAM].Name];
+    NextTeamName.text = [NSString stringWithFormat:@"%@\nv\n%@",[[GlobalVariableModel myGlobalVariable] getTeamFromID:myGame.myData.nextFixture.HOMETEAM].Name,[[GlobalVariableModel myGlobalVariable] getTeamFromID:myGame.myData.nextFixture.AWAYTEAM].Name];
     // Do any additional setup after loading the view.
 }
 

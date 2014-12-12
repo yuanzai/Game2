@@ -13,5 +13,6 @@
 
 @interface PlayersViewController : UIViewController //<UITableViewDataSource,UITableViewDelegate>
 @property (strong,nonatomic) PlayerList *tableSource;
+@property (strong,nonatomic) IBOutlet UITableView* playersView;
 
 @end

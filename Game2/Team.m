@@ -40,13 +40,13 @@
     
     Name = [result objectForKey:@"NAME"];
     TournamentID = [[result objectForKey:@"TOURNAMENTID"]integerValue];
-    leagueTournament = [[myGame.myGlobalVariableModel tournamentList]objectForKey:[@(TournamentID) stringValue]];
+    leagueTournament = [[[GlobalVariableModel myGlobalVariable]  tournamentList]objectForKey:[@(TournamentID) stringValue]];
     
     PlayerList = [NSMutableArray array];
     PlayerDictionary = [NSMutableDictionary dictionary];
 
     [PlayerIDList enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-        Player* thisPlayer = [[[GameModel myGlobalVariableModel]playerList]objectForKey:[NSString stringWithFormat:@"%@",obj]];
+        Player* thisPlayer = [[[GlobalVariableModel myGlobalVariable]playerList]objectForKey:[NSString stringWithFormat:@"%@",obj]];
         [PlayerList addObject:thisPlayer];
         [PlayerDictionary setObject:thisPlayer forKey:[obj stringValue]];
     }];

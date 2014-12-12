@@ -32,6 +32,7 @@
     NSMutableDictionary* teamList;
     NSMutableDictionary* playerList;
     
+    double* ageProfile2;
 }
 
 + (id)myGlobalVariable
@@ -40,10 +41,15 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         myGlobalVariable = [[self alloc] init];
+        [myGlobalVariable setAgeProfile2:nil];
     });
     return myGlobalVariable;
 }
 
+- (void) setAgeProfile2:(double*) temp
+{
+    ageProfile2 = temp;
+}
 
 //Fonts
 + (UIFont*) newFont1Small {
@@ -184,6 +190,8 @@
 
 - (Team*) getTeamFromID:(NSInteger) TEAMID
 {
+    if (!teamList)
+        [self teamList];
     return [teamList objectForKey:[@(TEAMID) stringValue]];
 }
 
@@ -201,6 +209,8 @@
 
 - (Player*) getPlayerFromID:(NSInteger) PLAYERID
 {
+    if (!playerList)
+        [self playerList];
     return [playerList objectForKey:[@(PLAYERID) stringValue]];
 }
 # pragma mark Training Methods
@@ -217,6 +227,7 @@
     }
     return statBiasTable ;
 }
+
 
 - (NSArray*) ageProfile
 {
@@ -239,8 +250,25 @@
             }
         }];
         ageProfile = result;
+        
+        //double* testArray[5][5][5];
+        //NSMutableArray* newA = [NSMutableArray array];
+        //[newA addObject: [NSValue valueWithPointer:testArray]];
+        //ageProfile
+        
     }
     return ageProfile;
+}
+
+- (double*) ageProfile2
+{
+    if (ageProfile2 == nil) {
+        double hello[5][5];
+        ageProfile2 = *hello;
+        ageProfile2[2][2]= 0;
+        
+    }
+    return ageProfile2;
 }
 
 + (NSArray*) planStats

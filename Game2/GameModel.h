@@ -9,22 +9,21 @@
 #import <Foundation/Foundation.h>
 #import "SinglePlayerData.h"
 #import "Structs.h"
-#import "GlobalVariableModel.h"
+//#import "GlobalVariableModel.h"
 #import "DatabaseModel.h"
 
 
 @class SinglePlayerData;
 @class Match;
 @class DatabaseModel;
-@class GlobalVariableModel;
+//@class GlobalVariableModel;
 @class Player;
 
 @interface GameModel : NSObject
 @property SinglePlayerData* myData;
 @property DatabaseModel* myDB;
-@property GlobalVariableModel* myGlobalVariableModel;
+//@property GlobalVariableModel* myGlobalVariableModel;
 @property UIStoryboard* myStoryboard;
-@property UIViewController* currentViewController;
 @property NSInteger GameID;
 @property NSMutableDictionary* source;
 
@@ -39,21 +38,24 @@
  
  [PRE WEEK]
  - process date
- - process cash
  - process next match
-
+ - process last match
+ 
  Highlights
-
- - see lastgame result
- - see table standing
- - see stat gain from game
+ - see training result
+ - see match training result
+ - see scout results
+ - see task results
  
  - see news
- - see awards/injuries/
- - see transfer requests
- - [end season] prize money
+ - see awards/injuries(training + match)/cards
+ - see transfer requests/ transfer approaches
+    - boost in player value
+ 
+ - [end season] see prize money
+ - [end season] see prize money
+ - [new season] see season tickets
  - [new season] youth players
- -
  
  News
  - see special actionables
@@ -67,10 +69,13 @@
     - see table
     - see fixtures
     - see next match
+       - opponent form/ position
 
     Squad subview
     - see player stats
     - see player season stats
+      - games played
+      - goals
 
     Tactics subview
     - see current tactic
@@ -122,16 +127,7 @@
      - football seminar
  
  [POST TASK]
- - process training
- - process scouting
- - process admin
- - process task
- 
- End of week
- - see week's task gain
- - see training gain
- - see scout gain - ie new names
- - see admin gain - cash/new job seekers
+ - nil
  
  [PRE GAME]
  Prematch Selection
@@ -151,14 +147,25 @@
  [POST GAME]
  - process tournament games played
  - process single player fixture
- - [SCENE] bus travelling with weather depending on result
+ - process cash
 
+ - process training
+ - process scouting
+ - process admin
+ - process task
+
+ 
+ - [SCENE] bus travelling with weather depending on result
+ - [SCENE] see lastgame result
+ - [SCENE] see other league result
+ - [SCENE] see table standing
 */
+
 
 //Static Method
 + (id)myGame;
 + (DatabaseModel*) myDB;
-+ (GlobalVariableModel*) myGlobalVariableModel;
+//+ (GlobalVariableModel*) myGlobalVariableModel;
 
 //Save Load
 - (void) newWithGameID:(NSInteger) thisGameID;

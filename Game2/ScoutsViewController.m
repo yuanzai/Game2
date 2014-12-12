@@ -41,7 +41,7 @@
 
 - (void) viewDidDisappear:(BOOL)animated
 {
-    [myGame.myData.myScouting updateAllScoutsToDatabase];
+    [myGame saveThisGame];
 }
 
 - (void)didReceiveMemoryWarning {

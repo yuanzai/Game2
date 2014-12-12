@@ -10,10 +10,10 @@
 #import <UIKit/UIKit.h>
 
 @interface PlayerList : NSObject <UITableViewDelegate,UITableViewDataSource>
-@property(nonatomic,retain) id target;
+@property(nonatomic,retain) UIViewController* target;
 @property __block NSMutableArray* players;
 
-- (id) initWithTarget:(id) thisTarget;
+- (id) initWithTarget:(UIViewController*) thisTarget;
 //- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
 //- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 

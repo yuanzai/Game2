@@ -36,7 +36,7 @@ const NSInteger max_action = 10;
 
 -(void) setEventOwnerTeam1:(LineUp*) team1 Team2:(LineUp*) team2
 {
-    NSDictionary* factorTable=[[GameModel myGlobalVariableModel] eventOccurenceFactorTable];
+    NSDictionary* factorTable=[[GlobalVariableModel myGlobalVariable] eventOccurenceFactorTable];
     [team1 populateTeamAttDefStats];
     [team2 populateTeamAttDefStats];
     

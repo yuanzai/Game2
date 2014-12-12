@@ -39,7 +39,7 @@
             team1.Location = home;
             hasSP = YES;
         } else {
-            team1 = [[LineUp alloc]initWithTeam:[[[GameModel myGlobalVariableModel] teamList]objectForKey:[NSString stringWithFormat:@"%i",fixture.HOMETEAM]]];
+            team1 = [[LineUp alloc]initWithTeam:[[[GlobalVariableModel myGlobalVariable] teamList]objectForKey:[NSString stringWithFormat:@"%i",fixture.HOMETEAM]]];
             team1.Location = home;
             team1.currentTactic = [[Tactic alloc]initWithTacticID:2 WithPlayerDict:nil];
             [team1 populateMatchDayForm];
@@ -51,7 +51,7 @@
             team2.Location = away;
             hasSP = YES;
         } else {
-            team2 = [[LineUp alloc]initWithTeam:[[[GameModel myGlobalVariableModel] teamList]objectForKey:[NSString stringWithFormat:@"%i",fixture.AWAYTEAM]]];
+            team2 = [[LineUp alloc]initWithTeam:[[[GlobalVariableModel myGlobalVariable] teamList]objectForKey:[NSString stringWithFormat:@"%i",fixture.AWAYTEAM]]];
             team2.Location = away;
             team2.currentTactic = [[Tactic alloc]initWithTacticID:2 WithPlayerDict:nil];
             [team2 populateMatchDayForm];
@@ -113,7 +113,6 @@
 
     if ([postCommentary count] > 0)
         [minuteEvent addObject:postCommentary];
-    NSLog(@"%@",minuteEvent);
     return minuteEvent;
 }
 
@@ -257,6 +256,7 @@
         }
         [self nextMinute];
     }
+    [self printMatch];
 }
 
 - (void) updateMatchFixture
@@ -278,7 +278,7 @@
 
 - (void) printMatch
 {
-    NSLog(@"%i t1:%i t2:%i %i - %i", thisFixture.MATCHID, thisFixture.HOMETEAM, thisFixture.AWAYTEAM, team1.score, team2.score);
+    NSLog(@"%i %@ %i - %@ %i", thisFixture.MATCHID, team1.team.Name, team1.score, team2.team.Name, team2.score);
 }
 
 //TODO: injury/redcard

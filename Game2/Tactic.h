@@ -42,6 +42,7 @@
 - (BOOL) hasPlayerAtPositionSide:(PositionSide) ps;
 - (BOOL) hasPositionAtPositionSide: (PositionSide) ps;
 
+- (void) validateTactic;
 - (BOOL) isFormationFilled;
 
 - (BOOL) updateTacticsInDatabase;

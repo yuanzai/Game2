@@ -48,7 +48,7 @@
     [[GameModel myGame]saveThisGame];
     
     NSLog(@"Season %i | Week %i",[[GameModel myGame]myData].season, [[GameModel myGame]myData].weekdate);
-    NSLog(@"Tournament Name %@",[[GameModel myGame]myData].currentLeagueTournament.tournamentName);
+    NSLog(@"Tournament Name %@",[[GameModel myGame]myData].myTournament.tournamentName);
     NSLog(@"Next Match ID %i",[[GameModel myGame]myData].nextFixture.MATCHID);
 }
 
@@ -60,16 +60,16 @@
 - (void)testPrintTable
 {
     [[GameModel myGame]loadWithGameID:1];
-    NSLog(@"%i",[[[GameModel myGame] myData]currentLeagueTournament].tournamentID );
-    NSLog(@"%@",[[[GameModel myGame] myData]currentLeagueTournament] );
+    NSLog(@"%i",[[[GameModel myGame] myData]myTournament].tournamentID );
+    NSLog(@"%@",[[[GameModel myGame] myData]myTournament] );
     
     
-    Tournament* temp = [[[GameModel myGlobalVariableModel] tournamentList] objectForKey:@"84"];
+    Tournament* temp = [[[GlobalVariableModel myGlobalVariable] tournamentList] objectForKey:@"84"];
     
     NSLog(@"%i",temp.tournamentID);
     NSLog(@"%@",temp);
     
-    [[[[GameModel myGame] myData]currentLeagueTournament]printTable];
+    [[[[GameModel myGame] myData]myTournament]printTable];
 }
 
 - (void)testTraining
@@ -77,7 +77,7 @@
     GameModel* game = [GameModel myGame];
     [game loadWithGameID:1];
     Plan* myPlan = [game.myData.myTraining.Plans objectAtIndex:0];
-    NSLog(@"%@", myPlan.Coach);
+    NSLog(@"%@", myPlan.thisCoach);
     NSLog(@"%@", myPlan.PlanStats);
     
 }
@@ -88,7 +88,7 @@
     [game loadWithGameID:1];
     [game enterPreWeek];
     [game enterPreGame];
-    [game.myData.currentLineup fillLineup];
+    [game.myData.myLineup fillLineup];
     
     [game enterGame];
     
@@ -98,7 +98,7 @@
     while (!playGame.isOver) {
         if (playGame.isPaused) {
             if (playGame.hasSP) {
-                [game.myData.currentLineup subInjured];
+                [game.myData.myLineup subInjured];
                 [playGame resumeMatch];
             }
         }
@@ -119,7 +119,7 @@
     while (!playGame.isOver) {
         if (playGame.isPaused) {
             if (playGame.hasSP) {
-                [game.myData.currentLineup subInjured];
+                [game.myData.myLineup subInjured];
                 [playGame resumeMatch];
             }
         }
@@ -138,15 +138,15 @@
     NSLog(@"%f",[Action addToRuntime:1 amt:0]);
     NSLog(@"%f",[Action addToRuntime:2 amt:0]);
     NSLog(@"%f",[Action addToRuntime:3 amt:0]);
-    NSLog(@"%i",game.myData.currentLeagueTournament.tournamentID );
-    NSLog(@"%@",game.myData.currentLeagueTournament);
+    NSLog(@"%i",game.myData.myTournament.tournamentID );
+    NSLog(@"%@",game.myData.myTournament);
     
-    Tournament* temp = [[game.myGlobalVariableModel tournamentList] objectForKey:@"84"];
+    Tournament* temp = [[[GlobalVariableModel myGlobalVariable] tournamentList] objectForKey:@"84"];
     
     NSLog(@"%i",temp.tournamentID);
     NSLog(@"%@",temp);
 
-    [game.myData.currentLeagueTournament printTable];
+    [game.myData.myTournament printTable];
 }
 
 
@@ -178,7 +178,7 @@
     /*
     date = [NSDate date];
     for (int i =0; i<10000; i++){
-        NSDictionary* ageP = [[GameModel myGlobalVariableModel] ageProfile];
+        NSDictionary* ageP = [[GlobalVariableModel myGlobalVariable] ageProfile];
         NSDictionary* pid = [ageP objectForKey:@(0)];
         NSInteger r = arc4random_uniform(20);
         NSDictionary* profile = [pid objectForKey:[NSString stringWithFormat:@"%i",r]];
@@ -202,10 +202,17 @@
     
 }
 
+
+
 - (void) testScout {
-    Scout* newScout = [[Scout alloc]initWithScoutID:0];
-    
-    NSMutableArray* ary = [NSMutableArray array];
+    Scout* newScout = [Scout new];
+    newScout.SCOUTPOSITION = ScoutAny;
+    newScout.SCOUTTYPE = SquadPlayer;
+    newScout.JUDGEMENT = 20;
+    newScout.YOUTH = 20;
+    newScout.DILIGENCE = 20;
+    Player* p =[newScout scoutingResultwithFinalCut:10 RandomCut:20 FirstCut:30 PotentialCut:5 ValueLimit:1000000 Position:ScoutAny AgeLimit:-40];
+    NSLog(@"%@",p.DisplayName);
 }
 
 - (void) ttestSinglePlayerData

@@ -9,6 +9,7 @@
 #import "TacticView.h"
 #import "GameModel.h"
 #import "LineUp.h"
+#import "PlayersViewController.h"
 
 @implementation TacticView
 {
@@ -33,17 +34,15 @@ const NSInteger playerSpacing = 10;
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    NSLog(@"source - %@",myGame.source);
-
     self = [super initWithCoder:aDecoder];
     if (self) {
         isDragged = NO;
         myGame = [GameModel myGame];
-        if (!myGame.myData.currentLineup.currentTactic)
-            myGame.myData.currentLineup.currentTactic = [[Tactic alloc]initWithTacticID:0 WithPlayerDict:myGame.myData.lineUpPlayers];
+        if (!myGame.myData.myLineup.currentTactic)
+            myGame.myData.myLineup.currentTactic = [[Tactic alloc]initWithTacticID:0 WithPlayerDict:myGame.myData.lineUpPlayers];
         
         [self createGrid];
-        currentTactic = myGame.myData.currentLineup.currentTactic;
+        currentTactic = myGame.myData.myLineup.currentTactic;
         [self populateGridWithTactic:currentTactic];
         for (id subview in self.subviews) {
             if ([subview isKindOfClass:[UIButton class]]) {
@@ -188,7 +187,9 @@ const NSInteger playerSpacing = 10;
         } else if (self.tag == 511) { //ie from pre match view
             [myGame.source setObject:@"enterPreGame" forKey:@"source"];
         }
-        [myGame enterPlayers];
+
+        PlayersViewController *vc = [target.storyboard instantiateViewControllerWithIdentifier:@"enterPlayers"];
+        [target presentViewController:vc animated:YES completion:nil];
     }
 }
 @end

@@ -112,8 +112,8 @@
 
 - (void) backTo:(UIButton*) button
 {
-    myGame.currentViewController = self;
-    [myGame enterPlayers];
+    PlayersViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"enterPlayers"];
+    [self presentViewController:vc animated:YES completion:nil];
 }
 
 

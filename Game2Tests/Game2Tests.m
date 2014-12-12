@@ -37,6 +37,25 @@
 
 - (void)testExample
 {
+    
+    int* temp;
+    
+    NSLog(@"%d",temp[0]);
+    
+    if (temp[0] == nil)
+        NSLog(@"not exists");
+    if (temp != nil)
+        NSLog(@"fail");
+
+    
+    temp = malloc(sizeof(int)*5);
+    temp[0] =1;
+    if (temp != nil)
+        NSLog(@"exists");
+    if (temp == nil)
+        NSLog(@"fail");
+
+    
     //XCTFail(@"No implementation for \"%s\"", __PRETTY_FUNCTION__);
 }
 

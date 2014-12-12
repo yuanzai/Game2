@@ -230,12 +230,12 @@
 
     NSDictionary* valuationTable;
     if ([position isEqualToString:@"GK"]) {
-        valuationTable = [[GameModel myGlobalVariableModel] valuationStatListForFlank:@"GK"];
+        valuationTable = [[GlobalVariableModel myGlobalVariable] valuationStatListForFlank:@"GK"];
         statCount = [[GlobalVariableModel gkStatList]count];
     } else if ([[side uppercaseString] isEqualToString:@"CENTRE"]) {
-        valuationTable = [[[GameModel myGlobalVariableModel] valuationStatListForFlank:@"CENTRE"] objectForKey:position];
+        valuationTable = [[[GlobalVariableModel myGlobalVariable] valuationStatListForFlank:@"CENTRE"] objectForKey:position];
     } else {
-        valuationTable = [[[GameModel myGlobalVariableModel] valuationStatListForFlank:@"FLANK"] objectForKey:position];
+        valuationTable = [[[GlobalVariableModel myGlobalVariable] valuationStatListForFlank:@"FLANK"] objectForKey:position];
     }
     
     [Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
@@ -316,7 +316,7 @@
 }
 
 - (double) getMatchStatWithBaseStat:(double)stat Consistency:(double) consistency{
-    NSDictionary* sdTable = [[NSDictionary alloc]initWithDictionary:[[GameModel myGlobalVariableModel] standardDeviationTable]];
+    NSDictionary* sdTable = [[NSDictionary alloc]initWithDictionary:[[GlobalVariableModel myGlobalVariable] standardDeviationTable]];
     //normal dist 0 mean 1 sd
     double u =(double)(arc4random() %100000 + 1)/100000; //for precision
     double v =(double)(arc4random() %100000 + 1)/100000; //for precision
@@ -386,7 +386,7 @@
     [toTeam.PlayerList addObject:self];
     
     if (fromTeam.isSinglePlayer){
-        [[GameModel gameData].currentLineup removeInvalidPlayers];
+        [[GameModel gameData].myLineup removeInvalidPlayers];
         [GameModel gameData].money += price;
     } else if (toTeam.isSinglePlayer) {
         [GameModel gameData].money -= price;

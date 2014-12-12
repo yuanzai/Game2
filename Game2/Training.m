@@ -12,85 +12,22 @@
 #import "Team.h"
 #import "Player.h"
 #import "SinglePlayerData.h"
-
-@implementation Coach
-{
-    GameModel* myGame;
-}
-@synthesize valueArray;
-@synthesize COACHDRILLS, COACHPHYSICAL,COACHSHOOTING,COACHSKILLS,COACHTACTICS,COACHNAME,JUDGEMENT,MOTIVATION;
-
-- (id)initWithCoder:(NSCoder *)decoder {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-    
-    self.COACHDRILLS = [decoder decodeIntegerForKey:@"COACHDRILLS"];
-    self.COACHPHYSICAL = [decoder decodeIntegerForKey:@"COACHPHYSICAL"];
-    self.COACHSHOOTING = [decoder decodeIntegerForKey:@"COACHSHOOTING"];
-    self.COACHSKILLS = [decoder decodeIntegerForKey:@"COACHSKILLS"];
-    self.COACHTACTICS = [decoder decodeIntegerForKey:@"COACHTACTICS"];
-    self.JUDGEMENT = [decoder decodeIntegerForKey:@"JUDGEMENT"];
-    self.MOTIVATION = [decoder decodeIntegerForKey:@"MOTIVATION"];
-    self.COACHNAME = [decoder decodeObjectForKey:@"COACHNAME"];
-
-    return self;
-}
-
-- (void)encodeWithCoder:(NSCoder *)encoder {
-    [encoder encodeInteger:self.COACHDRILLS forKey:@"COACHDRILLS"];
-    [encoder encodeInteger:self.COACHPHYSICAL forKey:@"COACHPHYSICAL"];
-    [encoder encodeInteger:self.COACHSHOOTING forKey:@"COACHSHOOTING"];
-    [encoder encodeInteger:self.COACHSKILLS forKey:@"COACHSKILLS"];
-    [encoder encodeInteger:self.COACHTACTICS forKey:@"COACHTACTICS"];
-    [encoder encodeInteger:self.JUDGEMENT forKey:@"JUDGEMENT"];
-    [encoder encodeInteger:self.MOTIVATION forKey:@"MOTIVATION"];
-    [encoder encodeObject:self.COACHNAME forKey:@"COACHNAME"];
-}
+#import "GlobalVariableModel.h"
 
 
-- (id) initWithCoachID: (NSInteger) thisCoachID {
-    self = [super init];
-    if (self) {
-        myGame = [GameModel myGame];
-        valueArray = [NSArray arrayWithObjects:@"COACHDRILLS",
-                      @"COACHPHYSICAL",
-                      @"COACHSHOOTING",
-                      @"COACHSKILLS",
-                      @"COACHTACTICS",
-                      @"COACHNAME",
-                      @"JUDGEMENT",
-                      @"MOTIVATION", nil];
-        NSDictionary* result = [[GameModel myDB]getResultDictionaryForTable:@"training" withKeyField:@"TRAININGID" withKey:thisCoachID];
-        NSLog(@"Coach %@",result);
-        [valueArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            [self setValue:[result objectForKey:obj] forKey:obj];
-        }];
-    }
-    return self;
-}
-
-@end
-
-@implementation Plan {
-    NSArray *groupArray;
-    NSDictionary * groupStatList;
-    NSDictionary * statBiasTable;
-    NSInteger season;
-    NSTimeInterval timeInterval;
-    NSArray* ageProfiles;
-    NSInteger statExpMax;
-    NSInteger expReps;
-}
-
-@synthesize TrainingID;
+@implementation Plan
+@synthesize expReps, statExpMax;
+@synthesize ageProfiles, statBiasTable, groupStatList, groupArray;
+@synthesize season;
 @synthesize thisCoach;
 @synthesize PlayerList;
 @synthesize PlanStats;
 @synthesize PlayersExp;
 @synthesize PlayerIDList;
 @synthesize isActive;
+@synthesize myGame;
+@synthesize upStatSum,downStatSum, upExpSum, downExpSum;
+
 
 static double runtime1 =0.0;
 static double runtime2 =0.0;
@@ -110,11 +47,8 @@ static double runtime3 =0.0;
         PlayerIDList = [NSMutableSet set];
         PlayerList = [NSMutableSet set];
         thisCoach = nil;
-
-        statExpMax = 3;
-        expReps = 1;
-        
         isActive = NO;
+        [self setVariables];
     }; return self;
 }
 
@@ -129,8 +63,9 @@ static double runtime3 =0.0;
     self.PlanStats = [decoder decodeObjectForKey:@"PlanStats"];
     self.isActive = [decoder decodeIntegerForKey:@"isActive"];
     self.PlayerList = [NSMutableSet set];
-    
-    
+
+    [self setVariables];
+    [self setPlayerList];
     return self;
 }
 
@@ -144,11 +79,10 @@ static double runtime3 =0.0;
 
 - (void) setPlayerList
 {
-    GameModel* myGame = [GameModel myGame];
+    GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
 
     [PlayerIDList enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-        
-        Player* thisPlayer = [myGame.myGlobalVariableModel getPlayerFromID:[obj integerValue]];
+        Player* thisPlayer = [globals.playerList objectForKey:[obj stringValue]];
         if (thisPlayer.TeamID != 0) {
             [self removePlayerFromTrainingPlans:thisPlayer];
         } else {
@@ -159,41 +93,20 @@ static double runtime3 =0.0;
 
 - (void) setVariables
 {
-    groupArray = [[GlobalVariableModel playerGroupStatList] allKeys];
-    groupStatList = [GlobalVariableModel  playerGroupStatList];
-    statBiasTable = [[GameModel myGlobalVariableModel] statBiasTable];
-    season = [[[GameModel myGame]myData]season];
-    ageProfiles = [[GameModel myGlobalVariableModel] ageProfile];
-}
+    self.statExpMax = 3;
+    self.expReps = 1;
+    GlobalVariableModel* globals =[GlobalVariableModel myGlobalVariable];
 
-- (id) initWithDefault
-{
-    self = [super init];
-    if (self) {
-        groupArray = [[GlobalVariableModel playerGroupStatList] allKeys];
-        groupStatList = [GlobalVariableModel  playerGroupStatList];
-        statBiasTable = [[GameModel myGlobalVariableModel] statBiasTable];
-        season = [[[GameModel myGame]myData]season];
-        ageProfiles = [[GameModel myGlobalVariableModel] ageProfile];
-        statExpMax = 3;
-        expReps = 1;
-        PlayerList = [NSMutableSet set];
-        PlayerIDList = [NSMutableSet set];
-    }
-    return self;
+    self.groupArray = [[GlobalVariableModel playerGroupStatList] allKeys];
+    self.groupStatList = [GlobalVariableModel  playerGroupStatList];
+    self.statBiasTable = [globals statBiasTable];
+    self.ageProfiles = [globals ageProfile];
 }
 
 - (id) initWithPotential:(NSInteger) potential Age:(NSInteger) age
 {
-    self = [self initWithDefault];
+    self = [self init];
     if (self) {
-        PlanStats = [[NSMutableDictionary alloc]initWithObjectsAndKeys:
-                     @"0",@"DRILLS",
-                     @"0",@"SHOOTING",
-                     @"0",@"PHYSICAL",
-                     @"0",@"TACTICS",
-                     @"0",@"SKILLS",
-                     @"1",@"INTENSITY", nil];
         
         thisCoach = [Coach new];
         [thisCoach setValue:@(6) forKeyPath:@"COACHDRILLS"];
@@ -216,50 +129,11 @@ static double runtime3 =0.0;
     return self;
 }
 
-- (id) initWithTrainingID:(NSInteger) thisTrainingID
-{
-    self = [self initWithDefault];
-    if (self) {
-        TrainingID = thisTrainingID;
-        PlanStats = [[NSMutableDictionary alloc]initWithDictionary:[[GameModel myDB]getResultDictionaryForTable:@"training" withKeyField:@"TRAININGID" withKey:thisTrainingID]];
-
-        thisCoach = [[Coach alloc]initWithCoachID:TrainingID];
-        
-        //Populate Player ID List
-        PlayerIDList = [NSMutableSet setWithArray:[[GameModel myDB]getArrayFrom:@"trainingExp" withSelectField:@"PLAYERID" whereKeyField:@"TRAININGID" hasKey:[NSNumber numberWithInteger:thisTrainingID]]];
-
-        //Populate Player List
-        [PlayerIDList enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-            Player* thisPlayer = [[[GameModel myGlobalVariableModel]playerList]objectForKey:[NSString stringWithFormat:@"%@",obj]];
-            if (thisPlayer.TeamID != 0) {
-                [self removePlayerFromTrainingPlans:thisPlayer];
-            } else {
-                [PlayerList addObject:thisPlayer];
-                [PlayersExp setObject:thisPlayer forKey:[obj stringValue]];
-            }
-        }];
-        
-        //Populate Player Exp Dictionary
-        NSArray* expList = [[GameModel myDB] getArrayFrom:@"trainingExp" whereKeyField:@"TRAININGID" hasKey:[NSNumber numberWithInteger:thisTrainingID] sortFieldAsc:@""];
-        [expList enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
-            [PlayersExp setObject:[NSMutableDictionary dictionaryWithDictionary:obj] forKey:[@([[obj objectForKey:@"PLAYERID"]integerValue]) stringValue]];
-        }];
-    }
-    return self;
-}
-
 - (id) initWithCoach:(Coach*) newCoach PlayerList:(NSArray*) playerArray StatsGroup:(NSArray*) statGroupArray
 {
-    self = [self initWithDefault];
+    self = [self init];
     if (self) {
         thisCoach = newCoach;
-        PlanStats = [[NSMutableDictionary alloc]initWithObjectsAndKeys:
-                     @"0",@"DRILLS",
-                     @"0",@"SHOOTING",
-                     @"0",@"PHYSICAL",
-                     @"0",@"TACTICS",
-                     @"0",@"SKILLS",
-                     @"1",@"INTENSITY", nil];
         if (groupArray)
             groupArray = statGroupArray;
         PlayerList = [NSMutableSet setWithArray:playerArray];
@@ -268,30 +142,39 @@ static double runtime3 =0.0;
 
 - (void) runTrainingPlan
 {
+    statExpMax = 3;
+    expReps = 1;
+    season = myGame.myData.season;
+    upStatSum = 0;
+    downStatSum = 0;
+    upExpSum = 0;
+    downExpSum = 0;
     [PlayerList enumerateObjectsUsingBlock:^(Player* p, BOOL *stop) {
-        NSMutableDictionary* trainingEXP = [PlayersExp objectForKey:[@(p.PlayerID) stringValue]];
+        PlayerExp* trainingEXP = [PlayersExp objectForKey:[@(p.PlayerID) stringValue]];
+        [self runTrainingPlanForPlayer:p TrainingExp:trainingEXP];
         [p updatePlayerInDatabaseStats:YES GameStat:NO Team:NO Position:NO Valuation:NO];
-        [self updateTrainingExpForPlayer:p WithExp:trainingEXP];
     }];
 }
 
 - (void) runTrainingPlanForPlayer:(Player *)thisPlayer Times:(NSInteger) times ExpReps : (NSInteger) reps Season:(NSInteger) setSeason
 {
     // AI Simulation
+
     season = setSeason;
     expReps = reps;
-    NSMutableDictionary* trainingEXP = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-                                        @0,@"DRILLS",
-                                        @0,@"SHOOTING",
-                                        @0,@"PHYSICAL",
-                                        @0,@"TACTICS",
-                                        @0,@"SKILLS", nil];
+    PlayerExp* trainingEXP = [PlayerExp new];
+    trainingEXP.DRILLS = 0;
+    trainingEXP.SHOOTING = 0;
+    trainingEXP.SKILLS = 0;
+    trainingEXP.TACTICS = 0;
+    trainingEXP.PHYSICAL = 0;
+    
     for (NSInteger i = 0 ; i < times; i++) {
         [self runTrainingPlanForPlayer:thisPlayer TrainingExp:trainingEXP];
     }
 }
 
-- (void) runTrainingPlanForPlayer:(Player*) thisPlayer TrainingExp:(NSMutableDictionary*) trainingEXP
+- (void) runTrainingPlanForPlayer:(Player*) thisPlayer TrainingExp:(PlayerExp*) trainingEXP
 {
     __block double totalStat;
     [thisPlayer.Stats enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
@@ -301,7 +184,7 @@ static double runtime3 =0.0;
     [groupArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         __block double gStat = 0.0;
         
-        NSInteger statExp = [[trainingEXP objectForKey:obj]integerValue];
+        NSInteger statExp = [[trainingEXP valueForKey:obj]integerValue];
         NSArray* thisArray = (NSArray*)[groupStatList objectForKey:obj];
 
         [thisArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -314,7 +197,7 @@ static double runtime3 =0.0;
         //update stat
         
         if (statExp / statExpMax == 0) {
-            [trainingEXP setObject:@(statExp) forKey:obj];
+            [trainingEXP setValue:@(statExp) forKey:obj];
             
         } else if (statExp > 0) {
             
@@ -324,7 +207,7 @@ static double runtime3 =0.0;
                     [self getChangeStatStringWithGroup:obj Player:thisPlayer upChange:YES];
                 }
             }
-            [trainingEXP setObject:@(statExp % statExpMax) forKey:obj];
+            [trainingEXP setValue:@(statExp % statExpMax) forKey:obj];
         } else if (statExp < 0) {
             
             for (int i = 0; i < -statExp/statExpMax; i ++) {
@@ -333,14 +216,9 @@ static double runtime3 =0.0;
                     [self getChangeStatStringWithGroup:obj Player:thisPlayer upChange:NO];
                 }
             }
-            [trainingEXP setObject:@(statExpMax - statExp % statExpMax) forKey:obj];
+            [trainingEXP setValue:@(statExpMax - statExp % statExpMax) forKey:obj];
         }
     }];
-}
-
-- (void) updateTrainingExpForPlayer:(Player*) player WithExp:(NSDictionary*) data
-{
-    [[GameModel myDB]updateDatabaseTable:@"trainingExp" withKeyField:@"PLAYERID" withKey:player.PlayerID withDictionary:data];
 }
 
 - (int) updateOneGroup:(NSString*) group
@@ -383,8 +261,8 @@ static double runtime3 =0.0;
     
     double decayK = [self getMultiplierWithType:@"DECAYCONSTANT" ID:player.DecayConstantID Age:age];
     [Plan addToRuntime:2 amt:-[date timeIntervalSinceNow]];
-
-    decayProb = decay * (double) player.Potential + decayK;
+    
+    decayProb = decay * (double) player.Potential/100 + decayK;
 
 
     if ((double)tStat/(double)player.Potential/3.60 < 0.4)
@@ -403,13 +281,20 @@ static double runtime3 =0.0;
     
 //    NSLog(@"%f,%f,%f,%f,%f,%f,%f",potentialM,realisedM,growthM,biasM,coachM,absoluteM,trainingM);
     trainingProb = MIN(potentialM * realisedM * growthM * biasM * coachM * absoluteM * trainingM,0.95);
-
+//    NSLog(@"%f", trainingProb);
+    
     for (NSInteger i = 0; i < expReps; i ++) {
-        if (arc4random()*10000 < trainingProb*10000) expChange++;
-        if (arc4random()*10000 < decayProb*10000) expChange--;
+        if (arc4random()%10000 < trainingProb*10000)
+            expChange++;
+        if (arc4random()%10000 < decayProb*10000)
+            expChange--;
     }
     [Plan addToRuntime:3 amt:-[date timeIntervalSinceNow]];
-
+    if (expChange>0)
+        upExpSum ++;
+    if (expChange<0)
+        downExpSum++;
+    
     return expChange;
 }
 
@@ -462,9 +347,9 @@ static double runtime3 =0.0;
 
 
 - (void) getChangeStatStringWithGroup:(NSString*) group Player:(Player*) player upChange:(BOOL) isUp{
-    NSArray* statArray = [[groupStatList objectForKey:group]allKeys];
-    NSMutableArray* validStats = [NSMutableArray array];
     
+    NSArray* statArray = [groupStatList objectForKey:group];
+    NSMutableArray* validStats = [NSMutableArray array];
     
     [statArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if (isUp) {
@@ -476,35 +361,31 @@ static double runtime3 =0.0;
         }
     }];
     
+    if ([validStats count] ==0)
+        return;
+    
     NSString* changeStat = [validStats objectAtIndex:arc4random() % [validStats count]];
     
     NSInteger stat = [[player.Stats objectForKey:changeStat]integerValue];
     if (isUp) {
+        upStatSum++;
         [player.Stats setObject:[NSNumber numberWithInteger:stat + 1] forKey:changeStat];
     } else {
+        downStatSum++;
         [player.Stats setObject:[NSNumber numberWithInteger:stat - 1] forKey:changeStat];
     }
 }
 
 - (void) addPlayerToTrainingPlan:(Player*) thisPlayer
 {
-    if(![[GameModel myDB]updateDatabaseTable:@"trainingExp" withKeyField:@"PLAYERID" withKey:thisPlayer.PlayerID withDictionary:[NSDictionary dictionaryWithObjectsAndKeys:@(TrainingID),@"TRAININGID", nil]])
-        [NSException raise:@"update player training id" format:@"update player training id"];
-    
     [PlayerList addObject:thisPlayer];
+    [PlayerIDList addObject:@(thisPlayer.PlayerID)];
 }
 
 - (void) removePlayerFromTrainingPlans:(Player*) thisPlayer
 {
+    [PlayerList removeObject:thisPlayer];
     [PlayerIDList removeObject:@(thisPlayer.PlayerID)];
-    
-    //[[GameModel myDB]deleteFromTable:@"trainingExp" withData:[NSDictionary dictionaryWithObjectsAndKeys:@(thisPlayer.PlayerID),@"PLAYERID", nil]];
-}
-
-- (BOOL) updateTrainingPlanToDatabase
-{
-    return YES;
-    //return [[GameModel myDB]updateDatabaseTable:@"training" withKeyField:@"TRAININGID" withKey:TrainingID withDictionary:PlanStats];
 }
 
 - (BOOL) updatePlanStats:(NSString*)stat Value:(NSInteger) value
@@ -512,7 +393,7 @@ static double runtime3 =0.0;
     if ([[PlanStats objectForKey:stat]integerValue] == value)
         return NO;
     [PlanStats setObject:[NSNumber numberWithInteger:value] forKey:stat];
-    return [self updateTrainingPlanToDatabase];
+    return YES;
 }
 
 - (double) getCoachMultiplierGroup:(NSString*) group PlayerGroupStat:(NSInteger)gStat {
@@ -573,18 +454,11 @@ static double runtime3 =0.0;
 @end
 
 @implementation Training
-{
-    GameModel* myGame;
-}
-@synthesize Plans, playerExps;
+@synthesize Plans, playerExps, lastRun, myGame;
 
 - (id) init {
     if (!(self = [super init]))
 		return nil;
-    myGame = [GameModel myGame];
-    
-
-    
     playerExps = [NSMutableDictionary dictionary];
     [myGame.myData.myTeam.PlayerList enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
         [playerExps setObject:[PlayerExp new] forKey:[@(p.PlayerID) stringValue]];
@@ -597,7 +471,6 @@ static double runtime3 =0.0;
         newPlan.PlayersExp = self.playerExps;
     };
     
-    //[self syncTrainingPlansToTeam];
     return self;
 }
 
@@ -609,12 +482,11 @@ static double runtime3 =0.0;
     
     self.Plans = [decoder decodeObjectForKey:@"Plans"];
     self.playerExps = [decoder decodeObjectForKey:@"playerExps"];
+    self.lastRun = [decoder decodeIntegerForKey:@"lastRun"];
     [self checkPlayers];
     
     [Plans enumerateObjectsUsingBlock:^(Plan* pl, NSUInteger idx, BOOL *stop) {
         pl.PlayersExp = self.playerExps;
-        [pl setVariables];
-        [pl setPlayerList];
     }];
     return self;
 }
@@ -622,6 +494,7 @@ static double runtime3 =0.0;
 - (void)encodeWithCoder:(NSCoder *)encoder {
     [encoder encodeObject:self.Plans forKey:@"Plans"];
     [encoder encodeObject:self.playerExps forKey:@"playerExps"];
+    [encoder encodeInteger:self.lastRun forKey:@"lastRun"];
 }
 
 - (void) checkPlayers
@@ -631,7 +504,7 @@ static double runtime3 =0.0;
             [playerExps setObject:[PlayerExp new] forKey:@(p.PlayerID)];
     }];
     [playerExps enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        if ([myGame.myGlobalVariableModel getPlayerFromID:[key integerValue]].TeamID != 0)
+        if ([[GlobalVariableModel myGlobalVariable] getPlayerFromID:[key integerValue]].TeamID != 0)
             [playerExps removeObjectForKey:key];
     }];
 }
@@ -639,19 +512,10 @@ static double runtime3 =0.0;
 - (void) runAllPlans
 {
     [Plans enumerateObjectsUsingBlock:^(Plan* pl, NSUInteger idx, BOOL *stop) {
-        [pl runTrainingPlan];
+        if (pl.isActive)
+            [pl runTrainingPlan];
     }];
-}
-
-- (void) syncTrainingPlansToTeam
-{
-    NSArray* unassigned = [self getUnassignedPlayers];
-    for (Player* p in unassigned) {
-        if (![[GameModel myDB]insertDatabaseTable:@"trainingExp" withData:[NSDictionary dictionaryWithObjectsAndKeys:@(p.PlayerID),@"PLAYERID",@(0),@"TRAININGID", nil]])
-        
-            [NSException raise:@"not inserted" format:@"not inserted"];
-        
-    }
+    lastRun = myGame.myData.weekdate;
 }
 
 - (NSArray*) getUnassignedPlayers
@@ -664,6 +528,46 @@ static double runtime3 =0.0;
         }];
     };
     return playerList;
+}
+
+-(NSInteger)getUpStats
+{
+    __block NSInteger sum = 0;
+    [Plans enumerateObjectsUsingBlock:^(Plan* pl, NSUInteger idx, BOOL *stop) {
+        if (pl.isActive)
+            sum += pl.upStatSum;
+    }];
+    return sum;
+}
+
+-(NSInteger)getDownStats
+{
+    __block NSInteger sum = 0;
+    [Plans enumerateObjectsUsingBlock:^(Plan* pl, NSUInteger idx, BOOL *stop) {
+        if (pl.isActive)
+            sum += pl.downStatSum;
+    }];
+    return sum;
+}
+
+-(NSInteger)getUpExp
+{
+    __block NSInteger sum = 0;
+    [Plans enumerateObjectsUsingBlock:^(Plan* pl, NSUInteger idx, BOOL *stop) {
+        if (pl.isActive)
+            sum += pl.upExpSum;
+    }];
+    return sum;
+}
+
+-(NSInteger)getDownExp
+{
+    __block NSInteger sum = 0;
+    [Plans enumerateObjectsUsingBlock:^(Plan* pl, NSUInteger idx, BOOL *stop) {
+        if (pl.isActive)
+            sum += pl.downExpSum;
+    }];
+    return sum;
 }
 @end
 
@@ -692,4 +596,38 @@ static double runtime3 =0.0;
     [encoder encodeInteger:self.PHYSICAL forKey:@"PHYSICAL"];
 }
 
+@end
+
+@implementation Coach
+@synthesize valueArray;
+@synthesize COACHDRILLS, COACHPHYSICAL,COACHSHOOTING,COACHSKILLS,COACHTACTICS,COACHNAME,JUDGEMENT,MOTIVATION;
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+    
+    self.COACHDRILLS = [decoder decodeIntegerForKey:@"COACHDRILLS"];
+    self.COACHPHYSICAL = [decoder decodeIntegerForKey:@"COACHPHYSICAL"];
+    self.COACHSHOOTING = [decoder decodeIntegerForKey:@"COACHSHOOTING"];
+    self.COACHSKILLS = [decoder decodeIntegerForKey:@"COACHSKILLS"];
+    self.COACHTACTICS = [decoder decodeIntegerForKey:@"COACHTACTICS"];
+    self.JUDGEMENT = [decoder decodeIntegerForKey:@"JUDGEMENT"];
+    self.MOTIVATION = [decoder decodeIntegerForKey:@"MOTIVATION"];
+    self.COACHNAME = [decoder decodeObjectForKey:@"COACHNAME"];
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)encoder {
+    [encoder encodeInteger:self.COACHDRILLS forKey:@"COACHDRILLS"];
+    [encoder encodeInteger:self.COACHPHYSICAL forKey:@"COACHPHYSICAL"];
+    [encoder encodeInteger:self.COACHSHOOTING forKey:@"COACHSHOOTING"];
+    [encoder encodeInteger:self.COACHSKILLS forKey:@"COACHSKILLS"];
+    [encoder encodeInteger:self.COACHTACTICS forKey:@"COACHTACTICS"];
+    [encoder encodeInteger:self.JUDGEMENT forKey:@"JUDGEMENT"];
+    [encoder encodeInteger:self.MOTIVATION forKey:@"MOTIVATION"];
+    [encoder encodeObject:self.COACHNAME forKey:@"COACHNAME"];
+}
 @end

@@ -13,19 +13,14 @@
 #import "Generator.h"
 #import "Task.h"
 #import "Training.h"
-
-#import "ViewController.h"
-#import "PlayersViewController.h"
-#import "PlayerInfoViewController.h"
-#import "PlanViewController.h"
+#import "Scouting.h"
 
 @implementation GameModel
 @synthesize myData;
 @synthesize GameID;
 @synthesize myDB;
-@synthesize myGlobalVariableModel;
+//@synthesize myGlobalVariableModel;
 @synthesize myStoryboard;
-@synthesize currentViewController;
 @synthesize source;
 
 #pragma mark Initialization Methods
@@ -37,8 +32,8 @@
     dispatch_once(&onceToken, ^{
         myGame = [[self alloc] init];
         myGame.myDB = [DatabaseModel new];
-        //myGame.myGlobalVariableModel = [GlobalVariableModel new];
         myGame.myStoryboard = [UIStoryboard storyboardWithName:@"Main_iPhone" bundle:nil];
+        myGame.source = [NSMutableDictionary dictionary];
     });
     return myGame;
 }
@@ -54,13 +49,6 @@
 {
     return [[self myGame]myDB];
 }
-
-
-+ (GlobalVariableModel*) myGlobalVariableModel
-{
-    return [[self myGame]myGlobalVariableModel];
-}
-
 
 #pragma mark Data Methods
 
@@ -78,8 +66,7 @@
     myData.SaveGameID = thisGameID;
     self.myData.myGame = self;
     
-    //Training New Coach
-    
+    //Setup Training New Coach
     
     [myData setUpData];
     
@@ -90,7 +77,12 @@
     for (Player* p in thisPlan.PlayerList) {
         [thisPlan.PlayerIDList addObject:@(p.PlayerID)];
     }
-
+    
+    //Setup Scouting New Scout
+    [myData.myScouting.scoutArray setObject:[newGenerator generateNewScoutWithAbility:32] atIndexedSubscript:0];
+    Scout* newScout =[myData.myScouting.scoutArray objectAtIndex:0];
+    newScout.ISACTIVE = YES;
+    
     [[GameModel myGame]enterPreWeek];
     [[GameModel myGame]saveThisGame];
 }
@@ -112,7 +104,8 @@
 
             if ([myData.weekStage isEqualToString:@""] || myData.weekStage == nil)
                 myData.weekStage = @"enterPreWeek";
-            [self goToView];
+            if ([myData.weekStage isEqualToString:@"enterPlan"])
+                myData.weekStage = @"enterTraining";
         }
     }
 }
@@ -133,13 +126,6 @@
 }
 
 #pragma mark View Controller Methods
-- (void) goToView
-{
-    ViewController *vc = (ViewController*)[currentViewController.storyboard instantiateViewControllerWithIdentifier:myData.weekStage];
-    [currentViewController presentViewController:vc animated:YES completion:nil];
-    currentViewController = vc;
-}
-
 
 #pragma mark Game Play Methods
 
@@ -161,8 +147,8 @@
     }
     myData.week++;
     [myData setNextFixture];
+    [myData setLastFixture];
     [myData setNextMatchOpponents];
-    [myData.currentLeagueTournament setCurrentLeagueTable];
 }
 
 - (void) enterPreTask
@@ -180,7 +166,7 @@
 - (void) enterTask
 {
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
-    myData.weekTask = TaskNone;
+    //myData.weekTask = TaskNone;
     [self saveThisGame];
 }
 
@@ -198,7 +184,7 @@
 {
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
     [myData.myTeam updateConditionPreGame];
-    [myData.currentLineup populateMatchDayForm];
+    [myData.myLineup populateMatchDayForm];
     [self saveThisGame];
 }
 
@@ -213,24 +199,39 @@
 - (void) enterPostGame
 {
     myData.weekStage = [NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)];
+    [source setObject:@([myData.myTournament getTeamPositionInLeague:0]) forKey:@"previousLeaguePosition"];
 
     NSLog(@"Updating Match Fixture");
     [myData.nextMatch updateMatchFixture];
 
     NSLog(@"Updating All Match Fixtures");
-    NSDictionary* tournamentList = [myGlobalVariableModel tournamentList];
+    NSDictionary* tournamentList = [[GlobalVariableModel myGlobalVariable] tournamentList];
     
     [tournamentList enumerateKeysAndObjectsUsingBlock:^(id key, Tournament* t, BOOL *stop) {
         NSArray* thisT = [t getFixturesForNonSinglePlayerForDate:myData.weekdate];
         for (Fixture* fx in thisT) {
-            Match* simulateMatch = [[Match alloc]initWithFixture:fx WithSinglePlayerTeam:nil];
-            NSLog(@"%i %i %@ v %@",t.tournamentID,fx.MATCHID,simulateMatch.team1.team.Name, simulateMatch.team2.team.Name);
-            [simulateMatch playFullGame];
-            [simulateMatch updateMatchFixture];
+            if (fx.PLAYED ==0) {
+                Match* simulateMatch = [[Match alloc]initWithFixture:fx WithSinglePlayerTeam:nil];
+                NSLog(@"%i %i %@ v %@",t.tournamentID,fx.MATCHID,simulateMatch.team1.team.Name, simulateMatch.team2.team.Name);
+                //[simulateMatch playFullGame];
+                //[simulateMatch updateMatchFixture];
+            }
         }
         [t setCurrentLeagueTable];
     }];
+    [myData.myTraining runAllPlans];
+    [myData.myScouting runAllScouting];
+    [myData.myScouting removeExcessPlayersFromShortlist];
+    [myData.myScouting addPlayersFromResultToShortlist];
+    [myData.myLineup.currentTactic validateTactic];
+    [source setObject:@([myData.myTraining getUpStats]) forKey:@"trainingUpStats"];
+    [source setObject:@([myData.myTraining getDownStats]) forKey:@"trainingDownStats"];
+    [source setObject:@([myData.myTraining getUpExp]) forKey:@"trainingUpExp"];
+    [source setObject:@([myData.myTraining getDownExp]) forKey:@"trainingDownExp"];
     
+    [source setObject:@([[myData.myScouting getAllScoutsResults] count]) forKey:@"scoutingCount"];
+    [source setObject:@([myData.myTournament getTeamPositionInLeague:0]) forKey:@"currentLeaguePosition"];
+    [source setObject:[myData.myTournament getScoresForNonSinglePlayerForDate:myData.weekdate] forKey:@"scores"];
     [self saveThisGame];
 }
 
@@ -247,9 +248,7 @@
 
 - (void) enterTactic
 {
-    ViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:[NSString stringWithFormat:@"%@",NSStringFromSelector(_cmd)]];
-    [currentViewController presentViewController:vc animated:YES completion:nil];
-    currentViewController = vc;
+    [source setObject:@"enterTactic" forKey:@"source"];
 }
 
 - (void) exitTactic
@@ -260,37 +259,23 @@
 
 - (void) enterPlayers
 {
-    NSLog(@"enterPlayers");
-    NSLog(@"%@",currentViewController);
-    PlayersViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:@"enterPlayers"];
-    [currentViewController presentViewController:vc animated:YES completion:nil];
-    currentViewController = vc;
-    
+
 }
 
 - (void) enterPlayerInfo
 {
-    PlayerInfoViewController *vc = [currentViewController.storyboard instantiateViewControllerWithIdentifier:@"enterInfo"];;
-    [currentViewController presentViewController:vc animated:YES completion:nil];
+
 }
 
 - (void) exitPlayers
 {
-    NSString* sourceString = [source objectForKey:@"source"];
-    if ([sourceString isEqualToString:@"enterTactic"]) {
-        [self enterTactic];
-    } else if ([sourceString isEqualToString:@"enterPreGame"]) {
-        [self goToView];
-    } else if ([sourceString isEqualToString:@"enterPlanPlayers"]) {
-        [self enterPlan];
-    }
 }
 
 
 - (void) startSeason
 {
     myData.season++;
-    NSDictionary* tournamentList = [myGlobalVariableModel tournamentList];
+    NSDictionary* tournamentList = [[GlobalVariableModel myGlobalVariable] tournamentList];
     NSLog(@"Fixture season %i",myData.season);
     [tournamentList enumerateKeysAndObjectsUsingBlock:^(id key, Tournament* t, BOOL *stop) {
         [t createFixturesForSeason:myData.season];

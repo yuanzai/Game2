@@ -23,15 +23,15 @@
 @property NSInteger SaveGameID;
 
 @property Team* myTeam;
-@property LineUp* currentLineup;
-@property Tournament* currentLeagueTournament;
+@property LineUp* myLineup;
+@property Tournament* myTournament;
 @property Training* myTraining;
 @property Scouting* myScouting;
 
 
 @property Fixture* nextFixture;
 @property Match* nextMatch;
-@property Fixture* lastMatch;
+@property Fixture* lastFixture;
 @property Team* nextMatchOpponents;
 
 
@@ -55,4 +55,5 @@
 - (void) setNextMatchOpponents;
 - (void) setMyTeam;
 - (void) setNextMatch;
+- (void) setLastFixture;
 @end

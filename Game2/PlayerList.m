@@ -9,6 +9,7 @@
 #import "PlayerList.h"
 #import "GameModel.h"
 #import "PlayerInfoViewController.h"
+#import "PlayersViewController.h"
 #import "LineUp.h"
 #import "Training.h"
 
@@ -35,6 +36,7 @@
         sectionNames = [NSMutableArray array];
         sectionCount = 0;
         [self loadData];
+
     }
     return self;
 }
@@ -42,16 +44,41 @@
 
 - (void) loadData
 {
-    if ([sourceString isEqualToString:@"enterTactic"] || [sourceString isEqualToString:@"enterPreGame"]) {
-        PositionSide ps;
-        [[myGame.source objectForKey:@"ps"] getValue:&ps];
-
-        if (ps.position == GKPosition && ps.side == GKSide) {
-            [players addObject: [myGame.myData.myTeam getAllGKWithInjured:NO]];
-        } else {
-            [players addObject: [myGame.myData.myTeam getAllOutfieldWithInjured:NO]];
+    
+    if ([sourceString isEqualToString:@"enterPlayers"] || [sourceString isEqualToString:@"enterPreGame"]) {
+        
+        NSString* enterPlayersSource = [myGame.source objectForKey:@"enterPlayers"];
+        
+        if ([enterPlayersSource isEqualToString:@"enterTactic"] || [enterPlayersSource isEqualToString:@"enterPreGame"]) {
+            PositionSide ps;
+            [[myGame.source objectForKey:@"ps"] getValue:&ps];
+            
+            if (ps.position == GKPosition && ps.side == GKSide) {
+                [players addObject: [myGame.myData.myTeam getAllGKWithInjured:NO]];
+            } else {
+                [players addObject: [myGame.myData.myTeam getAllOutfieldWithInjured:NO]];
+            }
+            sectionCount = 1;
+        } else if ([enterPlayersSource isEqualToString:@"enterPlan"]){
+            sectionCount = 0;
+            NSLog(@"Unassigned %i",[[[[myGame myData]myTraining] getUnassignedPlayers]count]);
+            if ([[[[myGame myData]myTraining] getUnassignedPlayers]count] > 0) {
+                [players addObject:[[[myGame myData]myTraining] getUnassignedPlayers]];
+                [sectionNames addObject:@"Unassigned Players"];
+                sectionCount++;
+            }
+            for (NSInteger i = 0; i<4; i++) {
+                if ([[myGame.source objectForKey:@"PlanID"]integerValue] == i)
+                    continue;
+                Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:i];
+                if ([thisPlan.PlayerList count] > 0) {
+                    sectionCount++;
+                    [players addObject: [thisPlan.PlayerList allObjects]];
+                    [sectionNames addObject:[NSString stringWithFormat:@"Plan %i",i+1]];
+                }
+            }
         }
-        sectionCount = 1;
+        
     } else if ([sourceString isEqualToString:@"enterPlan"]){
 
         Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[myGame.source objectForKey:@"PlanID"]integerValue]];
@@ -59,24 +86,6 @@
             [players addObject: [thisPlan.PlayerList allObjects]];
         sectionCount = 1;
         
-    } else if ([sourceString isEqualToString:@"enterPlanPlayers"]){
-        sectionCount = 0;
-        NSLog(@"Unassigned %i",[[[[myGame myData]myTraining] getUnassignedPlayers]count]);
-        if ([[[[myGame myData]myTraining] getUnassignedPlayers]count] > 0) {
-            [players addObject:[[[myGame myData]myTraining] getUnassignedPlayers]];
-            [sectionNames addObject:@"Unassigned Players"];
-            sectionCount++;
-        }
-        for (NSInteger i = 0; i<4; i++) {
-            if ([[myGame.source objectForKey:@"PlanID"]integerValue] == i)
-                continue;
-            Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:i];
-            if ([thisPlan.PlayerList count] > 0) {
-                sectionCount++;
-                [players addObject: [thisPlan.PlayerList allObjects]];
-                [sectionNames addObject:[NSString stringWithFormat:@"Plan %i",i+1]];
-            }
-        }
     }
 }
 #pragma mark - Table view data source
@@ -129,18 +138,20 @@
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [myGame.source setObject:[[players objectAtIndex:indexPath.section] objectAtIndex:indexPath.row] forKey:@"player"];
-    [myGame enterPlayerInfo];
+
+    PlayerInfoViewController *vc = [target.storyboard instantiateViewControllerWithIdentifier:@"enterInfo"];;
+    [target presentViewController:vc animated:YES completion:nil];
 }
 
 - (void) tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
     Player* p = [[players objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
     if ([sourceString isEqualToString:@"enterTactic"] || [sourceString isEqualToString:@"enterPreGame"]) {
-        [myGame.myData.currentLineup.currentTactic removePlayerFromTactic:p];
+        [myGame.myData.myLineup.currentTactic removePlayerFromTactic:p];
         PositionSide ps;
         [[myGame.source objectForKey:@"ps"] getValue:&ps];
-        [myGame.myData.currentLineup.currentTactic populatePlayer:p PositionSide:ps ForceSwap:NO];
-        [myGame.myData.currentLineup.currentTactic updatePlayerLineup];
+        [myGame.myData.myLineup.currentTactic populatePlayer:p PositionSide:ps ForceSwap:NO];
+        [myGame.myData.myLineup.currentTactic updatePlayerLineup];
         [myGame enterTactic];
     } else if ([sourceString  isEqualToString:@"enterPlan"]){
         Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[myGame.source objectForKey:@"PlanID"]integerValue]];
@@ -159,7 +170,8 @@
                 [thisPlan.PlayerList removeObject:p];
             }
         }
-        [myGame enterPlan];
+        [((PlayersViewController*)target).playersView reloadData];
+        [target viewDidLoad];
     }
 
 }

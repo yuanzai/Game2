@@ -32,9 +32,10 @@
 - (void) getPromotionAndRelegationForSeason:(NSInteger) season;
 
 - (NSArray*) getFixturesForNonSinglePlayerForDate:(NSInteger)date;
-
+- (NSArray*) getScoresForNonSinglePlayerForDate:(NSInteger)date;
 
 - (Fixture*) getMatchForTeamID:(NSInteger) teamID Date:(NSInteger) date;
+- (NSInteger) getTeamPositionInLeague:(NSInteger) TeamID;
 
 - (void) setCurrentLeagueTable;
 - (void) printTable;
