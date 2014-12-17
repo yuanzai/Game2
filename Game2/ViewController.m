@@ -11,8 +11,9 @@
 #import "GlobalVariableModel.h"
 #import "Match.h"
 #import "LineUp.h"
+#import "Tactic.h"
 #import "TacticView.h"
-
+#import "PlayerInfoView.h"
 @interface ViewController ()
 
 @end
@@ -27,7 +28,6 @@
     [self getButtons];
     UILabel* time = (UILabel*)[self.view viewWithTag:620];
     time.font = [GlobalVariableModel newFont2Large];
-    
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 }
@@ -126,7 +126,9 @@
                 [myGame enterPostGame];
             break;
         case 601:
-            [self startMatch];
+            if (!myGame.myData.nextMatch.isPaused && !myGame.myData.nextMatch.isOver) {
+                [self startMatch];
+            }
             break;
             
         case 602:
@@ -142,7 +144,8 @@
             break;
             
         case 700:
-            [myGame enterPreWeek];
+            if (myGame.myData.nextMatch.isOver)
+                [myGame enterPreWeek];
             break;
         case 999:
             [myGame saveThisGame];
@@ -199,7 +202,7 @@
 {
     switch (((UIButton*)sender).tag) {
         case 500:
-            if (![myGame.myData.myLineup validateTactic]) {
+            if (![myGame.myData.myLineup.currentTactic isTacticValid]) {
                 NSLog(@"Invalid Tactic");
                 return NO;
             }
@@ -209,6 +212,9 @@
                 return NO;
             [myGame enterTask];
             break;
+        case 700:
+            //if (myGame.myData.nextMatch.isOver)
+              //  return NO;
         default:
             break;
             

@@ -51,7 +51,7 @@
 - (void) setUpData;
 
 - (void) setNextFixture;
-- (void) setCurrentLeagueTournament;
+- (void) setMyTournament;
 - (void) setNextMatchOpponents;
 - (void) setMyTeam;
 - (void) setNextMatch;

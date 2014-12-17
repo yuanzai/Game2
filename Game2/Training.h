@@ -48,6 +48,7 @@
 @property NSArray *groupArray;
 @property NSDictionary * groupStatList;
 @property NSDictionary * statBiasTable;
+@property NSDictionary * trainingProfile;
 @property NSArray* ageProfiles;
 
 @property NSInteger statExpMax;

@@ -16,6 +16,8 @@
 #import "Match.h"
 #import "Action.h"
 #import "Training.h"
+#import "GlobalVariableModel.h"
+
 @interface NewGameTest : XCTestCase
 
 @end
@@ -202,9 +204,21 @@
     
 }
 
-
+- (void) testShortlist {
+    GameModel* myGame = [GameModel myGame];
+    [myGame loadWithGameID:1];
+    GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
+    [globals playerList];
+    
+    NSLog(@"%@",[myGame.myData.myScouting getShortList]);
+    [myGame.myData.myScouting runAllScouting];
+    [myGame.myData.myScouting addPlayersFromResultToShortlist];
+    NSLog(@"%@",[myGame.myData.myScouting getShortList]);
+    
+}
 
 - (void) testScout {
+
     Scout* newScout = [Scout new];
     newScout.SCOUTPOSITION = ScoutAny;
     newScout.SCOUTTYPE = SquadPlayer;

@@ -9,20 +9,16 @@
 #import <Foundation/Foundation.h>
 #import "SinglePlayerData.h"
 #import "Structs.h"
-//#import "GlobalVariableModel.h"
 #import "DatabaseModel.h"
-
 
 @class SinglePlayerData;
 @class Match;
 @class DatabaseModel;
-//@class GlobalVariableModel;
 @class Player;
 
 @interface GameModel : NSObject
 @property SinglePlayerData* myData;
 @property DatabaseModel* myDB;
-//@property GlobalVariableModel* myGlobalVariableModel;
 @property UIStoryboard* myStoryboard;
 @property NSInteger GameID;
 @property NSMutableDictionary* source;
@@ -199,5 +195,4 @@
 - (void) enterTraining;
 - (void) enterPlan;
 
-- (void) goToView;
 @end

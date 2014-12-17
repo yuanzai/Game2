@@ -96,7 +96,7 @@
 - (void) setUpData
 {
     [self setMyTeam];
-    [self setCurrentLeagueTournament];
+    [self setMyTournament];
     [self setNextFixture];
     [self setLastFixture];
     [self setCurrentLineup];
@@ -110,7 +110,7 @@
     myScouting = [Scouting new];
 }
 
-- (void) setCurrentLeagueTournament
+- (void) setMyTournament
 {
     NSInteger tournamentID = myTeam.TournamentID;
     self.myTournament = [[[GlobalVariableModel myGlobalVariable] tournamentList] objectForKey:
@@ -122,7 +122,6 @@
 {
     self.nextFixture = [self.myTournament getMatchForTeamID:0 Date:weekdate];
     NSLog(@"Next Fixture- %@",nextFixture);
-
 }
 
 - (void) setNextMatchOpponents
@@ -160,15 +159,4 @@
 {
     myTraining = [[Training alloc]init];
 }
-
-
-/*
-- (void) setLastMatch;
-{
-    if (weekdate > 1) {
-        self.nextMatch = [self.currentLeagueTournament getMatchForTeamID:0 Date:weekdate-1];
-    }
-    
-}
-*/
 @end

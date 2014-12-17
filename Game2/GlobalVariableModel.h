@@ -13,7 +13,7 @@
 @class Player;
 @interface GlobalVariableModel : NSObject
 + (id)myGlobalVariable;
-
++ (id)myGame;
 //Fonts
 + (UIFont*) newFont1Small;
 + (UIFont*) newFont1Medium;
@@ -36,7 +36,7 @@
 
 - (NSDictionary*) statBiasTable;
 - (NSArray*) ageProfile;
-- (double*) ageProfile2;
+- (NSMutableDictionary*) trainingProfile;
 + (NSArray*) planStats;
 
 //Match Variables

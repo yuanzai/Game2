@@ -139,7 +139,6 @@
     myData.weekdate++;
     if (myData.week>50) {
         myData.week = 0;
-        
     }
     
     if (myData.week == 0) {
@@ -211,8 +210,8 @@
         NSArray* thisT = [t getFixturesForNonSinglePlayerForDate:myData.weekdate];
         for (Fixture* fx in thisT) {
             if (fx.PLAYED ==0) {
-                Match* simulateMatch = [[Match alloc]initWithFixture:fx WithSinglePlayerTeam:nil];
-                NSLog(@"%i %i %@ v %@",t.tournamentID,fx.MATCHID,simulateMatch.team1.team.Name, simulateMatch.team2.team.Name);
+                //Match* simulateMatch = [[Match alloc]initWithFixture:fx WithSinglePlayerTeam:nil];
+                //NSLog(@"%i %i %@ v %@",t.tournamentID,fx.MATCHID,simulateMatch.team1.team.Name, simulateMatch.team2.team.Name);
                 //[simulateMatch playFullGame];
                 //[simulateMatch updateMatchFixture];
             }
@@ -224,6 +223,10 @@
     [myData.myScouting removeExcessPlayersFromShortlist];
     [myData.myScouting addPlayersFromResultToShortlist];
     [myData.myLineup.currentTactic validateTactic];
+    
+    if (!source)
+        source = [NSMutableDictionary dictionary];
+    
     [source setObject:@([myData.myTraining getUpStats]) forKey:@"trainingUpStats"];
     [source setObject:@([myData.myTraining getDownStats]) forKey:@"trainingDownStats"];
     [source setObject:@([myData.myTraining getUpExp]) forKey:@"trainingUpExp"];
@@ -232,6 +235,8 @@
     [source setObject:@([[myData.myScouting getAllScoutsResults] count]) forKey:@"scoutingCount"];
     [source setObject:@([myData.myTournament getTeamPositionInLeague:0]) forKey:@"currentLeaguePosition"];
     [source setObject:[myData.myTournament getScoresForNonSinglePlayerForDate:myData.weekdate] forKey:@"scores"];
+    
+    NSLog(@"%@",myData.myScouting.shortListID);
     [self saveThisGame];
 }
 
@@ -281,14 +286,13 @@
         [t createFixturesForSeason:myData.season];
     }];
      
-    [myData setCurrentLeagueTournament];
+    [myData setMyTournament];
 }
 
 - (void) endSeason
 {
 
 }
-
 
 //TODO: Finances
 

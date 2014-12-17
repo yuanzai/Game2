@@ -93,7 +93,7 @@
         if (p.Condition <= 0) {
             isValid = NO;
             *stop = YES;
-            //NSLog(@"Player Condition");
+            NSLog(@"Player Condition");
         }
         if ([playerList containsObject:p]) {
             isValid = NO;
@@ -105,7 +105,7 @@
             }];
     if ([[currentTactic getAllPlayers]count]!=11-redCard) {
         isValid = NO;
-        //NSLog(@"Player Count");
+        NSLog(@"Player Count");
     }
     
     return isValid;
@@ -476,12 +476,4 @@
     return result;
 }
 
-- (NSArray*) getArrayByValueForPosition:(PositionSide) ps
-{
-    NSMutableArray* resultArray = [NSMutableArray array];
-    NSMutableArray* sortedArray = [[NSMutableArray alloc]initWithArray:[team.PlayerList sortedArrayUsingComparator:^NSComparisonResult(Player* a, Player* b) {
-        return [@(b.Valuation) compare:@(a.Valuation)];
-    }]];
-    return nil;
-}
 @end

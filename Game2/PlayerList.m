@@ -12,8 +12,12 @@
 #import "PlayersViewController.h"
 #import "LineUp.h"
 #import "Training.h"
+#import "Scouting.h"
+
+#import "PlayerInfoView.h"
 
 #import "PlanViewController.h"
+#import "ViewController.h"
 
 @implementation PlayerList
 {
@@ -44,7 +48,6 @@
 
 - (void) loadData
 {
-    
     if ([sourceString isEqualToString:@"enterPlayers"] || [sourceString isEqualToString:@"enterPreGame"]) {
         
         NSString* enterPlayersSource = [myGame.source objectForKey:@"enterPlayers"];
@@ -86,6 +89,9 @@
             [players addObject: [thisPlan.PlayerList allObjects]];
         sectionCount = 1;
         
+    } else if ([sourceString isEqualToString:@"enterShortlist"]){
+        [players addObject:[myGame.myData.myScouting getShortList]];
+        sectionCount = 1;
     }
 }
 #pragma mark - Table view data source
@@ -110,11 +116,9 @@
     if ([players count] == 0)
         return 0;
     
-    
     if (![players objectAtIndex:section])
         return 0;
-//    if ([[players objectAtIndex:section ] count] == 0)
-//       return 0;
+
     return [[players objectAtIndex:section ] count];
 }
 
@@ -137,26 +141,45 @@
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [myGame.source setObject:[[players objectAtIndex:indexPath.section] objectAtIndex:indexPath.row] forKey:@"player"];
+    [myGame.source setObject:[[players objectAtIndex:indexPath.section] objectAtIndex:indexPath.row] forKey:@"playerInfo"];
+    PlayerInfoView* infoView = [[PlayerInfoView alloc]initWithTarget:target Player:[[players objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]];
+    
+    NSLog(@"remove from superview");
+//    [infoView.contentView removeFromSuperview];
+    NSLog(@"remove from superview");
 
+    [target viewDidLoad];
+//    [infoView.closeView addTarget:infoView.contentView action:@selector(removeFromSuperview) forControlEvents:UIControlEventTouchUpInside];
+//    [infoView.closeView.titleLabel setText:@"hihi"];
+//    [target.view addSubview:infoView];
+    //[infoView showInfoView:target Player:[[players objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]];
+    /*
     PlayerInfoViewController *vc = [target.storyboard instantiateViewControllerWithIdentifier:@"enterInfo"];;
     [target presentViewController:vc animated:YES completion:nil];
+    */
 }
 
 - (void) tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
     Player* p = [[players objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
-    if ([sourceString isEqualToString:@"enterTactic"] || [sourceString isEqualToString:@"enterPreGame"]) {
+    if ([sourceString isEqualToString:@"enterPlayers"] || [sourceString isEqualToString:@"enterPreGame"]) {
         [myGame.myData.myLineup.currentTactic removePlayerFromTactic:p];
         PositionSide ps;
         [[myGame.source objectForKey:@"ps"] getValue:&ps];
         [myGame.myData.myLineup.currentTactic populatePlayer:p PositionSide:ps ForceSwap:NO];
         [myGame.myData.myLineup.currentTactic updatePlayerLineup];
-        [myGame enterTactic];
+        NSString* enterPlayersSource = [myGame.source objectForKey:@"enterPlayers"];
+        if ([enterPlayersSource isEqualToString:@"enterTactic"]) {
+            ViewController *vc = [target.storyboard instantiateViewControllerWithIdentifier:@"enterTactic"];;
+            [target presentViewController:vc animated:YES completion:nil];
+        } else if ([enterPlayersSource isEqualToString:@"enterPreGame"]) {
+            ViewController *vc = [target.storyboard instantiateViewControllerWithIdentifier:@"enterPreGame"];;
+            [target presentViewController:vc animated:YES completion:nil];
+
+        }
     } else if ([sourceString  isEqualToString:@"enterPlan"]){
         Plan* thisPlan = [myGame.myData.myTraining.Plans objectAtIndex:[[myGame.source objectForKey:@"PlanID"]integerValue]];
         [thisPlan.PlayerList removeObject:p];
-        NSLog(@"%@",p.DisplayName);
         [tableView reloadData];
 
         [(PlanViewController*)target refreshTable];
@@ -173,6 +196,5 @@
         [((PlayersViewController*)target).playersView reloadData];
         [target viewDidLoad];
     }
-
 }
 @end

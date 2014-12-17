@@ -13,6 +13,8 @@
 #import "Scouting.h"
 #import "Team.h"
 #import "LineUp.h"
+#import "C2DArray_double.h"
+#import "GlobalVariableModel.h"
 
 @interface Game2Tests : XCTestCase
 
@@ -33,7 +35,20 @@
     NSLog(@"%@",[[GameModel myDB]databasePath]);
 }
 
-
+- (void) testC2dArray
+{
+//    C2DArray_double* n = [[C2DArray_double alloc]initWithRows:2 Columns:2];
+//    [n setValue:1.1 atRow:1 Column:1];
+//    NSLog(@"%f",[n valueAtRow:1 Column:1]);
+    
+    
+    /*
+    GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
+    NSDictionary* result = [globals trainingProfile];
+    C2DArray_double* c =[result objectForKey:@"DECAY"];
+    double d = [c valueAtRow:1 Column:1];
+    NSLog(@"%f",d);*/
+}
 
 - (void)testExample
 {

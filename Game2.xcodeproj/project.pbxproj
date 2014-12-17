@@ -84,6 +84,16 @@
 		6B675B671A38336D007E5696 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 6B675B651A38336D007E5696 /* database.db */; };
 		6B675B6A1A384A4A007E5696 /* ScoutsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B691A384A4A007E5696 /* ScoutsViewController.m */; };
 		6B675B6B1A384A4A007E5696 /* ScoutsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B691A384A4A007E5696 /* ScoutsViewController.m */; };
+		6B675B6E1A3C0682007E5696 /* C2DArray_double.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B6D1A3C0682007E5696 /* C2DArray_double.m */; };
+		6B675B6F1A3C0682007E5696 /* C2DArray_double.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B6D1A3C0682007E5696 /* C2DArray_double.m */; };
+		6B675B721A3D957B007E5696 /* ShortlistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B711A3D957B007E5696 /* ShortlistViewController.m */; };
+		6B675B731A3D957B007E5696 /* ShortlistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B711A3D957B007E5696 /* ShortlistViewController.m */; };
+		6B675B781A3DB237007E5696 /* PlayerInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B675B771A3DB237007E5696 /* PlayerInfoView.xib */; };
+		6B675B791A3DB237007E5696 /* PlayerInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B675B771A3DB237007E5696 /* PlayerInfoView.xib */; };
+		6B675B7F1A3DB2F0007E5696 /* PlayerInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B7E1A3DB2F0007E5696 /* PlayerInfoView.m */; };
+		6B675B801A3DB2F0007E5696 /* PlayerInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B7E1A3DB2F0007E5696 /* PlayerInfoView.m */; };
+		6B675B8A1A40590B007E5696 /* Transfer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B891A40590B007E5696 /* Transfer.m */; };
+		6B675B8B1A40590B007E5696 /* Transfer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B675B891A40590B007E5696 /* Transfer.m */; };
 		6BB21C5D1A0FAB9C00ED2310 /* Structs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BB21C5C1A0FAB9C00ED2310 /* Structs.m */; };
 		6BB21C5E1A0FAB9C00ED2310 /* Structs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BB21C5C1A0FAB9C00ED2310 /* Structs.m */; };
 		6BC2C08C1A09EAFF005973C2 /* NewGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2C08B1A09EAFF005973C2 /* NewGameTest.m */; };
@@ -180,6 +190,15 @@
 		6B675B651A38336D007E5696 /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
 		6B675B681A384A4A007E5696 /* ScoutsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoutsViewController.h; sourceTree = "<group>"; };
 		6B675B691A384A4A007E5696 /* ScoutsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoutsViewController.m; sourceTree = "<group>"; };
+		6B675B6C1A3C0682007E5696 /* C2DArray_double.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C2DArray_double.h; sourceTree = "<group>"; };
+		6B675B6D1A3C0682007E5696 /* C2DArray_double.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = C2DArray_double.m; sourceTree = "<group>"; };
+		6B675B701A3D957B007E5696 /* ShortlistViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShortlistViewController.h; sourceTree = "<group>"; };
+		6B675B711A3D957B007E5696 /* ShortlistViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShortlistViewController.m; sourceTree = "<group>"; };
+		6B675B771A3DB237007E5696 /* PlayerInfoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayerInfoView.xib; sourceTree = "<group>"; };
+		6B675B7D1A3DB2F0007E5696 /* PlayerInfoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerInfoView.h; sourceTree = "<group>"; };
+		6B675B7E1A3DB2F0007E5696 /* PlayerInfoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerInfoView.m; sourceTree = "<group>"; };
+		6B675B881A40590B007E5696 /* Transfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Transfer.h; sourceTree = "<group>"; };
+		6B675B891A40590B007E5696 /* Transfer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Transfer.m; sourceTree = "<group>"; };
 		6BB21C5B1A0FAB9C00ED2310 /* Structs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structs.h; sourceTree = "<group>"; };
 		6BB21C5C1A0FAB9C00ED2310 /* Structs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Structs.m; sourceTree = "<group>"; };
 		6BC2C08B1A09EAFF005973C2 /* NewGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameTest.m; sourceTree = "<group>"; };
@@ -313,6 +332,8 @@
 			children = (
 				6BB21C5B1A0FAB9C00ED2310 /* Structs.h */,
 				6BB21C5C1A0FAB9C00ED2310 /* Structs.m */,
+				6B675B6C1A3C0682007E5696 /* C2DArray_double.h */,
+				6B675B6D1A3C0682007E5696 /* C2DArray_double.m */,
 				6B133A0119EECF2600BC749E /* GameModel.h */,
 				6B133A0219EECF2600BC749E /* GameModel.m */,
 				6B133A0319EECF2600BC749E /* GlobalVariableModel.h */,
@@ -343,6 +364,8 @@
 			children = (
 				6B675B601A36DB3C007E5696 /* Task.h */,
 				6B675B611A36DB3C007E5696 /* Task.m */,
+				6B675B881A40590B007E5696 /* Transfer.h */,
+				6B675B891A40590B007E5696 /* Transfer.m */,
 				6B133A1219EECF7B00BC749E /* Fixture.h */,
 				6B133A1319EECF7B00BC749E /* Fixture.m */,
 				6B133A1419EECF7B00BC749E /* Generator.h */,
@@ -375,6 +398,9 @@
 				6B1D45A91A208929006633A9 /* PlayersViewController.m */,
 				6B1D45B11A20A6B5006633A9 /* PlayerInfoViewController.h */,
 				6B1D45B21A20A6B5006633A9 /* PlayerInfoViewController.m */,
+				6B675B771A3DB237007E5696 /* PlayerInfoView.xib */,
+				6B675B7D1A3DB2F0007E5696 /* PlayerInfoView.h */,
+				6B675B7E1A3DB2F0007E5696 /* PlayerInfoView.m */,
 				6B1D458D1A1C5D29006633A9 /* Main_iPhone.storyboard */,
 				6B1D458F1A1C5D29006633A9 /* Main_iPad.storyboard */,
 			);
@@ -392,6 +418,8 @@
 				6B1D45BB1A24464D006633A9 /* PlanViewController.m */,
 				6B675B681A384A4A007E5696 /* ScoutsViewController.h */,
 				6B675B691A384A4A007E5696 /* ScoutsViewController.m */,
+				6B675B701A3D957B007E5696 /* ShortlistViewController.h */,
+				6B675B711A3D957B007E5696 /* ShortlistViewController.m */,
 			);
 			name = Parallels;
 			sourceTree = "<group>";
@@ -479,6 +507,7 @@
 				6B1D45B51A20F7FF006633A9 /* 8-BIT WONDER.TTF in Resources */,
 				6B1339BE19EECC5400BC749E /* Images.xcassets in Resources */,
 				6B1339AD19EECC5400BC749E /* InfoPlist.strings in Resources */,
+				6B675B781A3DB237007E5696 /* PlayerInfoView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -486,6 +515,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B675B791A3DB237007E5696 /* PlayerInfoView.xib in Resources */,
 				6B675B671A38336D007E5696 /* database.db in Resources */,
 				6B1D45B61A20F7FF006633A9 /* 8-BIT WONDER.TTF in Resources */,
 				6B1D45B91A2122D3006633A9 /* visitor1.ttf in Resources */,
@@ -502,9 +532,11 @@
 			files = (
 				6B1D45BC1A24464D006633A9 /* PlanViewController.m in Sources */,
 				6B1D45AA1A208929006633A9 /* PlayersViewController.m in Sources */,
+				6B675B6E1A3C0682007E5696 /* C2DArray_double.m in Sources */,
 				6B1339BC19EECC5400BC749E /* ViewController.m in Sources */,
 				6B133A2C19EECF7B00BC749E /* Training.m in Sources */,
 				6B1D45B31A20A6B5006633A9 /* PlayerInfoViewController.m in Sources */,
+				6B675B8A1A40590B007E5696 /* Transfer.m in Sources */,
 				6B133A0919EECF2600BC749E /* GlobalVariableModel.m in Sources */,
 				6B675B4E1A2F657E007E5696 /* TacticView.m in Sources */,
 				6B133A0719EECF2600BC749E /* GameModel.m in Sources */,
@@ -518,12 +550,14 @@
 				6B1339ED19EECEB500BC749E /* LineUp.m in Sources */,
 				6B1D45C31A262C21006633A9 /* PlayerList.m in Sources */,
 				6B675B6A1A384A4A007E5696 /* ScoutsViewController.m in Sources */,
+				6B675B721A3D957B007E5696 /* ShortlistViewController.m in Sources */,
 				6BB21C5D1A0FAB9C00ED2310 /* Structs.m in Sources */,
 				6B675B5E1A3251D5007E5696 /* LeagueTableViewController.m in Sources */,
 				6B1339EB19EECEB500BC749E /* Event.m in Sources */,
 				6B1339FD19EECEFC00BC749E /* FMDatabasePool.m in Sources */,
 				6B133A2019EECF7B00BC749E /* Fixture.m in Sources */,
 				6B133A0F19EECF3700BC749E /* DatabaseModel.m in Sources */,
+				6B675B7F1A3DB2F0007E5696 /* PlayerInfoView.m in Sources */,
 				6B133A2819EECF7B00BC749E /* Staff.m in Sources */,
 				6B1339FF19EECEFC00BC749E /* FMResultSet.m in Sources */,
 				6B1339B319EECC5400BC749E /* AppDelegate.m in Sources */,
@@ -551,6 +585,7 @@
 				6B133A2D19EECF7B00BC749E /* Training.m in Sources */,
 				6B675B571A31A78F007E5696 /* FixturesViewController.m in Sources */,
 				6BC2C08C1A09EAFF005973C2 /* NewGameTest.m in Sources */,
+				6B675B8B1A40590B007E5696 /* Transfer.m in Sources */,
 				6B1339F019EECEB500BC749E /* Match.m in Sources */,
 				6B1339FE19EECEFC00BC749E /* FMDatabasePool.m in Sources */,
 				6B133A0C19EECF2600BC749E /* SinglePlayerData.m in Sources */,
@@ -559,15 +594,18 @@
 				6B133A2B19EECF7B00BC749E /* Team.m in Sources */,
 				6B133A2119EECF7B00BC749E /* Fixture.m in Sources */,
 				6B133A2319EECF7B00BC749E /* Generator.m in Sources */,
+				6B675B6F1A3C0682007E5696 /* C2DArray_double.m in Sources */,
 				6B133A0019EECEFC00BC749E /* FMResultSet.m in Sources */,
 				6B133A1019EECF3700BC749E /* DatabaseModel.m in Sources */,
 				6B133A2919EECF7B00BC749E /* Staff.m in Sources */,
 				6B133A0819EECF2600BC749E /* GameModel.m in Sources */,
 				6B133A0A19EECF2600BC749E /* GlobalVariableModel.m in Sources */,
+				6B675B731A3D957B007E5696 /* ShortlistViewController.m in Sources */,
 				6BB21C5E1A0FAB9C00ED2310 /* Structs.m in Sources */,
 				6B133A3B19FA180C00BC749E /* Tactic.m in Sources */,
 				6B1339E119EECE7B00BC749E /* Action.m in Sources */,
 				6B133A2719EECF7B00BC749E /* Scouting.m in Sources */,
+				6B675B801A3DB2F0007E5696 /* PlayerInfoView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

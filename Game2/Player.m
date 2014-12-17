@@ -98,7 +98,7 @@
     [TrainingExp setObject:[record objectForKey:@"TACTICSEXP"] forKey:@"TACTICSEXP"];
     [TrainingExp setObject:[record objectForKey:@"SKILLSEXP"] forKey:@"SKILLSEXP"];
     
-    Valuation = [[record objectForKey:@"VALUATION"] integerValue];
+    Valuation = [[record objectForKey:@"VALUATION"] doubleValue];
     if (Condition < 0.01)
         isInjured = YES;
     return self;

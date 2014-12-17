@@ -1,4 +1,4 @@
-//
+    //
 //  Scouting.m
 //  MatchEngine
 //
@@ -24,6 +24,7 @@
             [scoutArray addObject:[Scout new]];
         }
         shortListLimit = 50;
+        shortListID = [NSMutableArray array];
     }; return self;
 }
 
@@ -36,10 +37,6 @@
     self.shortListID = [decoder decodeObjectForKey:@"shortListID"];
     self.shortListLimit = [decoder decodeIntegerForKey:@"shortListLimit"];
     self.lastRun = [decoder decodeIntegerForKey:@"lastRun"];
-
-    [scoutArray enumerateObjectsUsingBlock:^(Scout* s, NSUInteger idx, BOOL *stop) {
-        s.myGame = myGame;
-    }];
     return self;
 }
 
@@ -54,7 +51,8 @@
 {
     __block NSMutableArray* shortList = [NSMutableArray array];
     [shortListID enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        Player* p = [[GlobalVariableModel myGlobalVariable]getPlayerFromID:[obj integerValue]];
+        GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
+        Player* p = [globals getPlayerFromID:[obj integerValue]];
         if (p.TeamID !=0) {
             [shortList addObject:p];
         } else {
@@ -66,6 +64,9 @@
 
 - (void) addPlayerToShortList:(Player*)player
 {
+    if (!shortListID)
+        shortListID = [NSMutableArray array];
+
     [shortListID enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if ([obj integerValue] == player.PlayerID) {
             *stop = YES;
@@ -73,6 +74,8 @@
         }
     }];
     [shortListID addObject:@(player.PlayerID)];
+    NSLog(@"%i",[shortListID count]);
+
 }
 
 - (void) removeFromShortList:(Player*)player
@@ -152,7 +155,6 @@
 - (id)init {
     self = [super init];
     if (self) {
-        myGame = [GameModel myGame];
         SCOUTPOSITION = ScoutAny;
         SCOUTTYPE = SquadPlayer;
         ISACTIVE = NO;
@@ -175,7 +177,7 @@
     self.SCOUTTYPE = [decoder decodeIntegerForKey:@"SCOUTTYPE"];
     self.SCOUTPOSITION = [decoder decodeIntegerForKey:@"SCOUTPOSITION"];
     self.ISACTIVE = [decoder decodeIntegerForKey:@"ISACTIVE"];
-
+    myGame = [GlobalVariableModel myGame];
     return self;
 }
 
@@ -215,10 +217,10 @@
     }
     success = (NSInteger)((double) success * (1 + (double)DILIGENCE * 0.03));
     
-    /*
-    if (arc4random() % 1000 > success)
-        return NO;
-     */
+    
+    //if (arc4random() % 1000 > success)
+      //  return NO;
+     
     return YES;
 }
 
@@ -275,7 +277,10 @@
     }
     
     NSMutableArray* resultArray = [NSMutableArray array];
-    [resultArray addObject:[self scoutingResultwithFinalCut:finalCut RandomCut:randomCut FirstCut:firstCut PotentialCut:potentialCut ValueLimit:valueLimit Position:pos AgeLimit:ageLimit]];
+    
+    Player* scouted = [self scoutingResultwithFinalCut:finalCut RandomCut:randomCut FirstCut:firstCut PotentialCut:potentialCut ValueLimit:valueLimit Position:pos AgeLimit:ageLimit];
+    if (scouted)
+        [resultArray addObject:scouted];
     return resultArray;
 }
 
@@ -309,13 +314,16 @@
             break;
     }
     
-    NSString* firstCutSQL = [NSString stringWithFormat:@"SELECT * FROM players WHERE BIRTHYEAR > %i AND VALUATION < %f %@ ORDER BY ABILITY DESC LIMIT %i",ageLimit, valueLimit,positionSQL,firstCut];
+    NSString* firstCutSQL = [NSString stringWithFormat:@"SELECT * FROM players WHERE BIRTHYEAR > %i AND VALUATION < %f AND %@ ORDER BY ABILITY DESC LIMIT %i",ageLimit, valueLimit,positionSQL,firstCut];
     NSString* potentialCutSQL = [NSString stringWithFormat:@"SELECT * FROM (%@) ORDER BY POTENTIAL DESC LIMIT %i",firstCutSQL, potentialCut];
     NSString* randomCutSQL = [NSString stringWithFormat:@"SELECT * FROM (SELECT * FROM (%@) ORDER BY POTENTIAL LIMIT %i) ORDER BY RANDOM() LIMIT %i",firstCutSQL, firstCut - potentialCut, randomCut - potentialCut];
     NSString* finalCutSQL = [NSString stringWithFormat:@"SELECT * FROM (SELECT * FROM (%@) UNION SELECT * FROM (%@)) ORDER BY ABILITY DESC LIMIT %i",potentialCutSQL,randomCutSQL,finalCut];
     NSString* finalOneSQL = [NSString stringWithFormat:@"SELECT PLAYERID FROM (%@) ORDER BY RANDOM() LIMIT 1",finalCutSQL];
     NSArray* resultArray = [[myGame myDB]getArrayFromQuery:finalOneSQL];
-    return [[GlobalVariableModel myGlobalVariable]getPlayerFromID:[[resultArray[0] objectForKey:@"PLAYERID"]integerValue]];
+    GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
+    Player* p = [globals getPlayerFromID:[[resultArray[0] objectForKey:@"PLAYERID"]integerValue]];
+    NSLog(@"%@",p.DisplayName);
+    return p;
 }
 
 - (void) removeScout

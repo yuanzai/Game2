@@ -188,6 +188,23 @@
     }];
 }
 
+
+- (BOOL) isTacticValid
+{
+    __block BOOL result = YES;
+    
+    [positionArray enumerateObjectsUsingBlock:^(TacticPosition* tp, NSUInteger idx, BOOL *stop) {
+        if (!tp.player) {
+            *stop = YES;
+            result = NO;
+        }
+    }];
+    if (!GoalKeeper)
+        result = NO;
+
+    return YES;
+}
+
 - (BOOL) isFormationFilled
 {
     for (int i = 0; i < 5;i++) {
@@ -237,7 +254,7 @@
     }];
     
     [SubList enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
-        [dataPlayerList setObject:@(p.PlayerID) forKey:[NSString stringWithFormat:@"SUB%lu",idx]];
+        [dataPlayerList setObject:@(p.PlayerID) forKey:[NSString stringWithFormat:@"SUB%lu",(unsigned long)idx]];
     }];
     
     return YES;

@@ -522,10 +522,10 @@
             </objects>
             <point key="canvasLocation" x="-405" y="505"/>
         </scene>
-        <!--View Controller-->
+        <!--Shortlist View Controller-->
         <scene sceneID="NfY-zq-Rjt">
             <objects>
-                <viewController id="kkl-tI-ea6" customClass="ViewController" sceneMemberID="viewController">
+                <viewController id="kkl-tI-ea6" customClass="ShortlistViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="YYT-3j-ozr"/>
                         <viewControllerLayoutGuide type="bottom" id="HXl-dq-H4j"/>
@@ -543,12 +543,12 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="p4U-NR-71e">
+                            <tableView clipsSubviews="YES" tag="888" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="p4U-NR-71e">
                                 <rect key="frame" x="16" y="58" width="288" height="452"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r1n-Xn-elp">
-                                <rect key="frame" x="258" y="20" width="48" height="30"/>
+                                <rect key="frame" x="223" y="20" width="83" height="30"/>
                                 <state key="normal" title="Scouts">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -575,6 +575,9 @@
                             <constraint firstItem="HXl-dq-H4j" firstAttribute="top" secondItem="Qup-HT-yKA" secondAttribute="bottom" constant="20" id="tH5-Y7-5MY"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="playersView" destination="p4U-NR-71e" id="knj-Iy-tTo"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lwO-ra-ZNZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -602,7 +605,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i4O-q6-Vyr">
-                                <rect key="frame" x="16" y="20" width="57" height="30"/>
+                                <rect key="frame" x="16" y="20" width="84" height="30"/>
                                 <state key="normal" title="Shortlist">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -1441,8 +1444,8 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="40c-hX-I9Y"/>
-        <segue reference="sAu-Ny-xXX"/>
+        <segue reference="dyI-JK-D24"/>
+        <segue reference="33H-7q-Ic7"/>
         <segue reference="XAH-2K-sBM"/>
         <segue reference="vyB-AB-UoZ"/>
         <segue reference="ljy-hG-2Uv"/>

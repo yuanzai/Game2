@@ -14,7 +14,5 @@
 @property __block NSMutableArray* players;
 
 - (id) initWithTarget:(UIViewController*) thisTarget;
-//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
-//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 
 @end

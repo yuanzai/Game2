@@ -13,11 +13,11 @@
 #import "Player.h"
 #import "SinglePlayerData.h"
 #import "GlobalVariableModel.h"
-
+#import "C2DArray_double.h"
 
 @implementation Plan
 @synthesize expReps, statExpMax;
-@synthesize ageProfiles, statBiasTable, groupStatList, groupArray;
+@synthesize ageProfiles, statBiasTable, groupStatList, groupArray, trainingProfile;
 @synthesize season;
 @synthesize thisCoach;
 @synthesize PlayerList;
@@ -101,6 +101,8 @@ static double runtime3 =0.0;
     self.groupStatList = [GlobalVariableModel  playerGroupStatList];
     self.statBiasTable = [globals statBiasTable];
     self.ageProfiles = [globals ageProfile];
+    self.trainingProfile = [globals trainingProfile];
+
 }
 
 - (id) initWithPotential:(NSInteger) potential Age:(NSInteger) age
@@ -417,9 +419,15 @@ static double runtime3 =0.0;
 
 
 - (double) getMultiplierWithType:(NSString*) type ID: (NSInteger) ProfileID Age:(NSInteger) age {
-    NSDictionary* profile = [ageProfiles objectAtIndex:age];
-    NSDictionary* record = [profile objectForKey:[NSString stringWithFormat:@"%i", ProfileID]];
-    return [[record objectForKey:type]doubleValue];
+    double result;
+    
+    //NSDictionary* profile = [ageProfiles objectAtIndex:age];
+    //NSDictionary* record = [profile objectForKey:[NSString stringWithFormat:@"%i", ProfileID]];
+    //result = [[record objectForKey:type]doubleValue];
+    
+    C2DArray_double* profileArray = trainingProfile[type];
+    result = [profileArray valueAtRow:age Column:ProfileID];
+    return result;
 }
 
 

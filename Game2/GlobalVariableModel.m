@@ -9,8 +9,9 @@
 #import "GlobalVariableModel.h"
 #import "GameModel.h"
 #import "Fixture.h"
-#import 'C2DArray_double.h'
+#import "C2DArray_double.h"
 #import "LineUp.h"
+
 @implementation GlobalVariableModel
 {
     NSArray* ageProfile;
@@ -41,14 +42,14 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         myGlobalVariable = [[self alloc] init];
-        [myGlobalVariable setAgeProfile2:nil];
+
     });
     return myGlobalVariable;
 }
 
-- (void) setAgeProfile2:(double*) temp
++ (id) myGame
 {
-    ageProfile2 = temp;
+    return [GameModel myGame];
 }
 
 //Fonts
@@ -263,31 +264,29 @@
 - (NSMutableDictionary*) trainingProfile
 {
     if (!trainingProfile) {
-        NSMutableDictionary* result = [NSMutableDictionary dictionary];
-        NSArray* allProfiles = [[GameModel myDB]getArrayFrom:@"trainingProfile" whereData:nil sortFieldAsc:@""];
+        __block NSMutableDictionary* result = [NSMutableDictionary dictionary];
+        __block NSArray* allProfiles = [NSArray arrayWithArray:[[GameModel myDB]getArrayFrom:@"trainingProfile" whereData:nil sortFieldAsc:@""]];
         __block NSInteger maxAge = 0;
         __block NSInteger maxProfileID = 0;
         [allProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             if ([[obj objectForKey:@"AGE"]integerValue] > maxAge)
-                maxAge = [[obj objectForKey:@"AGE"]integerValue]
+                maxAge = [[obj objectForKey:@"AGE"]integerValue];
             if ([[obj objectForKey:@"PROFILEID"]integerValue] > maxProfileID)
-                maxProfileID = [[obj objectForKey:@"AGE"]integerValue]
+                maxProfileID = [[obj objectForKey:@"AGE"]integerValue];
         }];
-        NSDictionary* temp = allProfiles[0];
-        
-        [[temp allKeys] enumerateObjectsUsingBlock:^(id key, NSUInteger idx, BOOL *stop) {
-            if ([key isEqualToString@"AGE"] || [key isEqualToString@"PROFILEID"])
-                return;
-                
-            C2DArray_double* new2DArray = [C2DArray_double alloc]initWithRows:maxAge Columns:maxProfileID;
-
+        maxAge++;
+        maxProfileID++;
+        NSArray* temp = [allProfiles[0] allKeys];
+        for (NSInteger i = 0; i < [temp count]; i++) {
+            if ([temp[i] isEqualToString:@"AGE"] || [temp[i] isEqualToString:@"PROFILEID"])
+                continue;
+            C2DArray_double* new2DArray = [[C2DArray_double alloc]initWithRows:maxAge Columns:maxProfileID];
+            
             [allProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                [new2DArray setValue:[[obj objectForKey:@"PROB"]doubleValue] atRow:[[obj objectForKey:@"AGE"]integerValue] Column:[[obj objectForKey:@"PROFILEID"]integerValue]];
+                [new2DArray setValue:[[obj objectForKey:temp[i]]doubleValue] atRow:[[obj objectForKey:@"AGE"]integerValue] Column:[[obj objectForKey:@"PROFILEID"]integerValue]];
             }];
-                
-            [result setObject:key forKey:new2DArray];
-        }];
-
+            [result setObject:new2DArray forKey:temp[i]];
+        }
         trainingProfile = result;
     }
     return trainingProfile;

@@ -72,7 +72,6 @@
 
 - (BOOL) startMatch
 {
-
     if (team1 == nil || team2 == nil)
         return NO;
     
@@ -166,6 +165,7 @@
 
 - (void) updateFatigue
 {
+    return;
     [[team1.currentTactic getAllPlayers]enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
         double factor = 0.0;
         
