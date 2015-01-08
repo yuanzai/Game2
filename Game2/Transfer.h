@@ -14,6 +14,11 @@ typedef enum {
     TransferSell
 } TransferChoices;
 
+typedef enum {
+    TransferDone,
+    TransferNegotiate,
+    transferRejected
+} TransferResponse;
 
 /*
  Buying
@@ -31,6 +36,8 @@ typedef enum {
 
 @property NSInteger expiryWeek;
 @property NSInteger responseWeek;
+@property TransferResponse response;
+
 
 @property NSMutableArray* counterparties;
 

@@ -21,6 +21,7 @@
 @synthesize relegateCount;
 @synthesize playerCount;
 @synthesize currentLeagueTable;
+@synthesize lastWeekDate;
 
 //TODO: Remove reliance on db for table/fixture info. problem when no games are played.
 
@@ -38,6 +39,7 @@
         promoteCount = [[record objectForKey:@"PROMOTECOUNT"]integerValue];
         relegateCount = [[record objectForKey:@"RELEGATECOUNT"]integerValue];
         playerCount =[[record objectForKey:@"PLAYERCOUNT"]integerValue];
+        lastWeekDate = [self getLastWeekDate];
     }
     return self;
 }
@@ -225,8 +227,16 @@
     return [[GameModel myDB]getLeagueTableForTournamentID:tournamentID Season:season];
 }
 
+- (NSInteger) getLastWeekDate
+{
+    NSString* query = @"SELECT DATE FROM fixtures ORDER BY DATE DESC LIMIT 1";
+    NSArray* result = [[GameModel myDB] getArrayFromQuery:query];
+    return [[[result firstObject]objectForKey:@"DATE"]integerValue];
+}
+
 - (Fixture*) getMatchForTeamID:(NSInteger) teamID Date:(NSInteger) date
 {
+    
     NSDictionary* result = [[GameModel myDB]
                             getResultDictionaryForTable:@"fixtures"
                             withDictionary:[[NSDictionary alloc]

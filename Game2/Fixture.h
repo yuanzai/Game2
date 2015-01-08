@@ -22,6 +22,7 @@
 @property NSInteger relegateCount;
 @property NSInteger playerCount;
 @property NSArray* currentLeagueTable;
+@property NSInteger lastWeekDate;
 
 - (id) initWithTournamentID:(NSInteger) TournamentID;
 
