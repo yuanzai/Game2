@@ -50,7 +50,7 @@
     if (self) {
         thisPlayer = p;
         playerID = p.PlayerID;
-
+        lastBid = bid;
         
         GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
         Team* thisTeam = [globals getTeamFromID:p.TeamID];
@@ -67,42 +67,89 @@
         
         transferType = TransferBuy;
         if (playerRank < 4) {
+            playerRank = 1;
             if (wkDate <= lastWeekDate) {
-                responseWeek = lastWeekDate + 1;
-            } else {
                 responseWeek = wkDate + 1;
+                response = TransferRejectedEndSeason;
+            } else {
+                if (bid <5 ){
+                 responseWeek = wkDate + 3;
+                } else {
+                 responseWeek = wkDate + 2;
+                }
             }
         } else if (playerRank < 9) {
+         playerRank = 2;
             if (wkDate <= lastWeekDate || bid < 6) {
-                responseWeek = lastWeekDate + 1;
-            } else {
                 responseWeek = wkDate + 1;
+                response = TransferRejectedEndSeason;
+            } else {
+                if (bid <5 ){
+                 responseWeek = wkDate + 3;
+                } else {
+                 responseWeek = wkDate + 2;
+                }
             }
         } else if (playerRank < 16) {
+         playerRank = 3;
             if (wkDate <= lastWeekDate || bid < 5) {
-                responseWeek = lastWeekDate + 1;
-            } else {
                 responseWeek = wkDate + 1;
+                response = TransferRejectedEndSeason;
+            } else {
+                if (bid <4 ){
+                 responseWeek = wkDate + 3;
+                } else if (bid <5 ) {
+                 responseWeek = wkDate + 2;
+                } else {
+                 responseWeek = wkDate + 1;
+                }
             }
         } else {
+         playerRank = 4;
             if (wkDate <= lastWeekDate || bid < 4) {
-                responseWeek = lastWeekDate + 2;
+                responseWeek = wkDate + 1;
+                response = TransferRejectedEndSeason;
             } else {
-                responseWeek = wkDate + 2;
+                if (bid <5 ){
+                 responseWeek = wkDate + 2;
+                } else {
+                 responseWeek = wkDate + 1;
+                }
             }
         }
         
+        if (response != TransferRejectedEndSeason) {
         
-        
+        NSInteger prob = [self getProbilityForBid:bid Rank:playerRank];
+        if (arc4Random%100 < prob) {
+         response = TransferAgreed;
+        } else {
+         response = TransferRejected;
+        }
+        if ([thisTeam.players count]<20) {
+         response = TransferRejectedSmallTeam;
+         responseWeek = wkDate + 1;
+        }
+        }
     } return self;
 }
 
-- (void) submitBid:(NSInteger) bid
+- (NSInteger) getProbilityForBid:(NSInteger) bid Rank:(NSInteger) rank
 {
+ NSMutableArray* prob = @[@"",@[@"",@(0),@(0),@(0),@(33),@(50)]
+  ,@[@"",@(0),@(0),@(0),@(50),@(75)]
+  ,@[@"",@(0),@(5),@(33),@(66),@(100)]
+  ,@[@"",@(10),@(33),@(66),@(75),@(100)]
+  ,@[@"",@(60),@(80),@(95),@(99),@(100)]
+  ,@[@"",@(90),@(95),@(99),@(99),@(100)]];
+
+return prob[rank][bid];
+
 }
 
-
-
+- (void) cancelBid
+{
+}
 
 - (void) negotiateBid:(NSInteger) bid CurrentWeekDate:(NSInteger) wkDate{
 
