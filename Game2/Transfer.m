@@ -12,7 +12,8 @@
 #import "Team.h"
 #import "Fixture.h"
 @implementation Negotiation
-@synthesize playerID, thisPlayer, lastBid, bidThreshold, bidRange, expiryWeek, responseWeek, counterparties, transferType, response;
+
+@synthesize playerID, thisPlayer, lastBid, bidThreshold, bidRange, expiryWeek, responseWeek, counterparties, transferType, response, playerRank;
 
 /*
  
@@ -54,88 +55,63 @@
         
         GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
         Team* thisTeam = [globals getTeamFromID:p.TeamID];
-        __block NSInteger playerRank;
         NSInteger lastWeekDate = thisTeam.leagueTournament.lastWeekDate;
         
-        [[thisTeam getAllPlayersSortByValuation]enumerateObjectsUsingBlock:^(Player* arrayPlayer, NSUInteger idx, BOOL *stop) {
-            
-            if (thisPlayer.PlayerID == arrayPlayer.PlayerID) {
-                playerRank = idx;
-                *stop = YES;
-            }
-        }];
-        
+        playerRank = [self getPlayerRankWithTeam:thisTeam Player:thisPlayer];
         transferType = TransferBuy;
-        if (playerRank < 4) {
-            playerRank = 1;
+        responseWeek = [self getResponseDelay] + wkDate;
+        response = [self getResponse];
+        
+        // check season
+        if (playerRank == 1) {
             if (wkDate <= lastWeekDate) {
                 responseWeek = wkDate + 1;
                 response = TransferRejectedEndSeason;
-            } else {
-                if (bid <5 ){
-                 responseWeek = wkDate + 3;
-                } else {
-                 responseWeek = wkDate + 2;
-                }
             }
-        } else if (playerRank < 9) {
-         playerRank = 2;
+        } else if (playerRank == 2) {
             if (wkDate <= lastWeekDate || bid < 6) {
                 responseWeek = wkDate + 1;
                 response = TransferRejectedEndSeason;
-            } else {
-                if (bid <5 ){
-                 responseWeek = wkDate + 3;
-                } else {
-                 responseWeek = wkDate + 2;
-                }
             }
-        } else if (playerRank < 16) {
-         playerRank = 3;
+        } else if (playerRank == 3) {
             if (wkDate <= lastWeekDate || bid < 5) {
                 responseWeek = wkDate + 1;
                 response = TransferRejectedEndSeason;
-            } else {
-                if (bid <4 ){
-                 responseWeek = wkDate + 3;
-                } else if (bid <5 ) {
-                 responseWeek = wkDate + 2;
-                } else {
-                 responseWeek = wkDate + 1;
-                }
             }
         } else {
-         playerRank = 4;
             if (wkDate <= lastWeekDate || bid < 4) {
                 responseWeek = wkDate + 1;
                 response = TransferRejectedEndSeason;
-            } else {
-                if (bid <5 ){
-                    responseWeek = wkDate + 2;
-                } else {
-                    responseWeek = wkDate + 1;
-                }
             }
         }
         
-        if (response != TransferRejectedEndSeason) {
-            
-            NSInteger prob = [self getProbabilityForBid:bid Rank:playerRank];
-            
-            if (arc4random() % 100 < prob) {
-                response = TransferAccepted;
-            } else {
-                response = TransferRejected;
-            }
-            if ([thisTeam.PlayerList count]<20) {
-                response = TransferRejectedSmallTeam;
-                responseWeek = wkDate + 1;
-            }
+        // check team size
+        if ([thisTeam.PlayerList count]<20) {
+            response = TransferRejectedSmallTeam;
+            responseWeek = wkDate + 1;
         }
+        
+        
     } return self;
 }
 
-- (NSInteger) getProbabilityForBid:(NSInteger) bid Rank:(NSInteger) rank
+- (void) negotiateBid:(NSInteger) bid CurrentWeekDate:(NSInteger) wkDate{
+    if (bid <= lastBid)
+        return;
+    lastBid = bid;
+    responseWeek = wkDate + [self getResponseDelay];
+    response = [self getResponse];
+    
+    // check team size
+    GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
+    Team* thisTeam = [globals getTeamFromID:thisPlayer.TeamID];
+    if ([thisTeam.PlayerList count]<20) {
+        response = TransferRejectedSmallTeam;
+        responseWeek = wkDate + 1;
+    }
+}
+
+- (TransferResponse) getResponse
 {
     NSArray* prob = @[@"",@[@"",@(0),@(0),@(0),@(33),@(50)]
                       ,@[@"",@(0),@(0),@(0),@(50),@(75)]
@@ -144,17 +120,84 @@
                       ,@[@"",@(60),@(80),@(95),@(99),@(100)]
                       ,@[@"",@(90),@(95),@(99),@(99),@(100)]];
     
-    return [prob[rank][bid] integerValue];
+    if (arc4random() % 100 < [prob[playerRank][lastBid] integerValue]) {
+        return TransferAccepted;
+    } else {
+        return TransferRejected;
+    }
+}
 
+- (NSInteger) getPlayerRankWithTeam:(Team*)thisTeam Player:(Player*) p
+{
+    __block NSInteger rank;
+    [[thisTeam getAllPlayersSortByValuation]enumerateObjectsUsingBlock:^(Player* arrayPlayer, NSUInteger idx, BOOL *stop) {
+        
+        if (p.PlayerID == arrayPlayer.PlayerID) {
+            rank = idx;
+            *stop = YES;
+        }
+    }];
+    if (rank < 4) {
+        return 1;
+    } else if (rank < 9) {
+        return 2;
+    } else if (rank < 16) {
+        return 3;
+    } else {
+        return  4;
+    }
+}
+
+- (void) acceptTransfer
+{
 }
 
 - (void) cancelBid
 {
+    
 }
 
-- (void) negotiateBid:(NSInteger) bid CurrentWeekDate:(NSInteger) wkDate{
-
+- (NSInteger) getResponseDelay
+{
+    if (playerRank == 1) {
+        if (lastBid <5 ){
+            return 3;
+        } else {
+            return 2;
+        }
+        
+    } else if (playerRank == 2) {
+        
+        if (lastBid <5 ){
+            return 3;
+        } else {
+            return 2;
+        }
+        
+    } else if (playerRank == 3) {
+        if (lastBid <4 ){
+            return 3;
+        } else if (lastBid <5 ) {
+            return 2;
+        } else {
+            return 1;
+        }
+        
+    } else {
+        if (lastBid <5 ){
+            return 2;
+        } else {
+            return 1;
+        }
+    }
 }
+
+- (BOOL) isPendingResponseCurrentWeekDate:(NSInteger) currentWeek
+{
+    return (currentWeek < responseWeek);
+}
+
+
 
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super init];
@@ -169,6 +212,10 @@
     self.responseWeek = [decoder decodeIntegerForKey:@"responseWeek"];
     self.counterparties = [decoder decodeObjectForKey:@"counterparties"];
     self.transferType = (TransferChoices){[decoder decodeIntegerForKey:@"transferType"]};
+    self.playerRank = [decoder decodeIntegerForKey:@"playerRank"];
+    self.response = (TransferResponse){[decoder decodeIntegerForKey:@"response"]};
+    
+    
     GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
     self.thisPlayer = [globals getPlayerFromID:self.playerID];
     return self;
@@ -182,6 +229,8 @@
     [encoder encodeInteger:self.expiryWeek forKey:@"expiryWeek"];
     [encoder encodeInteger:self.responseWeek forKey:@"responseWeek"];
     [encoder encodeInteger:self.transferType forKey:@"transferType"];
+    [encoder encodeInteger:self.response forKey:@"response"];
+    [encoder encodeInteger:self.playerRank forKey:@"playerRank"];
     [encoder encodeObject:self.counterparties forKey:@"counterparties"];
 }
 

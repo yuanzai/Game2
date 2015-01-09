@@ -45,6 +45,8 @@ typedef enum {
 @property NSMutableArray* counterparties;
 
 @property TransferChoices transferType;
+
+@property __block NSInteger playerRank;
 @end
 
 @interface Transfer : NSObject <NSCoding>
