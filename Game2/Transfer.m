@@ -111,39 +111,40 @@
                 response = TransferRejectedEndSeason;
             } else {
                 if (bid <5 ){
-                 responseWeek = wkDate + 2;
+                    responseWeek = wkDate + 2;
                 } else {
-                 responseWeek = wkDate + 1;
+                    responseWeek = wkDate + 1;
                 }
             }
         }
         
         if (response != TransferRejectedEndSeason) {
-        
-        NSInteger prob = [self getProbilityForBid:bid Rank:playerRank];
-        if (arc4Random%100 < prob) {
-         response = TransferAgreed;
-        } else {
-         response = TransferRejected;
-        }
-        if ([thisTeam.players count]<20) {
-         response = TransferRejectedSmallTeam;
-         responseWeek = wkDate + 1;
-        }
+            
+            NSInteger prob = [self getProbabilityForBid:bid Rank:playerRank];
+            
+            if (arc4random() % 100 < prob) {
+                response = TransferAccepted;
+            } else {
+                response = TransferRejected;
+            }
+            if ([thisTeam.PlayerList count]<20) {
+                response = TransferRejectedSmallTeam;
+                responseWeek = wkDate + 1;
+            }
         }
     } return self;
 }
 
-- (NSInteger) getProbilityForBid:(NSInteger) bid Rank:(NSInteger) rank
+- (NSInteger) getProbabilityForBid:(NSInteger) bid Rank:(NSInteger) rank
 {
- NSMutableArray* prob = @[@"",@[@"",@(0),@(0),@(0),@(33),@(50)]
-  ,@[@"",@(0),@(0),@(0),@(50),@(75)]
-  ,@[@"",@(0),@(5),@(33),@(66),@(100)]
-  ,@[@"",@(10),@(33),@(66),@(75),@(100)]
-  ,@[@"",@(60),@(80),@(95),@(99),@(100)]
-  ,@[@"",@(90),@(95),@(99),@(99),@(100)]];
-
-return prob[rank][bid];
+    NSArray* prob = @[@"",@[@"",@(0),@(0),@(0),@(33),@(50)]
+                      ,@[@"",@(0),@(0),@(0),@(50),@(75)]
+                      ,@[@"",@(0),@(5),@(33),@(66),@(100)]
+                      ,@[@"",@(10),@(33),@(66),@(75),@(100)]
+                      ,@[@"",@(60),@(80),@(95),@(99),@(100)]
+                      ,@[@"",@(90),@(95),@(99),@(99),@(100)]];
+    
+    return [prob[rank][bid] integerValue];
 
 }
 

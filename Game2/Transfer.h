@@ -15,9 +15,12 @@ typedef enum {
 } TransferChoices;
 
 typedef enum {
-    TransferDone,
+    TransferAccepted,
     TransferNegotiate,
-    transferRejected
+    TransferRejected,
+    TransferRejectedEndSeason,
+    TransferRejectedSmallTeam
+    
 } TransferResponse;
 
 /*
