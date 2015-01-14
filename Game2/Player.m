@@ -44,6 +44,8 @@
 
 @synthesize matchStats, PosCoeff, currentPositionSide, yellow, red, att, def, hasPlayed, lineup;
 
+@synthesize globalRank, leagueRank;
+
 - (id) initWithPlayerID:(NSInteger) InputID {
 	if (!(self = [super init]))
 		return nil;
@@ -404,6 +406,14 @@
     att = 0.0;
     def = 0.0;
     hasPlayed = NO;
+}
+
+- (void) updateRanks
+{
+    globalRank = [((NSArray*)[[GameModel myDB] getArrayFromQuery:[NSString stringWithFormat:@"SELECT count(*) FROM players WHERE VALUATION > %f",Valuation]])[0] integerValue] * 100 / [[[GlobalVariableModel myGlobalVariable] PlayerList]count];
+    NSInteger leagueID = [[[GlobalVariableModel myGlobalVariable] getTeamFromID:TeamID]TournamentID];
+    
+    leagueRank = [((NSArray*)[[GameModel myDB] getArrayFromQuery:[NSString stringWithFormat:@"SELECT count(*) FROM players WHERE VALUATION > %f AND ",Valuation]])[0] integerValue] * 100 / [[[GlobalVariableModel myGlobalVariable] PlayerList]count];
 }
 
 - (BOOL) addToShortlist

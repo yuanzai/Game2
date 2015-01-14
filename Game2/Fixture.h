@@ -23,6 +23,7 @@
 @property NSInteger playerCount;
 @property NSArray* currentLeagueTable;
 @property NSInteger lastWeekDate;
+@property NSArray* teamList;
 
 - (id) initWithTournamentID:(NSInteger) TournamentID;
 

@@ -63,6 +63,9 @@
 @property BOOL isGoalKeeper;
 @property double Valuation;
 
+@property NSInteger leagueRank;
+@property NSInteger globalRank;
+
 //In Game Stats
 @property NSMutableDictionary* matchStats;
 @property double PosCoeff;
@@ -86,6 +89,8 @@
 - (void) populatePosCoeff;
 - (void) populateMatchStats;
 - (void) clearMatchVariable;
+- (void) updateRanks;
+
 
 - (BOOL) addToShortlist;
 @end

@@ -22,6 +22,7 @@
 @synthesize playerCount;
 @synthesize currentLeagueTable;
 @synthesize lastWeekDate;
+@synthesize teamList;
 
 //TODO: Remove reliance on db for table/fixture info. problem when no games are played.
 
@@ -40,8 +41,19 @@
         relegateCount = [[record objectForKey:@"RELEGATECOUNT"]integerValue];
         playerCount =[[record objectForKey:@"PLAYERCOUNT"]integerValue];
         lastWeekDate = [self getLastWeekDate];
+        [self updateTeamList];
     }
     return self;
+}
+
+- (void) updateTeamList
+{
+    NSArray* teamListID = [[GameModel myDB]getArrayFrom:@"teams" withSelectField:@"TEAMID" whereKeyField:@"TOURNAMENTID" hasKey:@(tournamentID)];
+    NSMutableArray* tempArray = [NSMutableArray array];
+    [teamListID enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [tempArray addObject:[[GlobalVariableModel myGlobalVariable]getTeamFromID:[obj integerValue]]];
+    }];
+    teamList = [NSArray arrayWithArray:tempArray];
 }
 
 - (BOOL) createFixturesForSeason:(NSInteger)season

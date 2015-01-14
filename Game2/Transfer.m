@@ -95,6 +95,96 @@
     } return self;
 }
 
+
++ (NSInteger) getPlayerSellingPriceWithPlayer:(Player*)p
+{
+    NSInteger bid;
+    __block NSInteger rank;
+    GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
+    Team* thisTeam = [globals getTeamFromID:p.TeamID];
+    NSMutableArray* playerArray = [NSMutableArray array];
+    [thisTeam.leagueTournament.teamList enumerateObjectsUsingBlock:^(Team* t, NSUInteger idx, BOOL *stop) {
+        [playerArray addObjectsFromArray:t.PlayerList];
+    }];
+    
+    playerArray = [[NSMutableArray alloc]initWithArray:[playerArray sortedArrayUsingComparator:^NSComparisonResult(Player* a, Player* b) {
+        return [@(b.Valuation) compare:@(a.Valuation)];
+    }]];
+    
+    [[thisTeam getAllPlayersSortByValuation]enumerateObjectsUsingBlock:^(Player* arrayPlayer, NSUInteger idx, BOOL *stop) {
+        
+        if (p.PlayerID == arrayPlayer.PlayerID) {
+            rank = idx;
+            *stop = YES;
+        }
+    }];
+    rank *=100;
+    rank /=[playerArray count];
+    
+    
+    if (rank < 10) {
+        bid = 3;
+    } else if (rank < 20) {
+        bid = 2;
+    } else if (rank < 50) {
+        bid = 1;
+    } else 
+        
+    
+    return bid;
+}
+
+- (id) initSellWithPlayer:(Player*)p
+              TransferType:(TransferChoices) type
+                       Bid:(NSInteger) bid
+           CurrentWeekDate:(NSInteger) wkDate{
+    
+    self = [super init];
+    if (self) {
+        thisPlayer = p;
+        playerID = p.PlayerID;
+        lastBid = bid;
+        
+        GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
+        Team* thisTeam = [globals getTeamFromID:p.TeamID];
+        NSInteger lastWeekDate = thisTeam.leagueTournament.lastWeekDate;
+        
+        playerRank = [self getPlayerRankWithLeagueForPlayer:p];
+        transferType = TransferSell;
+        responseWeek = [self getResponseDelay] + wkDate;
+        response = [self getResponse];
+        
+        // check season
+        if (playerRank < 10) {
+            if (wkDate <= lastWeekDate) {
+                responseWeek = wkDate + 1;
+                response = TransferRejectedEndSeason;
+            }
+        } else if (playerRank == 2) {
+            if (wkDate <= lastWeekDate || bid < 6) {
+                responseWeek = wkDate + 1;
+                response = TransferRejectedEndSeason;
+            }
+        } else if (playerRank == 3) {
+            if (wkDate <= lastWeekDate || bid < 5) {
+                responseWeek = wkDate + 1;
+                response = TransferRejectedEndSeason;
+            }
+        } else {
+            if (wkDate <= lastWeekDate || bid < 4) {
+                responseWeek = wkDate + 1;
+                response = TransferRejectedEndSeason;
+            }
+        }
+        
+        // check team size
+        if ([thisTeam.PlayerList count]<20) {
+            response = TransferRejectedSmallTeam;
+            responseWeek = wkDate + 1;
+        }
+    } return self;
+}
+
 - (void) negotiateBid:(NSInteger) bid CurrentWeekDate:(NSInteger) wkDate{
     if (bid <= lastBid)
         return;
@@ -127,6 +217,30 @@
     }
 }
 
+- (NSInteger) getPlayerRankWithLeagueForPlayer:(Player*) p
+{
+    __block NSInteger rank;
+    GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
+    Team* thisTeam = [globals getTeamFromID:p.TeamID];
+    NSMutableArray* playerArray = [NSMutableArray array];
+    [thisTeam.leagueTournament.teamList enumerateObjectsUsingBlock:^(Team* t, NSUInteger idx, BOOL *stop) {
+        [playerArray addObjectsFromArray:t.PlayerList];
+    }];
+    
+    playerArray = [[NSMutableArray alloc]initWithArray:[playerArray sortedArrayUsingComparator:^NSComparisonResult(Player* a, Player* b) {
+        return [@(b.Valuation) compare:@(a.Valuation)];
+    }]];
+
+    [[thisTeam getAllPlayersSortByValuation]enumerateObjectsUsingBlock:^(Player* arrayPlayer, NSUInteger idx, BOOL *stop) {
+        
+        if (p.PlayerID == arrayPlayer.PlayerID) {
+            rank = idx;
+            *stop = YES;
+        }
+    }];
+    return (rank * 100)/[playerArray count];
+}
+
 - (NSInteger) getPlayerRankWithTeam:(Team*)thisTeam Player:(Player*) p
 {
     __block NSInteger rank;
@@ -144,7 +258,7 @@
     } else if (rank < 16) {
         return 3;
     } else {
-        return  4;
+        return 4;
     }
 }
 
