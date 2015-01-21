@@ -31,6 +31,8 @@
 
 - (void) transferActivity;
 
+- (void) updateRanksForTeam;
+
 //Querying
 - (NSArray*) getAllPlayersSortByValuation;
 - (NSArray*) getAllGKWithInjured:(BOOL) withInjured;

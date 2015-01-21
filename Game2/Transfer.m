@@ -8,6 +8,7 @@
 
 #import "Transfer.h"
 #import "GlobalVariableModel.h"
+#import "GameModel.h"
 #import "Player.h"
 #import "Team.h"
 #import "Fixture.h"
@@ -41,165 +42,195 @@
  news - get 5/6 offers only
  for sale starts at 1
  
+ Bid
+ Nego
+ Sell
+ ForSale
+ Holdout
  
  */
-- (id) initBuyWithPlayer:(Player*)p
-         TransferType:(TransferChoices) type
-                  Bid:(NSInteger) bid
-      CurrentWeekDate:(NSInteger) wkDate{
+- (id) initWithPlayer:(Player*)p
+         CurrentWeekDate:(NSInteger) wkDate{
     self = [super init];
     if (self) {
         thisPlayer = p;
         playerID = p.PlayerID;
-        lastBid = bid;
-        
-        GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
-        Team* thisTeam = [globals getTeamFromID:p.TeamID];
-        NSInteger lastWeekDate = thisTeam.leagueTournament.lastWeekDate;
-        
-        playerRank = [self getPlayerRankWithTeam:thisTeam Player:thisPlayer];
-        transferType = TransferBuy;
-        responseWeek = [self getResponseDelay] + wkDate;
-        response = [self getResponse];
-        
-        // check season
-        if (playerRank == 1) {
-            if (wkDate <= lastWeekDate) {
-                responseWeek = wkDate + 1;
-                response = TransferRejectedEndSeason;
-            }
-        } else if (playerRank == 2) {
-            if (wkDate <= lastWeekDate || bid < 6) {
-                responseWeek = wkDate + 1;
-                response = TransferRejectedEndSeason;
-            }
-        } else if (playerRank == 3) {
-            if (wkDate <= lastWeekDate || bid < 5) {
-                responseWeek = wkDate + 1;
-                response = TransferRejectedEndSeason;
-            }
-        } else {
-            if (wkDate <= lastWeekDate || bid < 4) {
-                responseWeek = wkDate + 1;
-                response = TransferRejectedEndSeason;
-            }
-        }
-        
-        // check team size
-        if ([thisTeam.PlayerList count]<20) {
-            response = TransferRejectedSmallTeam;
-            responseWeek = wkDate + 1;
-        }
-        
-        
     } return self;
 }
 
-
-+ (NSInteger) getPlayerSellingPriceWithPlayer:(Player*)p
+- (void) doStartBid:(NSInteger) bid
 {
-    NSInteger bid;
-    __block NSInteger rank;
-    GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
-    Team* thisTeam = [globals getTeamFromID:p.TeamID];
-    NSMutableArray* playerArray = [NSMutableArray array];
-    [thisTeam.leagueTournament.teamList enumerateObjectsUsingBlock:^(Team* t, NSUInteger idx, BOOL *stop) {
-        [playerArray addObjectsFromArray:t.PlayerList];
-    }];
+    NSInteger wkDate = [[[[GlobalVariableModel myGlobalVariable]myGame] myData]weekdate];
     
-    playerArray = [[NSMutableArray alloc]initWithArray:[playerArray sortedArrayUsingComparator:^NSComparisonResult(Player* a, Player* b) {
-        return [@(b.Valuation) compare:@(a.Valuation)];
-    }]];
-    
-    [[thisTeam getAllPlayersSortByValuation]enumerateObjectsUsingBlock:^(Player* arrayPlayer, NSUInteger idx, BOOL *stop) {
-        
-        if (p.PlayerID == arrayPlayer.PlayerID) {
-            rank = idx;
-            *stop = YES;
-        }
-    }];
-    rank *=100;
-    rank /=[playerArray count];
-    
-    
-    if (rank < 10) {
-        bid = 3;
-    } else if (rank < 20) {
-        bid = 2;
-    } else if (rank < 50) {
-        bid = 1;
-    } else 
-        
-    
-    return bid;
-}
-
-- (id) initSellWithPlayer:(Player*)p
-              TransferType:(TransferChoices) type
-                       Bid:(NSInteger) bid
-           CurrentWeekDate:(NSInteger) wkDate{
-    
-    self = [super init];
-    if (self) {
-        thisPlayer = p;
-        playerID = p.PlayerID;
-        lastBid = bid;
-        
-        GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
-        Team* thisTeam = [globals getTeamFromID:p.TeamID];
-        NSInteger lastWeekDate = thisTeam.leagueTournament.lastWeekDate;
-        
-        playerRank = [self getPlayerRankWithLeagueForPlayer:p];
-        transferType = TransferSell;
-        responseWeek = [self getResponseDelay] + wkDate;
-        response = [self getResponse];
-        
-        // check season
-        if (playerRank < 10) {
-            if (wkDate <= lastWeekDate) {
-                responseWeek = wkDate + 1;
-                response = TransferRejectedEndSeason;
-            }
-        } else if (playerRank == 2) {
-            if (wkDate <= lastWeekDate || bid < 6) {
-                responseWeek = wkDate + 1;
-                response = TransferRejectedEndSeason;
-            }
-        } else if (playerRank == 3) {
-            if (wkDate <= lastWeekDate || bid < 5) {
-                responseWeek = wkDate + 1;
-                response = TransferRejectedEndSeason;
-            }
-        } else {
-            if (wkDate <= lastWeekDate || bid < 4) {
-                responseWeek = wkDate + 1;
-                response = TransferRejectedEndSeason;
-            }
-        }
-        
-        // check team size
-        if ([thisTeam.PlayerList count]<20) {
-            response = TransferRejectedSmallTeam;
-            responseWeek = wkDate + 1;
-        }
-    } return self;
-}
-
-- (void) negotiateBid:(NSInteger) bid CurrentWeekDate:(NSInteger) wkDate{
-    if (bid <= lastBid)
-        return;
     lastBid = bid;
-    responseWeek = wkDate + [self getResponseDelay];
+    
+    Team* thisTeam = [thisPlayer getPlayerTeam];
+    NSInteger lastWeekDate = thisTeam.leagueTournament.lastWeekDate;
+    
+    playerRank = [self getPlayerRankWithTeam:thisTeam Player:thisPlayer];
+    transferType = TransferBuy;
+    
+    responseWeek = [self getResponseDelay] + wkDate;
     response = [self getResponse];
     
+    // check season
+    if (playerRank == 1) {
+        if (wkDate <= lastWeekDate) {
+            responseWeek = wkDate + 1;
+            response = TransferRejectedEndSeason;
+        }
+    } else if (playerRank == 2) {
+        if (wkDate <= lastWeekDate || bid < 6) {
+            responseWeek = wkDate + 1;
+            response = TransferRejectedEndSeason;
+        }
+    } else if (playerRank == 3) {
+        if (wkDate <= lastWeekDate || bid < 5) {
+            responseWeek = wkDate + 1;
+            response = TransferRejectedEndSeason;
+        }
+    } else {
+        if (wkDate <= lastWeekDate || bid < 4) {
+            responseWeek = wkDate + 1;
+            response = TransferRejectedEndSeason;
+        }
+    }
+    
     // check team size
-    GlobalVariableModel* globals = [GlobalVariableModel myGlobalVariable];
-    Team* thisTeam = [globals getTeamFromID:thisPlayer.TeamID];
     if ([thisTeam.PlayerList count]<20) {
         response = TransferRejectedSmallTeam;
         responseWeek = wkDate + 1;
     }
 }
+
+- (void) doNegotiateBid:(NSInteger) bid
+{
+    if (bid <= lastBid)
+        return;
+    
+    NSInteger wkDate = [[[[GlobalVariableModel myGlobalVariable]myGame] myData]weekdate];
+
+    lastBid = bid;
+    responseWeek = wkDate + [self getResponseDelay];
+    response = [self getResponse];
+    
+    // check team size
+    Team* thisTeam = [thisPlayer getPlayerTeam];
+    if ([thisTeam.PlayerList count]<20) {
+        response = TransferRejectedSmallTeam;
+        responseWeek = wkDate + 1;
+    }
+}
+
+- (void) doSell
+{
+    NSInteger wkDate = [[[[GlobalVariableModel myGlobalVariable]myGame] myData]weekdate];
+
+    lastBid = [Negotiation getPlayerSellingPriceWithPlayer:thisPlayer];
+    transferType = TransferSell;
+    responseWeek = wkDate;
+    response = TransferAccepted;
+}
+
+- (void) doForSale
+{
+    NSInteger wkDate = [[[[GlobalVariableModel myGlobalVariable]myGame] myData]weekdate];
+
+    lastBid = [Negotiation getPlayerSellingPriceWithPlayer:thisPlayer];
+    transferType = TransferSell;
+    responseWeek = wkDate;
+    
+    NSInteger r1 = arc4random() % 10 ;
+    NSInteger r2 = arc4random() % 4 + arc4random() % 2 ;
+
+    if (thisPlayer.globalRank < 1) {
+        if (r1 < 3) {
+            lastBid += 2;
+        } else {
+            lastBid += 1;
+        }
+        responseWeek += r2 + 1;
+        
+    } else if (thisPlayer.globalRank < 10) {
+
+        if (r1 < 2) {
+            lastBid += 2;
+        } else if (r1 < 8) {
+            lastBid += 1;
+        }
+        responseWeek += r2 + 2;
+    }  else if (thisPlayer.globalRank < 20) {
+        
+        if (r1 < 1) {
+            lastBid += 2;
+        } else if (r1 < 6) {
+            lastBid += 1;
+        }
+        responseWeek += r2 + 2;
+    } else if (thisPlayer.leagueRank < 15) {
+        if (r1 < 3) {
+            lastBid += 2;
+        } else if (r1 < 9) {
+            lastBid += 1;
+        }
+        responseWeek += r2 + 2;
+    } else if (thisPlayer.leagueRank < 33) {
+        if (r1 < 1) {
+            lastBid += 2;
+        } else if (r1 < 6) {
+            lastBid += 1;
+        }
+        responseWeek += r2 + 2;
+    } else {
+        if (r1 < 5) {
+            lastBid += 1;
+        }
+        responseWeek += r2 + 3;
+    }
+}
+
++ (NSInteger) getPlayerSellingPriceWithPlayer:(Player*)p
+{
+    NSInteger bid;
+    
+    if (p.globalRank < 10) {
+        bid = 3;
+    } else if (p.globalRank < 20) {
+        bid = 2;
+    } else if (p.globalRank < 50) {
+        bid = 1;
+    } else {
+        bid = 0;
+    }
+    
+    if (p.leagueRank< 20) {
+        bid = MIN(bid + 2,3);
+    } else if (p.leagueRank< 60) {
+        bid = MIN(bid + 1,2);
+    }
+    
+    return bid;
+}
+
+- (id) initForSaleWithPlayer:(Player*)p
+          CurrentWeekDate:(NSInteger) wkDate{
+    
+    self = [super init];
+    if (self) {
+        thisPlayer = p;
+        playerID = p.PlayerID;
+        lastBid = [Negotiation getPlayerSellingPriceWithPlayer:p];
+        transferType = TransferSell;
+        responseWeek = wkDate;
+        response = TransferAccepted;
+    } return self;
+}
+
+- (void) negotiateSale:(NSInteger) bid
+{
+    
+}
+
 
 - (TransferResponse) getResponse
 {

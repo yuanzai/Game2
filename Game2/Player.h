@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Tactic.h"
-
+@class Team;
 @class LineUp;
 @interface Player : NSObject
 {
@@ -91,6 +91,7 @@
 - (void) clearMatchVariable;
 - (void) updateRanks;
 
+- (Team*) getPlayerTeam;
 
 - (BOOL) addToShortlist;
 @end

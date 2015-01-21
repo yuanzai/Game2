@@ -223,6 +223,7 @@
     [myData.myScouting removeExcessPlayersFromShortlist];
     [myData.myScouting addPlayersFromResultToShortlist];
     [myData.myLineup.currentTactic validateTactic];
+    [myData.myTeam updateRanksForTeam];
     
     if (!source)
         source = [NSMutableDictionary dictionary];

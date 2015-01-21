@@ -47,6 +47,10 @@ typedef enum {
 @property TransferChoices transferType;
 
 @property __block NSInteger playerRank;
+
++ (NSInteger) getPlayerSellingPriceWithPlayer:(Player*)p;
+
+
 @end
 
 @interface Transfer : NSObject <NSCoding>

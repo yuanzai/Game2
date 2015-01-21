@@ -102,6 +102,12 @@
     }]];
 }
 
+- (void) updateRanksForTeam
+{
+    [PlayerList enumerateObjectsUsingBlock:^(Player* p, NSUInteger idx, BOOL *stop) {
+        [p updateRanks];
+    }];
+}
 
 
 - (void) updateConditionPreGame
